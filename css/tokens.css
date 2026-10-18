@@ -1,0 +1,118 @@
+/* ==========================================================================
+   VIDEM - DESIGN TOKENS & THEMING SYSTEM
+   Light and Dark Themes with Avant-Garde Prism Gradients
+   ========================================================================== */
+
+:root {
+  /* Font Families */
+  --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'Space Grotesk', ui-monospace, SFMono-Regular, monospace;
+
+  /* Brand Prismatic Colors */
+  --color-brand-cyan: #00F0FF;
+  --color-brand-teal: #00C4D8;
+  --color-brand-blue: #0077FF;
+  --color-brand-indigo: #6366F1;
+  --color-brand-violet: #8B5CF6;
+  --color-brand-purple: #7928CA;
+  
+  /* Status Colors */
+  --color-status-success: #10B981;
+  --color-status-success-glow: rgba(16, 185, 129, 0.35);
+  --color-status-warning: #F59E0B;
+
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-smooth: 400ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ==========================================================================
+   DARK THEME (Obsidian Cinema - Default)
+   ========================================================================== */
+[data-theme="dark"], :root:not([data-theme="light"]) {
+  color-scheme: dark;
+
+  /* Surfaces */
+  --bg-canvas: #06080D;
+  --bg-canvas-rgb: 6, 8, 13;
+  --bg-surface: #0E121B;
+  --bg-surface-glass: rgba(15, 20, 31, 0.65);
+  --bg-surface-glass-hover: rgba(22, 29, 45, 0.85);
+  --bg-card: rgba(18, 23, 36, 0.75);
+  --bg-card-border: rgba(255, 255, 255, 0.08);
+  --bg-card-border-hover: rgba(0, 240, 255, 0.3);
+
+  /* Text & Elements */
+  --text-primary: #F8FAFC;
+  --text-secondary: #94A3B8;
+  --text-muted: #64748B;
+  --text-inverse: #070A10;
+
+  /* Accents & Glows */
+  --accent-primary: #00F0FF;
+  --accent-secondary: #6366F1;
+  --accent-gradient: linear-gradient(135deg, #00F0FF 0%, #6366F1 50%, #8B5CF6 100%);
+  --accent-gradient-hover: linear-gradient(135deg, #38F8FF 0%, #818CF8 50%, #A78BFA 100%);
+  --accent-glow: 0 0 35px rgba(0, 240, 255, 0.22);
+  --hero-glow: radial-gradient(circle at 50% 30%, rgba(99, 102, 241, 0.18) 0%, rgba(0, 240, 255, 0.08) 35%, transparent 70%);
+
+  /* UI Components */
+  --nav-bg: rgba(6, 8, 13, 0.75);
+  --nav-border: rgba(255, 255, 255, 0.08);
+  --pill-bg: rgba(255, 255, 255, 0.05);
+  --pill-border: rgba(255, 255, 255, 0.12);
+  --input-bg: rgba(255, 255, 255, 0.04);
+  --input-border: rgba(255, 255, 255, 0.12);
+  
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 8px 24px -4px rgba(0, 0, 0, 0.6);
+  --shadow-lg: 0 20px 40px -10px rgba(0, 0, 0, 0.7);
+  --shadow-prism: 0 10px 30px -5px rgba(0, 240, 255, 0.25);
+}
+
+/* ==========================================================================
+   LIGHT THEME (Pure Studio)
+   ========================================================================== */
+[data-theme="light"] {
+  color-scheme: light;
+
+  /* Surfaces */
+  --bg-canvas: #F8FAFC;
+  --bg-canvas-rgb: 248, 250, 252;
+  --bg-surface: #FFFFFF;
+  --bg-surface-glass: rgba(255, 255, 255, 0.82);
+  --bg-surface-glass-hover: rgba(255, 255, 255, 0.95);
+  --bg-card: rgba(255, 255, 255, 0.9);
+  --bg-card-border: rgba(226, 232, 240, 0.9);
+  --bg-card-border-hover: rgba(14, 165, 233, 0.4);
+
+  /* Text & Elements */
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  --text-muted: #64748B;
+  --text-inverse: #FFFFFF;
+
+  /* Accents & Glows */
+  --accent-primary: #0284C7;
+  --accent-secondary: #4F46E5;
+  --accent-gradient: linear-gradient(135deg, #0284C7 0%, #4F46E5 60%, #7C3AED 100%);
+  --accent-gradient-hover: linear-gradient(135deg, #0369A1 0%, #4338CA 60%, #6D28D9 100%);
+  --accent-glow: 0 0 35px rgba(2, 132, 199, 0.16);
+  --hero-glow: radial-gradient(circle at 50% 30%, rgba(79, 70, 229, 0.1) 0%, rgba(2, 132, 199, 0.06) 40%, transparent 75%);
+
+  /* UI Components */
+  --nav-bg: rgba(255, 255, 255, 0.85);
+  --nav-border: rgba(226, 232, 240, 0.8);
+  --pill-bg: rgba(241, 245, 249, 0.8);
+  --pill-border: rgba(203, 213, 225, 0.7);
+  --input-bg: #F1F5F9;
+  --input-border: rgba(203, 213, 225, 0.9);
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06);
+  --shadow-md: 0 10px 25px -5px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 20px 45px -10px rgba(15, 23, 42, 0.12);
+  --shadow-prism: 0 10px 30px -5px rgba(14, 165, 233, 0.2);
+}

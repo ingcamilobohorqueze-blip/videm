@@ -1,0 +1,173 @@
+{
+  "name": "VIDEM - WhatsApp Tech Concierge Bot",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "videm-whatsapp-webhook",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "node-webhook-in",
+      "name": "Webhook WhatsApp Inbound",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 320]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Normalización del payload entrante (Soporta Evolution API, Meta Cloud API o Webhook genérico)\nconst body = $input.item.json.body || $input.item.json;\n\nlet senderPhone = '';\nlet incomingText = '';\nlet senderName = 'Cliente';\n\nif (body.data && body.data.message) {\n  // Formato Evolution API / Baileys\n  senderPhone = body.data.key.remoteJid.replace('@s.whatsapp.net', '');\n  incomingText = body.data.message.conversation || body.data.message.extendedTextMessage?.text || '';\n  senderName = body.data.pushName || 'Cliente';\n} else if (body.entry && body.entry[0]?.changes?.[0]?.value?.messages?.[0]) {\n  // Formato Meta Cloud API oficial\n  const msg = body.entry[0].changes[0].value.messages[0];\n  senderPhone = msg.from;\n  incomingText = msg.text?.body || '';\n  senderName = body.entry[0].changes[0].value.contacts?.[0]?.profile?.name || 'Cliente';\n} else {\n  senderPhone = body.from || body.phone || 'Unknown';\n  incomingText = body.text || body.message || '';\n  senderName = body.name || 'Cliente';\n}\n\nreturn {\n  senderPhone,\n  senderName,\n  rawText: incomingText,\n  normalizedText: incomingText.toLowerCase().trim()\n};"
+      },
+      "id": "node-normalize",
+      "name": "Normalizar Mensaje",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 320]
+    },
+    {
+      "parameters": {
+        "dataType": "string",
+        "value1": "={{ $json.normalizedText }}",
+        "rules": {
+          "rules": [
+            {
+              "value2": "validar si mi smart tv o tv box es compatible",
+              "output": 0
+            },
+            {
+              "value2": "cumplo con los requisitos técnicos",
+              "output": 1
+            },
+            {
+              "value2": "gestionar mi renovación",
+              "output": 2
+            },
+            {
+              "value2": "baja y supresión de mis datos",
+              "output": 3
+            }
+          ]
+        },
+        "fallbackOutput": 4
+      },
+      "id": "node-router",
+      "name": "Enrutador de Intenciones",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 1,
+      "position": [700, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const phone = $json.senderPhone;\nconst name = $json.senderName;\n\nconst responseText = `✦ *VIDEM | Private Tech Concierge*\n\nHola ${name}, un gusto saludarte. Soy el asistente técnico de *Videm*.\n\nPara garantizarte la experiencia cinematográfica en *Remux 4K nativo, Dolby Vision y Dolby Atmos sin buffering*, validemos rápidamente tu equipamiento:\n\n1️⃣ ¿Cuál es la marca y sistema de tu Smart TV o TV Box? (Ej: LG OLED webOS, Samsung Tizen, Google TV, Apple TV 4K, Fire TV Stick, Xiaomi Box).\n\n2️⃣ ¿Cuentas con conexión de fibra óptica en casa? ¿De cuántos megas aproximadamente?\n\n3️⃣ ¿Tienes barra de sonido o receptor A/V dedicado? (Ej: Sonos, Bose, Samsung Q-Symphony, etc.)\n\nPuedes responder aquí mismo y un especialista revisará tu perfil de compatibilidad de inmediato.\n\n_Nota: Al continuar autorizas el tratamiento de datos para fines de asistencia técnica y soporte._`;\n\nreturn { phone, responseText, flow: 'diagnostico' };"
+      },
+      "id": "node-flow-evaluacion",
+      "name": "Respuesta: Diagnóstico Técnico",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [980, 100]
+    },
+    {
+      "parameters": {
+        "jsCode": "const phone = $json.senderPhone;\nconst name = $json.senderName;\n\nconst responseText = `✦ *VIDEM | Acceso Calificado Confirmado*\n\nExcelente, ${name}. Al contar con Smart TV / TV Box reciente y fibra óptica, tu hogar califica con honores para el estándar privado *Videm*.\n\n*¿Qué incluye tu enlace Videm?*\n✔ Acceso directo a infraestructura CDN multiterabit privada (cero servidores comunitarios P2P).\n✔ Catálogo unificado y depurado con estrenos mundiales en Remux 4K, Dolby Vision y Dolby Atmos.\n✔ Entrega 'llave en mano' sincronizada mediante código QR en menos de 3 minutos.\n✔ Política de 1 Hogar / 1 IP exclusiva que blinda tu velocidad y estabilidad.\n\n*Modalidad de Servicio:* Consultoría y Aprovisionamiento Semestral ($60 USD / 6 meses completos).\n\n¿Deseas que te guiemos en el enlace de tu pantalla ahora mismo o prefieres agendar una llamada asistida?`;\n\nreturn { phone, responseText, flow: 'agendamiento' };"
+      },
+      "id": "node-flow-calificado",
+      "name": "Respuesta: Acceso Calificado",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [980, 240]
+    },
+    {
+      "parameters": {
+        "jsCode": "const phone = $json.senderPhone;\nconst name = $json.senderName;\n\nconst responseText = `✦ *VIDEM | Portal de Clientes & Renovaciones*\n\nHola ${name}, bienvenido a tu canal prioritario de servicio.\n\nPor favor indícanos:\n1️⃣ El correo o identificador con el que registraste tu enlace Videm.\n2️⃣ Si deseas renovar tu período por *6 meses* o extender a la modalidad *Anual (12 meses)* con tarifa preferencial.\n\nUno de nuestros conserjes verificará el estado de tu enlace en la CDN y te enviará los datos de liquidación y confirmación en minutos.`;\n\nreturn { phone, responseText, flow: 'renovacion' };"
+      },
+      "id": "node-flow-renovacion",
+      "name": "Respuesta: Renovación",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [980, 380]
+    },
+    {
+      "parameters": {
+        "jsCode": "const phone = $json.senderPhone;\nconst name = $json.senderName;\n\nconst responseText = `✦ *VIDEM | Solicitud de Supresión de Datos Confirmada*\n\nHola ${name}.\n\nHemos recibido formalmente tu solicitud de baja y supresión de datos conforme a la Ley 1581 de 2012 (Habeas Data).\n\nTu número telefónico y registro de contacto han sido retirados de nuestra lista de asistencia y no recibirás más notificaciones de Videm.\n\nSi en el futuro deseas volver a disfrutar del estándar Videm en tu hogar, siempre serás bienvenido. ¡Que tengas un excelente día!`;\n\nreturn { phone, responseText, flow: 'baja_datos' };"
+      },
+      "id": "node-flow-baja",
+      "name": "Respuesta: Baja de Datos (Habeas Data)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [980, 520]
+    },
+    {
+      "parameters": {
+        "jsCode": "const phone = $json.senderPhone;\nconst name = $json.senderName;\n\nconst responseText = `✦ *VIDEM | Private Tech Concierge*\n\nHola ${name}. Gracias por comunicarte con Videm.\n\nSomos un servicio exclusivo de consultoría y aprovisionamiento telemático privado para el entretenimiento en el hogar (4K Remux, Dolby Vision y Dolby Atmos sobre CDN dedicada sin buffering).\n\n¿En qué podemos asistirte hoy?\n1️⃣ Evaluar compatibilidad de mi Smart TV o TV Box.\n2️⃣ Información sobre planes semestrales y activación llave en mano.\n3️⃣ Soporte o renovación para clientes existentes.\n4️⃣ Gestión de datos personales.`;\n\nreturn { phone, responseText, flow: 'fallback' };"
+      },
+      "id": "node-flow-fallback",
+      "name": "Respuesta: Menú General",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [980, 660]
+    }
+  ],
+  "connections": {
+    "Webhook WhatsApp Inbound": {
+      "main": [
+        [
+          {
+            "node": "Normalizar Mensaje",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalizar Mensaje": {
+      "main": [
+        [
+          {
+            "node": "Enrutador de Intenciones",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enrutador de Intenciones": {
+      "main": [
+        [
+          {
+            "node": "Respuesta: Diagnóstico Técnico",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respuesta: Acceso Calificado",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respuesta: Renovación",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respuesta: Baja de Datos (Habeas Data)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respuesta: Menú General",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

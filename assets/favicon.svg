@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <defs>
+    <!-- Cyan gradient for left facet -->
+    <linearGradient id="videm-cyan" x1="15%" y1="20%" x2="70%" y2="85%">
+      <stop offset="0%" stop-color="#00F0FF" />
+      <stop offset="50%" stop-color="#00A3FF" />
+      <stop offset="100%" stop-color="#0066CC" />
+    </linearGradient>
+    <!-- Violet/Indigo gradient for right facet -->
+    <linearGradient id="videm-violet" x1="80%" y1="20%" x2="20%" y2="90%">
+      <stop offset="0%" stop-color="#7928CA" />
+      <stop offset="60%" stop-color="#4F46E5" />
+      <stop offset="100%" stop-color="#1E1B4B" />
+    </linearGradient>
+    <!-- Translucent overlay prism -->
+    <linearGradient id="videm-prism" x1="30%" y1="30%" x2="90%" y2="70%">
+      <stop offset="0%" stop-color="#00F0FF" stop-opacity="0.8" />
+      <stop offset="50%" stop-color="#8B5CF6" stop-opacity="0.6" />
+      <stop offset="100%" stop-color="#3B82F6" stop-opacity="0.3" />
+    </linearGradient>
+    <filter id="videm-glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <g filter="url(#videm-glow)">
+    <!-- Left Wing / Dark Deep facet -->
+    <path d="M22 34 L50 82 L38 52 Z" fill="#0F172A" opacity="0.9" />
+    <path d="M22 34 L50 82 L44 42 Z" fill="url(#videm-violet)" />
+    
+    <!-- Central Prismatic Core -->
+    <path d="M30 38 L50 82 L70 48 Z" fill="url(#videm-cyan)" opacity="0.85" />
+    
+    <!-- Right Upper Gem -->
+    <path d="M58 34 L72 34 L72 48 L58 34 Z" fill="#6366F1" />
+    <path d="M58 34 L72 34 L50 82 Z" fill="url(#videm-violet)" />
+    
+    <!-- Translucent Facet Overlap -->
+    <path d="M44 42 L80 52 L50 82 Z" fill="url(#videm-prism)" />
+    <path d="M22 34 L48 52 L72 34 Z" fill="url(#videm-cyan)" opacity="0.4" />
+  </g>
+</svg>

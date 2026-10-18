@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  
+  <title>Videm | El estándar definitivo del entretenimiento en casa</title>
+  <meta name="description" content="Servicio de conserjería técnica y enlace CDN privado para Smart TV y TV Box. Películas y series en 4K Remux, Dolby Vision y Dolby Atmos sin interrupciones.">
+  <meta name="keywords" content="Videm, Stremio, Real-Debrid, 4K Remux, Dolby Vision, Dolby Atmos, Smart TV, TV Box, Streaming privado, CDN, Entretenimiento">
+  <meta name="author" content="Videm Private Concierge">
+  <link rel="canonical" href="https://videm.tv/">
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://videm.tv/">
+  <meta property="og:title" content="Videm | El estándar definitivo del entretenimiento en casa">
+  <meta property="og:description" content="Todo el cine del mundo en una sola interfaz. 4K real con servidores privados CDN para tu hogar. Cero interrupciones.">
+  <meta property="og:image" content="https://videm.tv/assets/images/hero-home-theater.jpeg">
+  <meta property="og:locale" content="es_ES">
+  <meta property="og:site_name" content="Videm">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://videm.tv/">
+  <meta name="twitter:title" content="Videm | El estándar definitivo del entretenimiento en casa">
+  <meta name="twitter:description" content="Todo el cine del mundo en una sola interfaz. 4K real con servidores privados CDN para tu hogar. Cero interrupciones.">
+  <meta name="twitter:image" content="https://videm.tv/assets/images/hero-home-theater.jpeg">
+
+  <!-- Schema.org JSON-LD for Search Engines -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ProfessionalService",
+    "name": "Videm",
+    "url": "https://videm.tv",
+    "logo": "https://videm.tv/assets/images/logo-videm.png",
+    "image": "https://videm.tv/assets/images/hero-home-theater.jpeg",
+    "description": "Servicio de conserjería técnica y optimización telemática para Smart TV y TV Box de alta gama en hogares.",
+    "telephone": "+573015568904",
+    "priceRange": "$$",
+    "areaServed": {
+      "@type": "Country",
+      "name": "Colombia"
+    }
+  }
+  </script>
+
+  <!-- Favicon (Identical to Logo Videm.png) -->
+  <link rel="icon" type="image/png" sizes="64x64" href="assets/favicon-64.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="assets/favicon.png">
+  <link rel="shortcut icon" href="assets/favicon-64.png">
+  <link rel="apple-touch-icon" href="assets/favicon.png">
+  <meta name="theme-color" content="#06080D">
+
+  <!-- Google Fonts: Plus Jakarta Sans & Space Grotesk -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Early Theme Controller to avoid FOUC -->
+  <script src="js/theme.js"></script>
+</head>
+<body>
+
+  <!-- Ambient Glow Background -->
+  <div class="ambient-glow" aria-hidden="true"></div>
+
+  <!-- ==========================================================================
+       HEADER & NAVIGATION
+       ========================================================================== -->
+  <header class="site-header" id="siteHeader">
+    <div class="container nav-container">
+      <!-- Brand Logo & Name -->
+      <a href="#hero" class="brand-wrapper" id="brandHomeLink" aria-label="Videm Inicio">
+        <img src="assets/images/logo-videm.png" alt="Isotipo Videm" class="brand-logo-img" width="38" height="38">
+        <span class="brand-name">Videm</span>
+      </a>
+
+      <!-- Center Status Badge / Interactive Popover Trigger -->
+      <div class="nav-status-wrapper">
+        <button 
+          type="button" 
+          class="nav-center-badge nav-status-trigger" 
+          id="cdnStatusTrigger" 
+          aria-expanded="false" 
+          aria-haspopup="true" 
+          aria-controls="cdnStatusPopover" 
+          title="Haz clic para ver el monitor de salud de la red"
+        >
+          <span class="status-dot"></span>
+          <span>Red CDN: 100% Operacional</span>
+          <svg class="chevron-status" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
+
+        <!-- Popover Monitor de Salud de la Red CDN con Termómetro -->
+        <div class="cdn-status-popover" id="cdnStatusPopover" aria-hidden="true">
+          <div class="popover-header">
+            <div class="popover-title-row">
+              <span class="status-pulse-dot"></span>
+              <span class="popover-title">Monitor de Salud Telemática</span>
+            </div>
+            <span class="popover-badge-live">EN VIVO</span>
+          </div>
+
+          <!-- Termómetro de Calidad de Red -->
+          <div class="thermometer-container">
+            <div class="thermometer-header">
+              <span class="thermometer-label">Termómetro de Red:</span>
+              <span class="thermometer-status-text">99.9% • ÓPTIMA</span>
+            </div>
+            <div class="thermometer-bar-track">
+              <div class="thermometer-step step-bad" title="Mala: Menor a 25 Mbps, alto buffering">
+                <span>Mala</span>
+              </div>
+              <div class="thermometer-step step-unstable" title="Inestable: 25 - 80 Mbps, caídas en hora pico">
+                <span>Inestable</span>
+              </div>
+              <div class="thermometer-step step-good" title="Buena: 80 - 150 Mbps, 1080p y 4K comprimido">
+                <span>Buena</span>
+              </div>
+              <div class="thermometer-step step-optimal is-current" title="Óptima: Fibra CDN > 150 Mbps, Remux 4K sin pérdidas">
+                <span>Óptima</span>
+                <span class="optimal-dot-beacon"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Métricas de Infraestructura -->
+          <div class="popover-metrics-grid">
+            <div class="pop-metric-item">
+              <span class="pop-metric-name">Ancho de Banda CDN</span>
+              <span class="pop-metric-val">&gt; 100 Gbps</span>
+            </div>
+            <div class="pop-metric-item">
+              <span class="pop-metric-name">Latencia Directa</span>
+              <span class="pop-metric-val">&lt; 18 ms</span>
+            </div>
+            <div class="pop-metric-item">
+              <span class="pop-metric-name">Congestión Servidor</span>
+              <span class="pop-metric-val val-green">0% (Libre P2P)</span>
+            </div>
+            <div class="pop-metric-item">
+              <span class="pop-metric-name">Disponibilidad</span>
+              <span class="pop-metric-val val-green">99.9% Uptime</span>
+            </div>
+          </div>
+
+          <div class="popover-footer-note">
+            <span>🛡️ Tu enlace privado asigna ancho de banda exclusivo de fibra óptica para que las películas 4K Remux nunca sufran buffering en horas pico.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions: Theme Toggle & Direct CTA -->
+      <div class="nav-actions">
+        <!-- Direct Link to FAQs -->
+        <a href="#faqs" class="nav-text-link">Preguntas Frecuentes</a>
+
+        <!-- Light / Dark Mode Toggle Button -->
+        <button type="button" class="theme-toggle-btn" id="themeToggleBtn" aria-label="Cambiar tema">
+          <!-- Sun Icon (shown in dark mode) -->
+          <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2"></path>
+            <path d="M12 20v2"></path>
+            <path d="m4.93 4.93 1.41 1.41"></path>
+            <path d="m17.66 17.66 1.41 1.41"></path>
+            <path d="M2 12h2"></path>
+            <path d="M20 12h2"></path>
+            <path d="m6.34 17.66-1.41 1.41"></path>
+            <path d="m19.07 4.93-1.41 1.41"></path>
+          </svg>
+          <!-- Moon Icon (shown in light mode) -->
+          <svg class="icon-moon" style="display:none;" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 3a6 6 0 0 0 9 9 9 0 1 1-9-9Z"></path>
+          </svg>
+        </button>
+
+        <!-- Quick Access CTA -->
+        <a href="#requisitos" class="btn-nav-cta" id="navCheckLink">
+          <span>Verificar TV o TV Box</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==========================================================================
+       MAIN CONTENT
+       ========================================================================== -->
+  <main>
+
+    <!-- SECTION 1: EL HERO (EL GANCHO PRINCIPAL) -->
+    <section class="hero-section" id="hero">
+      <!-- Background Visual Layer -->
+      <div class="hero-background-wrapper" aria-hidden="true">
+        <img 
+          src="assets/images/hero-home-theater.jpeg" 
+          alt="Centro de entretenimiento de alta fidelidad Videm" 
+          class="hero-bg-img"
+          loading="eager"
+        >
+        <div class="hero-backdrop-overlay"></div>
+      </div>
+
+      <div class="container hero-content">
+        <!-- Pre-Badge -->
+        <div class="hero-pre-badge">
+          <span>✦ Conserjería Privada de Streaming</span>
+        </div>
+
+        <!-- H1 Titular Principal -->
+        <h1 class="hero-title">
+          Videm: El <span class="text-gradient">estándar definitivo</span> del entretenimiento en casa.
+        </h1>
+
+        <!-- H2 Subtítulo -->
+        <p class="hero-subtitle">
+          Todo el cine del mundo en una sola interfaz. 4K real con servidores privados CDN para tu hogar. Cero interrupciones.
+        </p>
+
+        <!-- Primary Call to Action -->
+        <div class="cta-group">
+          <a 
+            href="#" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            class="btn-primary-wa" 
+            id="heroCtaBtn"
+          >
+            <!-- WhatsApp Vector Icon -->
+            <svg class="wa-icon-svg" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.05 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+            </svg>
+            <span>Solicitar Acceso Privado para mi Smart TV o TV Box</span>
+          </a>
+        </div>
+
+        <!-- Micro-Trust Bar -->
+        <div class="hero-trust-bar">
+          <div class="trust-item">
+            <svg class="trust-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+            </svg>
+            <span>Velocidad CDN Dedicada</span>
+          </div>
+          <div class="trust-item">
+            <svg class="trust-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polygon points="10 8 16 12 10 16 10 8"></polygon>
+            </svg>
+            <span>Bitrate Nativo 40-80 Mbps</span>
+          </div>
+          <div class="trust-item">
+            <svg class="trust-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+            <span>Garantía 1 Hogar / 1 IP</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: BENEFICIOS PREMIUM (ADIÓS A LA PIRATERÍA BARATA) -->
+    <section class="section-premium" id="beneficios">
+      <div class="container">
+        
+        <!-- Header -->
+        <div class="section-header">
+          <span class="section-tag">Infraestructura de Vanguardia</span>
+          <h2 class="section-title">Adiós a la piratería barata.<br>Hola al cine sin concesiones.</h2>
+          <p class="section-desc">
+            Diseñado para quienes valoran su tiempo y su equipamiento. Desacoplamos la experiencia de los servidores colapsados y las trampas de la compresión.
+          </p>
+        </div>
+
+        <!-- 3 Minimalist Columns -->
+        <div class="benefits-grid">
+
+          <!-- Columna 1: Velocidad Dedicada (Velocímetro) -->
+          <article class="benefit-card">
+            <div class="card-icon-container" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8Z"/>
+                <path d="M12 6a1 1 0 0 1 1 1v4.27l2.87 1.66a1 1 0 0 1-1 1.74l-3.37-1.95A1 1 0 0 1 11 11.85V7a1 1 0 0 1 1-1Z"/>
+                <circle cx="12" cy="12" r="2"/>
+                <path d="m14 10 4-4"/>
+              </svg>
+            </div>
+            <h3 class="card-title">Velocidad Dedicada</h3>
+            <p class="card-text">
+              Nada de servidores P2P comunitarios. Tu hogar se conecta a una red de distribución (CDN) privada, asegurando una descarga en alta velocidad sin cortes los fines de semana.
+            </p>
+            <div class="card-pill-tag">Fibra Óptica Multiterabit</div>
+          </article>
+
+          <!-- Columna 2: Fidelidad Audiovisual Absoluta (Dolby) -->
+          <article class="benefit-card">
+            <div class="card-icon-container" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path d="M2 12h2"/>
+                <path d="M6 8v8"/>
+                <path d="M10 4v16"/>
+                <path d="M14 6v12"/>
+                <path d="M18 9v6"/>
+                <path d="M22 12h-2"/>
+              </svg>
+            </div>
+            <h3 class="card-title">Fidelidad Audiovisual Absoluta</h3>
+            <p class="card-text">
+              Exprime al máximo tu pantalla OLED y tu sistema de sonido con bitrates nativos en 4K HDR, Dolby Vision y Dolby Atmos.
+            </p>
+            <div class="card-pill-tag">Remux Puro • Cero Compresión</div>
+          </article>
+
+          <!-- Columna 3: Servicio de Conserjería (Llave) -->
+          <article class="benefit-card">
+            <div class="card-icon-container" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <circle cx="7.5" cy="15.5" r="5.5"/>
+                <path d="m21 2-9.6 9.6"/>
+                <path d="m15.5 7.5 3 3L22 7l-2-2"/>
+              </svg>
+            </div>
+            <h3 class="card-title">Servicio de Conserjería</h3>
+            <p class="card-text">
+              No instalas nada ni configuras código. Depuramos el catálogo por ti y te entregamos una llave de acceso unificada para que solo debas sentarte y disfrutar.
+            </p>
+            <div class="card-pill-tag">Experiencia Llave en Mano</div>
+          </article>
+
+        </div>
+
+        <!-- Comparative Quality Banner -->
+        <div class="comparison-banner">
+          <div class="comp-col bad">
+            <h4>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
+              </svg>
+              Listas IPTV & APKs Comunes
+            </h4>
+            <p>
+              Compresión destructiva (1080p a 2-3 Mbps), pixelado en sombras, audio estéreo plano, colapso de servidores a las 9:00 PM y vendedores que desaparecen.
+            </p>
+          </div>
+
+          <div class="comp-col good">
+            <h4>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+              </svg>
+              Estándar Videm Privado
+            </h4>
+            <p>
+              Archivos Remux 1:1 (40 a 80 Mbps), metadatos HDR/Dolby Vision intactos, sonido espacial Dolby Atmos y enlace CDN dedicado con soporte continuo.
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION 3: EL FILTRO DE EXCLUSIVIDAD (REQUISITOS DEL SISTEMA) -->
+    <section class="section-filter" id="requisitos">
+      <div class="container">
+        
+        <div class="filter-card-container">
+          
+          <div class="filter-header text-center">
+            <span class="filter-badge-pill">Filtro de Exclusividad</span>
+            <h2 class="filter-title">Requisitos del Sistema</h2>
+            <p class="filter-intro">
+              Para garantizar la experiencia premium, Videm requiere:
+            </p>
+          </div>
+
+          <!-- Requirements Dual Cards -->
+          <div class="requirements-duo">
+            
+            <!-- Requisito 1 -->
+            <div class="req-box">
+              <div class="req-number">1</div>
+              <div class="req-content">
+                <h4>Smart TV o Dispositivo TV Box</h4>
+                <p>Compatible de forma nativa con los principales sistemas de pantalla grande y reproductores multimedia.</p>
+                <div class="tech-badges-row">
+                  <span class="os-pill">Google TV / Android TV</span>
+                  <span class="os-pill">Fire TV Stick 4K</span>
+                  <span class="os-pill">Apple TV 4K</span>
+                  <span class="os-pill">Samsung Tizen</span>
+                  <span class="os-pill">LG WebOS</span>
+                  <span class="os-pill">Xiaomi / Onn 4K</span>
+                  <span class="os-pill">Nvidia Shield TV</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Requisito 2 -->
+            <div class="req-box">
+              <div class="req-number">2</div>
+              <div class="req-content">
+                <h4>Fibra óptica superior a 100 Mbps</h4>
+                <p>Una conexión de alta velocidad y baja latencia para descargar flujos de alto bitrate sin ningún tipo de compresión.</p>
+                <div class="tech-badges-row">
+                  <span class="os-pill">Fibra Simétrica</span>
+                  <span class="os-pill">&gt; 100 Mbps</span>
+                  <span class="os-pill">Baja Latencia</span>
+                  <span class="os-pill">1 Hogar / 1 IP</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Interactive Pre-qualifier Simulator -->
+          <div class="interactive-validator">
+            <div class="val-header">
+              <span class="val-title">Diagnóstico Inmediato de Compatibilidad</span>
+              <span class="val-status-tag" style="font-size:0.75rem; color:var(--text-muted); font-family:var(--font-mono);">
+                Paso 1 de 2
+              </span>
+            </div>
+
+            <div class="val-inputs">
+              <div class="val-group">
+                <label for="qualifierTvSelect">Marca o Sistema de tu Pantalla / TV Box:</label>
+                <select id="qualifierTvSelect" class="val-select">
+                  <option value="lg" selected>LG Smart TV (WebOS)</option>
+                  <option value="samsung">Samsung Smart TV (Tizen)</option>
+                  <option value="googletv">Google TV / Android TV (Sony, TCL, Philips)</option>
+                  <option value="firetv">Amazon Fire TV Stick 4K / Max</option>
+                  <option value="appletv">Apple TV 4K</option>
+                  <option value="xiaomi">Xiaomi TV Box S / Mi Stick 4K / Onn 4K</option>
+                  <option value="shield">Nvidia Shield TV Pro</option>
+                  <option value="other">Otro dispositivo / Pantalla</option>
+                </select>
+              </div>
+
+              <div class="val-group">
+                <div class="val-label-row">
+                  <label for="qualifierSpeedSelect">Velocidad de Internet Contratada:</label>
+                  <button type="button" class="btn-speedtest-inline" id="openSpeedtestModalBtn" title="Medir velocidad real">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+                    </svg>
+                    <span>¿No sabes tus Mbps? Medir en Speedtest</span>
+                  </button>
+                </div>
+                <select id="qualifierSpeedSelect" class="val-select">
+                  <option value="300" selected>Fibra Óptica 300 Mbps o superior (Ideal Remux)</option>
+                  <option value="150">Fibra Óptica 100 - 250 Mbps (Óptimo 4K HDR)</option>
+                  <option value="500">Fibra Óptica 500 Mbps a 1 Gbps (Máxima Fidelidad)</option>
+                  <option value="low">Menos de 100 Mbps (Requiere Evaluación)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Quick Speed Entry from Speedtest -->
+            <div class="speedtest-quick-entry">
+              <span class="quick-entry-label">⚡ O ingresa el resultado de tu prueba en Speedtest:</span>
+              <div class="quick-entry-input-group">
+                <input type="number" id="manualSpeedInput" class="manual-speed-input" placeholder="Ej: 200" min="5" max="2500">
+                <span class="manual-speed-unit">Mbps</span>
+                <button type="button" id="applyManualSpeedBtn" class="btn-apply-speed">Calcular</button>
+              </div>
+            </div>
+
+            <!-- Dynamic Result Notification -->
+            <div class="val-result-box" id="qualifierResultBox">
+              <!-- Dynamically populated by app.js -->
+            </div>
+          </div>
+
+          <!-- Secondary CTA Button -->
+          <div class="filter-action-wrapper">
+            <a 
+              href="#" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              class="btn-secondary-wa" 
+              id="secondaryCtaBtn"
+            >
+              <svg class="wa-icon-svg" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.05 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+              </svg>
+              <span>Cumplo los requisitos. Agendar mi acceso.</span>
+            </a>
+            <p class="guarantee-note">
+              Canal directo con el asistente de aprovisionamiento en WhatsApp. Sin registros engorrosos.
+            </p>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION 4: PREGUNTAS FRECUENTES (FAQS & BLINDAJE TRANSPARENTE) -->
+    <section class="section-faqs" id="faqs">
+      <div class="container">
+        
+        <div class="section-header">
+          <span class="section-tag">Transparencia y Blindaje</span>
+          <h2 class="section-title">Preguntas Frecuentes</h2>
+          <p class="section-desc">
+            Todo lo que necesitas saber sobre el estándar Videm: por qué somos radicalmente distintos a cualquier alternativa informal del mercado.
+          </p>
+        </div>
+
+        <div class="faqs-accordion" id="faqsAccordion">
+          
+          <!-- FAQ 1 -->
+          <div class="faq-item">
+            <button type="button" class="faq-question" aria-expanded="false">
+              <span class="faq-q-text">¿Qué es exactamente Videm? ¿Son una empresa de streaming o IPTV?</span>
+              <span class="faq-icon-arrow" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </span>
+            </button>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">
+                No. Videm <strong>no es una lista IPTV inestable ni vende cuentas piratas compartidas</strong>. Somos un servicio exclusivo de <strong>Conserjería Tecnológica y Optimización Telemática para el Hogar</strong>. Configuramos y sincronizamos una arquitectura personalizada basada en software de código abierto y enlaces a redes de distribución privada (CDN) multiterabit de alta velocidad. Pagas por la consultoría técnica, la depuración de catálogos y la entrega llave en mano sin dolores de cabeza.
+              </div>
+            </div>
+          </div>
+
+          <!-- FAQ 2 -->
+          <div class="faq-item">
+            <button type="button" class="faq-question" aria-expanded="false">
+              <span class="faq-q-text">¿Por qué Videm no sufre caídas ni buffering en horario estelar?</span>
+              <span class="faq-icon-arrow" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </span>
+            </button>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">
+                Los servicios informales o APKs comunes colapsan los fines de semana porque miles de usuarios saturan pequeños servidores comunitarios o conexiones P2P sin garantía de ancho de banda. Videm conecta tu pantalla directamente a servidores privados con conexión directa de fibra óptica multiterabit dedicadas a la entrega de datos, eliminando intermediarios y garantizando que las películas en 4K se descarguen a la máxima capacidad de tu internet.
+              </div>
+            </div>
+          </div>
+
+          <!-- FAQ 3 -->
+          <div class="faq-item">
+            <button type="button" class="faq-question" aria-expanded="false">
+              <span class="faq-q-text">¿Cómo funciona la regla de «1 Hogar / 1 IP» y por qué me beneficia?</span>
+              <span class="faq-icon-arrow" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </span>
+            </button>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">
+                Convertimos la restricción técnica de las CDN privadas en tu mayor garantía de estabilidad. Al limitar el enlace estrictamente a la red de tu hogar, blindamos tu cuenta contra bloqueos por sobreuso y evitamos que terceros consuman tu ancho de banda. Dentro de tu casa, puedes disfrutar de la experiencia en tus pantallas familiares de forma simultánea con total tranquilidad.
+              </div>
+            </div>
+          </div>
+
+          <!-- FAQ 4 -->
+          <div class="faq-item">
+            <button type="button" class="faq-question" aria-expanded="false">
+              <span class="faq-q-text">¿Necesito conocimientos técnicos o saber programar para usarlo?</span>
+              <span class="faq-icon-arrow" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </span>
+            </button>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">
+                Absolutamente cero. Esa es precisamente la razón de ser de nuestra conserjería. Nosotros realizamos todo el trabajo previo: configuramos los enlaces, filtramos las mejores fuentes en 4K HDR y audio Dolby Atmos/TrueHD, organizamos los catálogos en categorías tipo Netflix y sincronizamos los subtítulos en español. Tú solo debes escanear un código QR con tu televisor en 3 minutos y comenzar a disfrutar.
+              </div>
+            </div>
+          </div>
+
+          <!-- FAQ 5 -->
+          <div class="faq-item">
+            <button type="button" class="faq-question" aria-expanded="false">
+              <span class="faq-q-text">¿Cuál es el marco legal bajo el cual opera Videm?</span>
+              <span class="faq-icon-arrow" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </span>
+            </button>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">
+                Operamos bajo un estricto marco de asistencia técnica independiente. Videm no aloja, retransmite, comercializa ni posee derechos sobre obras audiovisuales; no administramos servidores de contenido ni modificamos aplicaciones. Actuamos como tus consultores telemáticos para optimizar tu equipamiento y vincular tus dispositivos a servicios de enlace de datos privados que tú contratas y autorizas para tu uso personal.
+              </div>
+            </div>
+          </div>
+
+          <!-- FAQ 6 -->
+          <div class="faq-item">
+            <button type="button" class="faq-question" aria-expanded="false">
+              <span class="faq-q-text">¿Puedo cancelar o renovar cuando lo desee? ¿Hay cargos sorpresa?</span>
+              <span class="faq-icon-arrow" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </span>
+            </button>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">
+                Totalmente. Manejamos ciclos semestrales y anuales transparentes sin cláusulas de permanencia forzosa ni cobros automáticos en tarjeta. Quince días antes del vencimiento de tu enlace, nuestro asistente en WhatsApp se comunicará contigo para consultar si deseas renovar o pausar tu servicio con un solo mensaje.
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==========================================================================
+       SECTION 5: EL FOOTER (PIE DE PÁGINA)
+       ========================================================================== -->
+  <footer class="site-footer" id="contacto">
+    <div class="container footer-content">
+      
+      <!-- Logo de Videm centrado -->
+      <div class="footer-brand">
+        <img src="assets/images/logo-videm.png" alt="Logo Videm" class="footer-logo-img" width="52" height="52">
+        <h3 class="footer-brand-title">Videm</h3>
+      </div>
+
+      <!-- Enlace al "Portal de Renovaciones" para clientes actuales -->
+      <div class="footer-nav-links">
+        <a 
+          href="#" 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          class="portal-renovaciones-link" 
+          id="renewalPortalBtn"
+        >
+          <svg class="portal-icon" viewBox="0 0 24 24">
+            <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+          </svg>
+          <span>Portal de Renovaciones (Clientes Actuales)</span>
+        </a>
+      </div>
+
+      <!-- Enlaces a Modales Legales y Habeas Data -->
+      <div class="footer-legal-links">
+        <button type="button" class="legal-btn-link" id="openTermsModalBtn">
+          Términos del Servicio
+        </button>
+        <button type="button" class="legal-btn-link" id="openPrivacyModalBtn">
+          Política de Tratamiento de Datos Personales (Habeas Data)
+        </button>
+      </div>
+
+      <!-- Blindaje Legal y Marco de Consultoría -->
+      <p class="legal-disclaimer">
+        <strong>Aviso Legal y Operativo:</strong> Videm opera estrictamente como un servicio de consultoría técnica, asistencia en configuración telemática y optimización de dispositivos multimedia de reproducción para el hogar. Videm no aloja, comercializa, transcodifica ni almacena contenido audiovisual protegido por derechos de autor. Las marcas comerciales, logotipos y nombres de sistemas mencionados (Stremio, Real-Debrid, Google TV, Samsung, LG, Apple) son propiedad exclusiva de sus respectivos titulares y se citan exclusivamente con fines de compatibilidad técnica.
+      </p>
+
+      <!-- Copyright -->
+      <div class="copyright-text">
+        © 2026 Videm Private Concierge. Todos los derechos reservados.
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- ==========================================================================
+       MODAL SPEEDTEST HELPER
+       ========================================================================== -->
+  <div class="modal-backdrop" id="speedtestModal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <button type="button" class="modal-close-btn" id="closeSpeedtestModalBtn" aria-label="Cerrar ventana">
+        &times;
+      </button>
+
+      <div class="modal-header">
+        <div class="modal-icon-badge">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8Z"/>
+            <path d="m14 10 4-4"/>
+            <circle cx="12" cy="12" r="2"/>
+          </svg>
+        </div>
+        <h3 class="modal-title">Medidor Rápido de Conexión</h3>
+        <p class="modal-desc">
+          Para garantizar que tu Smart TV disfrute de películas 4K Remux sin buffering, necesitamos medir la velocidad real de descarga de tu hogar.
+        </p>
+      </div>
+
+      <div class="modal-steps">
+        <!-- Paso 1 -->
+        <div class="modal-step-item">
+          <span class="step-num">1</span>
+          <div class="step-body">
+            <strong>Abre el test oficial de Speedtest.net</strong>
+            <p>Se abrirá en una nueva pestaña. Presiona el botón circular <em>«INICIO»</em> y espera 15 segundos.</p>
+            <a 
+              href="https://www.speedtest.net/es" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              class="btn-open-speedtest"
+            >
+              <span>Abrir Speedtest.net Oficial</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <line x1="10" y1="14" x2="21" y2="3"></line>
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- Paso 2 -->
+        <div class="modal-step-item">
+          <span class="step-num">2</span>
+          <div class="step-body">
+            <strong>Fíjate en el valor de Descarga (Mbps)</strong>
+            <p>No te preocupes por el "Ping": si es menor a 40 ms, tu inicio de video será instantáneo.</p>
+            
+            <div class="step-interactive-grid">
+              <!-- Left Column: Input and Apply Button -->
+              <div class="modal-input-col">
+                <label for="modalMbpsInput">Ingresa tu número de Descarga:</label>
+                <div class="modal-input-wrap">
+                  <input type="number" id="modalMbpsInput" placeholder="Ej: 285" min="5" max="2500">
+                  <span>Mbps</span>
+                  <button type="button" id="confirmModalSpeedBtn" class="btn-confirm-speed">Aplicar Evaluación</button>
+                </div>
+              </div>
+
+              <!-- Right Column: Visual Sample Badge (Exactly matching user's reference) -->
+              <div class="speedtest-sample-badge" aria-label="Muestra visual de Speedtest">
+                <div class="sample-badge-top">
+                  <span class="sample-tag">Ejemplo Ookla</span>
+                  <span class="sample-radar-dot"></span>
+                </div>
+                <div class="sample-type-label">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M12 5v14M19 12l-7 7-7-7"/>
+                  </svg>
+                  <span>DESCARGA Mbps</span>
+                </div>
+                <div class="sample-val-display">
+                  <span class="sample-val-int">285</span><span class="sample-val-dec">.40</span>
+                </div>
+                <div class="sample-badge-hint">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                  </svg>
+                  <span>Copia este número</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer-note">
+        💡 Nota técnica: Videm requiere al menos 100 Mbps para flujos 4K Remux con Dolby Vision y Dolby Atmos sin compresión.
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL 1: TÉRMINOS Y CONDICIONES DEL SERVICIO
+       ========================================================================== -->
+  <div class="modal-backdrop" id="termsModal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="legal-modal-card">
+      <button type="button" class="modal-close-btn" id="closeTermsModalBtn" aria-label="Cerrar términos">
+        &times;
+      </button>
+
+      <div class="legal-modal-header">
+        <span class="legal-badge-tag">Marco Contractual y Telemático</span>
+        <h3 class="legal-modal-title">Términos y Condiciones de Asistencia Técnica</h3>
+      </div>
+
+      <div class="legal-modal-body">
+        <h4>1. Naturaleza Jurídica del Servicio</h4>
+        <p>
+          <strong>Videm</strong> opera exclusivamente como un servicio profesional independiente de <strong>consultoría técnica, configuración telemática y optimización de dispositivos multimedia para el hogar</strong> (Smart TVs, TV Boxes, barras de sonido y redes domésticas).
+        </p>
+        <p>
+          Videm <strong>NO</strong> es un proveedor de servicios de internet (ISP), ni un operador de televisión, ni comercializa, transmite, retransmite, aloja ni almacena contenido audiovisual protegido por leyes de propiedad intelectual.
+        </p>
+
+        <h4>2. Software Cliente y Código Abierto</h4>
+        <p>
+          Las interfaces de usuario utilizadas (como Stremio) corresponden a software de código abierto (*open source*) distribuido públicamente bajo sus respectivas licencias comunitarias. Videm no altera, recompila ni distribuye binarios modificados de dicho software.
+        </p>
+
+        <h4>3. Enlaces Telemáticos de Terceros (CDN)</h4>
+        <p>
+          Para garantizar la máxima tasa de transferencia (bitrate Remux 4K sin buffering), el servicio integra enlaces hacia redes de distribución de datos de alta velocidad (Real-Debrid). El usuario reconoce y autoriza a Videm a actuar como mandatario técnico para el aprovisionamiento, parametrización y mantenimiento de dichos enlaces.
+        </p>
+
+        <h4>4. Política Estricta de 1 Hogar / 1 IP</h4>
+        <p>
+          Para blindar la estabilidad de la conexión y prevenir bloqueos por parte de los proveedores de enlace CDN, el acceso está configurado para operar exclusivamente dentro de la red IP del domicilio residencial del cliente. El uso concurrente del enlace fuera de la red local del hogar o su compartición con terceros provocará la suspensión técnica automática por parte del proveedor sin responsabilidad para Videm.
+        </p>
+
+        <h4>5. Honorarios Profesionales</h4>
+        <p>
+          Las tarifas cobradas corresponden estrictamente a honorarios por consultoría, despliegue llave en mano, curaduría de catálogos y soporte técnico continuo durante el ciclo contratado (semestral o anual).
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL 2: POLÍTICA DE TRATAMIENTO DE DATOS PERSONALES (HABEAS DATA)
+       ========================================================================== -->
+  <div class="modal-backdrop" id="privacyModal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="legal-modal-card">
+      <button type="button" class="modal-close-btn" id="closePrivacyModalBtn" aria-label="Cerrar privacidad">
+        &times;
+      </button>
+
+      <div class="legal-modal-header">
+        <span class="legal-badge-tag">Habeas Data • Ley 1581 de 2012</span>
+        <h3 class="legal-modal-title">Tratamiento de Datos Personales</h3>
+      </div>
+
+      <div class="legal-modal-body">
+        <h4>1. Responsable del Tratamiento</h4>
+        <p>
+          <strong>Videm Private Tech Concierge</strong> es responsable del tratamiento de los datos personales suministrados de forma voluntaria por los usuarios a través de nuestros canales digitales.
+        </p>
+
+        <h4>2. Principio de Mínima Recolección</h4>
+        <p>
+          En Videm no solicitamos números de tarjeta de crédito, documentos de identidad ni contraseñas bancarias en nuestra plataforma web. Los únicos datos gestionados son:
+        </p>
+        <ul>
+          <li><strong>Número de WhatsApp y nombre de contacto:</strong> Facilitado voluntariamente al iniciar la conversación.</li>
+          <li><strong>Datos técnicos del equipamiento:</strong> Marca o sistema del televisor/TV Box y velocidad de internet, empleados exclusivamente para el diagnóstico de compatibilidad.</li>
+        </ul>
+
+        <h4>3. Finalidades Legítimas del Tratamiento</h4>
+        <ul>
+          <li>Prestar la asistencia técnica telemática solicitada y aprovisionar el perfil del usuario.</li>
+          <li>Brindar soporte prioritario y resolver incidencias de reproducción o red.</li>
+          <li>Enviar avisos de mantenimiento de la infraestructura CDN y recordatorios transparentes antes del vencimiento semestral o anual.</li>
+        </ul>
+
+        <h4>4. Cero Spam y No Comercialización</h4>
+        <p>
+          Videm <strong>jamás venderá, cederá, arrendará ni compartirá</strong> tus datos de contacto con agencias de publicidad, bases de datos externas ni terceros. Tu canal de WhatsApp con Videm es privado y confidencial.
+        </p>
+
+        <!-- Callout Box con Derecho de Supresión y Baja Inmediata -->
+        <div class="baja-callout-box">
+          <div class="baja-header-row">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <span>Derecho de Supresión y Baja Inmediata</span>
+          </div>
+          <p>
+            En cumplimiento de la normativa de Habeas Data, puedes solicitar la eliminación total de tu número telefónico y registro de contacto en cualquier momento. Al hacer clic en el botón a continuación, se enviará una solicitud automática a nuestro sistema para darte de baja en un plazo máximo de 24 horas hábiles.
+          </p>
+          <a 
+            href="#" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            class="btn-baja-wa" 
+            id="bajaDataBtn"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
+            <span>Solicitar Baja y Supresión de Datos vía WhatsApp</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/app.js"></script>
+</body>
+</html>

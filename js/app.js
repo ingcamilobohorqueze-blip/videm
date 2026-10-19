@@ -103,7 +103,7 @@ function initInteractiveQualifier() {
         isFullyQualified = false;
         customMessage = `Hola, tengo una pantalla con ${tvText} y conexión de ${speedText}. Deseo asesoría técnica para evaluar si mi hogar califica para Videm.`;
       } else {
-        statusText = `✅ ¡Excelente! Tu configuración (${tvText} + ${speedText}) califica con honores para la experiencia completa Videm en Remux 4K, Dolby Vision y Dolby Atmos.`;
+        statusText = `✅ ¡Excelente! Tu configuración (${tvText} + ${speedText}) califica con honores para la experiencia completa <img src="assets/images/videm-text-logo-web.png" alt="Videm" class="inline-wordmark" width="75" height="16"> en Remux 4K, Dolby Vision y Dolby Atmos.`;
         isFullyQualified = true;
         customMessage = `Hola, cumplo con los requisitos técnicos: Tengo ${tvText} y conexión de fibra óptica ${speedText}. Deseo agendar mi acceso a Videm.`;
       }

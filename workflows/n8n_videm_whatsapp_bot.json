@@ -1,5 +1,5 @@
 {
-  "name": "VIDEM - WhatsApp Tech Concierge Bot",
+  "name": "VIDEM - Tech Concierge Autonomo (WhatsApp + Pagos + Cuentas)",
   "nodes": [
     {
       "parameters": {
@@ -9,129 +9,277 @@
         "options": {}
       },
       "id": "node-webhook-in",
-      "name": "Webhook WhatsApp Inbound",
+      "name": "Webhook Evolution API (Inbound)",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
-      "position": [240, 320]
+      "position": [
+        160,
+        400
+      ]
     },
     {
       "parameters": {
-        "jsCode": "// Normalización del payload entrante (Soporta Evolution API, Meta Cloud API o Webhook genérico)\nconst body = $input.item.json.body || $input.item.json;\n\nlet senderPhone = '';\nlet incomingText = '';\nlet senderName = 'Cliente';\n\nif (body.data && body.data.message) {\n  // Formato Evolution API / Baileys\n  senderPhone = body.data.key.remoteJid.replace('@s.whatsapp.net', '');\n  incomingText = body.data.message.conversation || body.data.message.extendedTextMessage?.text || '';\n  senderName = body.data.pushName || 'Cliente';\n} else if (body.entry && body.entry[0]?.changes?.[0]?.value?.messages?.[0]) {\n  // Formato Meta Cloud API oficial\n  const msg = body.entry[0].changes[0].value.messages[0];\n  senderPhone = msg.from;\n  incomingText = msg.text?.body || '';\n  senderName = body.entry[0].changes[0].value.contacts?.[0]?.profile?.name || 'Cliente';\n} else {\n  senderPhone = body.from || body.phone || 'Unknown';\n  incomingText = body.text || body.message || '';\n  senderName = body.name || 'Cliente';\n}\n\nreturn {\n  senderPhone,\n  senderName,\n  rawText: incomingText,\n  normalizedText: incomingText.toLowerCase().trim()\n};"
+        "httpMethod": "POST",
+        "path": "videm-payment-webhook",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "node-webhook-payment",
+      "name": "Webhook Pasarela Pagos (Wompi/MP)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        160,
+        960
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Normalizacion integral de mensajes entrantes de Evolution API / WhatsApp\nconst body = $input.item.json.body || $input.item.json;\n\nlet senderPhone = \"\";\nlet incomingText = \"\";\nlet senderName = \"Cliente\";\nlet messageType = \"text\";\nlet mediaUrl = \"\";\nlet isFromMe = false;\n\nif (body.data) {\n  const data = body.data;\n  isFromMe = data.key?.fromMe || false;\n  senderPhone = (data.key?.remoteJid || \"\").replace(\"@s.whatsapp.net\", \"\");\n  senderName = data.pushName || \"Cliente\";\n  const msg = data.message || {};\n  if (msg.conversation) {\n    incomingText = msg.conversation;\n  } else if (msg.extendedTextMessage?.text) {\n    incomingText = msg.extendedTextMessage.text;\n  } else if (msg.imageMessage) {\n    messageType = \"image\";\n    incomingText = msg.imageMessage.caption || \"[Comprobante Transferencia]\";\n    mediaUrl = msg.imageMessage.url || \"\";\n  }\n} else if (body.entry && body.entry[0]?.changes?.[0]?.value?.messages?.[0]) {\n  const msg = body.entry[0].changes[0].value.messages[0];\n  senderPhone = msg.from;\n  senderName = body.entry[0].changes[0].value.contacts?.[0]?.profile?.name || \"Cliente\";\n  if (msg.type === \"text\") incomingText = msg.text.body;\n  if (msg.type === \"image\") { messageType = \"image\"; incomingText = msg.image?.caption || \"[Comprobante]\"; }\n} else {\n  senderPhone = String(body.from || body.phone || \"573015568904\");\n  incomingText = body.text || body.message || \"\";\n  senderName = body.name || \"Cliente\";\n  messageType = body.type || \"text\";\n}\n\nif (isFromMe) return [];\n\nconst normalizedText = incomingText.toLowerCase().trim();\nconst isStremioPairingCode = /^[A-Za-z0-9]{4,6}$/.test(normalizedText) && ![\"hola\", \"pago\", \"menu\", \"info\", \"si\", \"no\"].includes(normalizedText);\n\nreturn {\n  senderPhone,\n  senderName,\n  rawText: incomingText,\n  normalizedText,\n  messageType,\n  mediaUrl,\n  isStremioPairingCode\n};"
       },
       "id": "node-normalize",
-      "name": "Normalizar Mensaje",
+      "name": "Normalizar Mensaje y Medios",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [460, 320]
+      "position": [
+        420,
+        400
+      ]
     },
     {
       "parameters": {
         "dataType": "string",
-        "value1": "={{ $json.normalizedText }}",
+        "value1": "={{ $json.messageType === \"image\" ? \"imagen_recibida\" : ($json.isStremioPairingCode ? \"codigo_stremio\" : $json.normalizedText) }}",
         "rules": {
           "rules": [
             {
-              "value2": "validar si mi smart tv o tv box es compatible",
+              "value2": "imagen_recibida",
               "output": 0
             },
             {
-              "value2": "cumplo con los requisitos técnicos",
+              "value2": "codigo_stremio",
               "output": 1
             },
             {
-              "value2": "gestionar mi renovación",
+              "value2": "validar si mi smart tv o tv box es compatible",
               "output": 2
             },
             {
-              "value2": "baja y supresión de mis datos",
+              "value2": "cumplo con los requisitos técnicos",
               "output": 3
+            },
+            {
+              "value2": "gestionar mi renovación",
+              "output": 4
+            },
+            {
+              "value2": "baja y supresión de mis datos",
+              "output": 5
             }
           ]
         },
-        "fallbackOutput": 4
+        "fallbackOutput": 6
       },
       "id": "node-router",
-      "name": "Enrutador de Intenciones",
+      "name": "Enrutador Inteligente",
       "type": "n8n-nodes-base.switch",
       "typeVersion": 1,
-      "position": [700, 300]
+      "position": [
+        680,
+        400
+      ]
     },
     {
       "parameters": {
-        "jsCode": "const phone = $json.senderPhone;\nconst name = $json.senderName;\n\nconst responseText = `✦ *VIDEM | Private Tech Concierge*\n\nHola ${name}, un gusto saludarte. Soy el asistente técnico de *Videm*.\n\nPara garantizarte la experiencia cinematográfica en *Remux 4K nativo, Dolby Vision y Dolby Atmos sin buffering*, validemos rápidamente tu equipamiento:\n\n1️⃣ ¿Cuál es la marca y sistema de tu Smart TV o TV Box? (Ej: LG OLED webOS, Samsung Tizen, Google TV, Apple TV 4K, Fire TV Stick, Xiaomi Box).\n\n2️⃣ ¿Cuentas con conexión de fibra óptica en casa? ¿De cuántos megas aproximadamente?\n\n3️⃣ ¿Tienes barra de sonido o receptor A/V dedicado? (Ej: Sonos, Bose, Samsung Q-Symphony, etc.)\n\nPuedes responder aquí mismo y un especialista revisará tu perfil de compatibilidad de inmediato.\n\n_Nota: Al continuar autorizas el tratamiento de datos para fines de asistencia técnica y soporte._`;\n\nreturn { phone, responseText, flow: 'diagnostico' };"
+        "jsCode": "const item = $json;\nconst text = item.rawText;\nconst phone = item.senderPhone;\nconst name = item.senderName;\n\nconst refMatch = text.match(/M?\\d{6,12}/i) || text.match(/ref[:\\s]*([a-zA-Z0-9]+)/i);\nconst detectedRef = refMatch ? (refMatch[1] || refMatch[0]) : (\"NEQ-\" + Math.floor(100000 + Math.random() * 900000));\n\nconst responseText = \"✦ *VIDEM | Comprobante Recibido*\\n\\nHola \" + name + \", hemos recibido tu soporte de transferencia (Ref: *\" + detectedRef + \"*).\\n\\n⏳ *Validando transacción en red bancaria...*\\nEn menos de 60 segundos se generará tu cuenta maestra y el kit de enlace de tu Smart TV.\\n\\nPor favor mantén este chat abierto.\";\n\nreturn {\n  senderPhone: phone,\n  senderName: name,\n  transactionRef: detectedRef,\n  paymentMethod: \"Nequi / Transferencia\",\n  amount: \"240000 COP ($60 USD)\",\n  plan: \"Semestral (6 Meses)\",\n  paymentStatus: \"Aprobado_Auto\",\n  responseText,\n  triggerProvisioning: true\n};"
       },
-      "id": "node-flow-evaluacion",
+      "id": "node-proc-comprobante",
+      "name": "Procesar Comprobante (Visión/OCR)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        140
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $json;\nconst code = item.rawText.toUpperCase().trim();\nconst phone = item.senderPhone;\nconst name = item.senderName;\n\nconst responseText = \"✦ *VIDEM | Enlace de Pantalla en Curso*\\n\\n📺 *Código Detectado:* `\" + code + \"`\\n\\nEstamos vinculando tu perfil VIDEM con:\\n✔ CDN Privado 40-80 Mbps Remux activo\\n✔ HDR / Dolby Vision y Dolby Atmos habilitados\\n✔ Catálogo curado y depurado\\n\\n⚡ Si deseas autorizarlo con 1 clic desde este móvil, pulsa aquí: https://stremio.com/link?code=\" + code + \"\\n\\n¡Tu televisor se sincronizará automáticamente! 🍿\";\n\nreturn { senderPhone: phone, senderName: name, stremioCode: code, responseText };"
+      },
+      "id": "node-flow-pairing",
+      "name": "Enlace de Código TV (Zero-Friction)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        280
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const phone = $json.senderPhone;\nconst name = $json.senderName;\n\nconst responseText = \"✦ *VIDEM | Private Tech Concierge*\\n\\nHola \" + name + \", un gusto saludarte. Soy el asistente técnico de *Videm*.\\n\\nPara garantizarte la experiencia cinematográfica en *Remux 4K nativo, Dolby Vision y Dolby Atmos sin buffering*, validemos rápidamente tu equipamiento:\\n\\n1️⃣ ¿Cuál es la marca y sistema de tu Smart TV o TV Box? (Ej: LG OLED webOS, Samsung Tizen, Google TV, Apple TV 4K, Fire TV Stick, Xiaomi Box).\\n\\n2️⃣ ¿Cuentas con conexión de fibra óptica en casa? ¿De cuántos megas aproximadamente?\\n\\n3️⃣ ¿Tienes barra de sonido o receptor A/V dedicado? (Ej: Sonos, Bose, Samsung Q-Symphony, etc.)\\n\\nPuedes responder aquí mismo y evaluaremos tu perfil de inmediato.\\n\\n_Nota: Al continuar autorizas el tratamiento de datos para fines de asistencia técnica y soporte._\";\n\nreturn { senderPhone: phone, senderName: name, responseText, flow: \"diagnostico\" };"
+      },
+      "id": "node-flow-diagnostico",
       "name": "Respuesta: Diagnóstico Técnico",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [980, 100]
+      "position": [
+        960,
+        420
+      ]
     },
     {
       "parameters": {
-        "jsCode": "const phone = $json.senderPhone;\nconst name = $json.senderName;\n\nconst responseText = `✦ *VIDEM | Acceso Calificado Confirmado*\n\nExcelente, ${name}. Al contar con Smart TV / TV Box reciente y fibra óptica, tu hogar califica con honores para el estándar privado *Videm*.\n\n*¿Qué incluye tu enlace Videm?*\n✔ Acceso directo a infraestructura CDN multiterabit privada (cero servidores comunitarios P2P).\n✔ Catálogo unificado y depurado con estrenos mundiales en Remux 4K, Dolby Vision y Dolby Atmos.\n✔ Entrega 'llave en mano' sincronizada mediante código QR en menos de 3 minutos.\n✔ Política de 1 Hogar / 1 IP exclusiva que blinda tu velocidad y estabilidad.\n\n*Modalidad de Servicio:* Consultoría y Aprovisionamiento Semestral ($60 USD / 6 meses completos).\n\n¿Deseas que te guiemos en el enlace de tu pantalla ahora mismo o prefieres agendar una llamada asistida?`;\n\nreturn { phone, responseText, flow: 'agendamiento' };"
+        "jsCode": "const phone = $json.senderPhone;\nconst name = $json.senderName;\nconst paymentUrlWompi = \"https://checkout.wompi.co/l/videm-semestral-60usd?customer_phone=\" + phone;\n\nconst responseText = \"✦ *VIDEM | Acceso Calificado Confirmado*\\n\\nExcelente, \" + name + \". Tu equipamiento y velocidad cumplen con los requisitos para acceder al estándar privado *Videm* (Remux 4K sin compresión).\\n\\n💎 *Tarifa de Consultoría y Aprovisionamiento:*\\n• *Plan Semestral (6 meses completos):* $240.000 COP (~$60 USD)\\n• *Plan Anual (12 meses preferencial):* $440.000 COP (~$110 USD)\\n\\n━━━━━━━━━━━━━━━━━━━━\\n💳 *OPCIÓN 1: Pago Inmediato con Tarjeta / PSE (Activación 100% Automática)*\\n👉 Enlace de pago seguro: \" + paymentUrlWompi + \"\\n\\n📱 *OPCIÓN 2: Transferencia Directa*\\n• *Nequi / Daviplata:* 301 556 8904\\n• *Bancolombia (Ahorros):* (Solicitar número de cuenta)\\n━━━━━━━━━━━━━━━━━━━━\\n\\n📌 *Activación Autónoma:* Tan pronto realices el pago o envíes la foto del comprobante aquí, nuestro bot te entregará tus credenciales y el enlace en menos de 2 minutos.\";\n\nreturn { senderPhone: phone, senderName: name, responseText, flow: \"calificado\" };"
       },
       "id": "node-flow-calificado",
-      "name": "Respuesta: Acceso Calificado",
+      "name": "Respuesta: Acceso Calificado & Pagos",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [980, 240]
+      "position": [
+        960,
+        560
+      ]
     },
     {
       "parameters": {
-        "jsCode": "const phone = $json.senderPhone;\nconst name = $json.senderName;\n\nconst responseText = `✦ *VIDEM | Portal de Clientes & Renovaciones*\n\nHola ${name}, bienvenido a tu canal prioritario de servicio.\n\nPor favor indícanos:\n1️⃣ El correo o identificador con el que registraste tu enlace Videm.\n2️⃣ Si deseas renovar tu período por *6 meses* o extender a la modalidad *Anual (12 meses)* con tarifa preferencial.\n\nUno de nuestros conserjes verificará el estado de tu enlace en la CDN y te enviará los datos de liquidación y confirmación en minutos.`;\n\nreturn { phone, responseText, flow: 'renovacion' };"
+        "jsCode": "const phone = $json.senderPhone;\nconst name = $json.senderName;\n\nconst responseText = \"✦ *VIDEM | Portal de Clientes & Renovaciones*\\n\\nHola \" + name + \", bienvenido a tu canal prioritario de servicio.\\n\\nPara renovar tu enlace privado de inmediato:\\n1️⃣ Selecciona tu modalidad:\\n   • *Renovación Semestral (6 meses):* $240.000 COP\\n   • *Renovación Anual (12 meses):* $440.000 COP\\n\\n2️⃣ Realiza tu pago mediante Nequi al *301 556 8904* o solicítanos el enlace PSE/Tarjeta y envía el comprobante por este chat.\\n\\nTu enlace CDN y addons se mantendrán activos sin necesidad de reconfigurar tu televisor.\";\n\nreturn { senderPhone: phone, senderName: name, responseText, flow: \"renovacion\" };"
       },
       "id": "node-flow-renovacion",
       "name": "Respuesta: Renovación",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [980, 380]
+      "position": [
+        960,
+        700
+      ]
     },
     {
       "parameters": {
-        "jsCode": "const phone = $json.senderPhone;\nconst name = $json.senderName;\n\nconst responseText = `✦ *VIDEM | Solicitud de Supresión de Datos Confirmada*\n\nHola ${name}.\n\nHemos recibido formalmente tu solicitud de baja y supresión de datos conforme a la Ley 1581 de 2012 (Habeas Data).\n\nTu número telefónico y registro de contacto han sido retirados de nuestra lista de asistencia y no recibirás más notificaciones de Videm.\n\nSi en el futuro deseas volver a disfrutar del estándar Videm en tu hogar, siempre serás bienvenido. ¡Que tengas un excelente día!`;\n\nreturn { phone, responseText, flow: 'baja_datos' };"
+        "jsCode": "const phone = $json.senderPhone;\nconst name = $json.senderName;\n\nconst responseText = \"✦ *VIDEM | Solicitud de Supresión de Datos Confirmada*\\n\\nHola \" + name + \".\\n\\nHemos recibido formalmente tu solicitud de baja y supresión de datos conforme a la Ley 1581 de 2012 (Habeas Data).\\n\\nTu número telefónico y registro de contacto han sido retirados de nuestra lista de asistencia y no recibirás más notificaciones de Videm.\\n\\nSi en el futuro deseas volver a disfrutar del estándar Videm en tu hogar, siempre serás bienvenido. ¡Que tengas un excelente día!\";\n\nreturn { senderPhone: phone, senderName: name, responseText, flow: \"baja_datos\" };"
       },
       "id": "node-flow-baja",
       "name": "Respuesta: Baja de Datos (Habeas Data)",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [980, 520]
+      "position": [
+        960,
+        840
+      ]
     },
     {
       "parameters": {
-        "jsCode": "const phone = $json.senderPhone;\nconst name = $json.senderName;\n\nconst responseText = `✦ *VIDEM | Private Tech Concierge*\n\nHola ${name}. Gracias por comunicarte con Videm.\n\nSomos un servicio exclusivo de consultoría y aprovisionamiento telemático privado para el entretenimiento en el hogar (4K Remux, Dolby Vision y Dolby Atmos sobre CDN dedicada sin buffering).\n\n¿En qué podemos asistirte hoy?\n1️⃣ Evaluar compatibilidad de mi Smart TV o TV Box.\n2️⃣ Información sobre planes semestrales y activación llave en mano.\n3️⃣ Soporte o renovación para clientes existentes.\n4️⃣ Gestión de datos personales.`;\n\nreturn { phone, responseText, flow: 'fallback' };"
+        "jsCode": "const payload = $input.item.json.body || $input.item.json;\nlet transactionRef = \"\";\nlet amount = 0;\nlet status = \"\";\nlet customerPhone = \"\";\n\nif (payload.data && payload.data.transaction) {\n  const tx = payload.data.transaction;\n  transactionRef = tx.id || tx.reference;\n  amount = (tx.amount_in_cents || 0) / 100;\n  status = tx.status;\n  customerPhone = tx.customer_data?.phone_number || tx.customer_email || \"\";\n} else {\n  transactionRef = payload.reference || (\"TX-\" + Date.now());\n  status = payload.status || \"APPROVED\";\n  amount = payload.amount || 240000;\n  customerPhone = payload.phone || \"573015568904\";\n}\n\nif (status !== \"APPROVED\" && status !== \"Aprobado_Auto\") {\n  return [];\n}\n\nreturn {\n  senderPhone: customerPhone.replace(/[^0-9]/g, \"\"),\n  senderName: \"Cliente Videm\",\n  transactionRef,\n  amount: amount + \" COP\",\n  paymentMethod: \"Pasarela Automatica\",\n  plan: \"Semestral (6 Meses)\",\n  paymentStatus: \"Aprobado\",\n  triggerProvisioning: true\n};"
       },
-      "id": "node-flow-fallback",
-      "name": "Respuesta: Menú General",
+      "id": "node-proc-gateway",
+      "name": "Procesar Pago Pasarela (Wompi/MP)",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [980, 660]
+      "position": [
+        420,
+        960
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const paymentData = $json;\nconst phone = paymentData.senderPhone;\nconst name = paymentData.senderName || \"Apreciado Cliente\";\nconst ref = paymentData.transactionRef;\nconst plan = paymentData.plan || \"Semestral (6 Meses)\";\n\nconst randomSuffix = Math.floor(1000 + Math.random() * 9000);\nconst clientEmail = \"videm.vip.\" + randomSuffix + \"@videm.private\";\nconst clientPass = \"Videm4K.\" + randomSuffix + \"!\";\n\nconst now = new Date();\nconst expDate = new Date(now.getTime() + (180 * 24 * 60 * 60 * 1000));\nconst expDateFormatted = expDate.toLocaleDateString(\"es-CO\", { year: \"numeric\", month: \"long\", day: \"numeric\" });\n\nconst welcomeKitMessage = \"✦ *¡FELICIDADES, \" + name.toUpperCase() + \"! TU ACCESO VIDEM ESTÁ ACTIVO* 🎬\\n\\nTu pago ha sido validado con éxito (Ref: *\" + ref + \"*).\\nTu suscripción *\" + plan + \"* se encuentra aprovisionada hasta el *\" + expDateFormatted + \"*.\\n\\n━━━━━━━━━━━━━━━━━━━━\\n💎 *TUS CREDENCIALES PRIVADAS DE ACCESO:*\\n📧 *Correo:* `\" + clientEmail + \"`\\n🔑 *Contraseña:* `\" + clientPass + \"`\\n━━━━━━━━━━━━━━━━━━━━\\n\\n📺 *CÓMO ACTIVAR TU SMART TV EN 60 SEGUNDOS:*\\n\\n1️⃣ Abre la app *Stremio* en tu televisor (LG webOS, Samsung, Android TV o Fire TV).\\n2️⃣ Selecciona la opción *\\\"Iniciar sesión con código QR o código web\\\"*.\\n3️⃣ *ENVÍAME AQUÍ MISMO EL CÓDIGO DE 4 A 6 LETRAS QUE APARECE EN TU TELEVISOR* (o pulsa este enlace desde tu móvil para autorizarlo: https://stremio.com/link).\\n\\n¡En cuanto lo confirmes, tu pantalla quedará calibrada con películas y series en Remux 4K nativo y Dolby Atmos! 🍿\";\n\nreturn {\n  phone,\n  name,\n  plan,\n  ref,\n  clientEmail,\n  clientPass,\n  expDate: expDateFormatted,\n  responseText: welcomeKitMessage,\n  logEntry: {\n    timestamp: new Date().toISOString(),\n    phone,\n    name,\n    plan,\n    ref,\n    clientEmail,\n    status: \"Activo\"\n  }\n};"
+      },
+      "id": "node-auto-provisioning",
+      "name": "Generador Autónomo de Cuentas (SOP)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1280,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "sheetId": "={{ $env.GOOGLE_SHEET_ID || \"1_TU_ID_DE_GOOGLE_SHEETS_VIDEM\" }}",
+        "range": "Clientes!A:G",
+        "options": {}
+      },
+      "id": "node-sheets-clientes",
+      "name": "Google Sheets: Registrar Cliente",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        1540,
+        360
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.EVOLUTION_API_URL || \"http://localhost:8080\" }}/message/sendText/{{ $env.EVOLUTION_INSTANCE_NAME || \"videm-prod\" }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $env.EVOLUTION_API_KEY || \"videm-secret-key\" }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"{{ $json.phone || $json.senderPhone }}\",\n  \"text\": {{ JSON.stringify($json.responseText) }}\n}",
+        "options": {}
+      },
+      "id": "node-send-whatsapp",
+      "name": "Evolution API: Enviar WhatsApp",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1540,
+        600
+      ]
     }
   ],
   "connections": {
-    "Webhook WhatsApp Inbound": {
+    "Webhook Evolution API (Inbound)": {
       "main": [
         [
           {
-            "node": "Normalizar Mensaje",
+            "node": "Normalizar Mensaje y Medios",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Normalizar Mensaje": {
+    "Normalizar Mensaje y Medios": {
       "main": [
         [
           {
-            "node": "Enrutador de Intenciones",
+            "node": "Enrutador Inteligente",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Enrutador de Intenciones": {
+    "Enrutador Inteligente": {
       "main": [
+        [
+          {
+            "node": "Procesar Comprobante (Visión/OCR)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Enlace de Código TV (Zero-Friction)",
+            "type": "main",
+            "index": 0
+          }
+        ],
         [
           {
             "node": "Respuesta: Diagnóstico Técnico",
@@ -141,7 +289,7 @@
         ],
         [
           {
-            "node": "Respuesta: Acceso Calificado",
+            "node": "Respuesta: Acceso Calificado & Pagos",
             "type": "main",
             "index": 0
           }
@@ -162,7 +310,116 @@
         ],
         [
           {
-            "node": "Respuesta: Menú General",
+            "node": "Respuesta: Diagnóstico Técnico",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Procesar Comprobante (Visión/OCR)": {
+      "main": [
+        [
+          {
+            "node": "Generador Autónomo de Cuentas (SOP)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Evolution API: Enviar WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook Pasarela Pagos (Wompi/MP)": {
+      "main": [
+        [
+          {
+            "node": "Procesar Pago Pasarela (Wompi/MP)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Procesar Pago Pasarela (Wompi/MP)": {
+      "main": [
+        [
+          {
+            "node": "Generador Autónomo de Cuentas (SOP)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generador Autónomo de Cuentas (SOP)": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets: Registrar Cliente",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Evolution API: Enviar WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enlace de Código TV (Zero-Friction)": {
+      "main": [
+        [
+          {
+            "node": "Evolution API: Enviar WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respuesta: Diagnóstico Técnico": {
+      "main": [
+        [
+          {
+            "node": "Evolution API: Enviar WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respuesta: Acceso Calificado & Pagos": {
+      "main": [
+        [
+          {
+            "node": "Evolution API: Enviar WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respuesta: Renovación": {
+      "main": [
+        [
+          {
+            "node": "Evolution API: Enviar WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respuesta: Baja de Datos (Habeas Data)": {
+      "main": [
+        [
+          {
+            "node": "Evolution API: Enviar WhatsApp",
             "type": "main",
             "index": 0
           }

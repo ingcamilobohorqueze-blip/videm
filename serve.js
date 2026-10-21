@@ -22,17 +22,22 @@ const server = http.createServer((req, res) => {
   const fullPath = path.join(__dirname, reqPath);
 
   fs.stat(fullPath, (err, stats) => {
+    let finalPath = fullPath;
     if (err || !stats.isFile()) {
-      res.writeHead(404, { 'Content-Type': 'text/plain' });
-      res.end('404 Not Found');
-      return;
+      if (fs.existsSync(fullPath + '.html')) {
+        finalPath = fullPath + '.html';
+      } else {
+        res.writeHead(404, { 'Content-Type': 'text/plain' });
+        res.end('404 Not Found');
+        return;
+      }
     }
 
-    const ext = path.extname(fullPath).toLowerCase();
+    const ext = path.extname(finalPath).toLowerCase();
     const contentType = MIME_TYPES[ext] || 'application/octet-stream';
 
     res.writeHead(200, { 'Content-Type': contentType });
-    fs.createReadStream(fullPath).pipe(res);
+    fs.createReadStream(finalPath).pipe(res);
   });
 });
 

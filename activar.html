@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal de Activación y Enlace de Pantalla | VIDEM</title>
+  <meta name="description" content="Guía interactiva paso a paso para sincronizar tu Smart TV o TV Box con la infraestructura privada de streaming de alta fidelidad de VIDEM en 60 segundos.">
+  <meta name="robots" content="noindex, follow">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+
+  <!-- Core Tokens & Activation Styles -->
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/activar.css">
+
+  <!-- Theme Script (Dark/Light Persistence) -->
+  <script src="js/theme.js"></script>
+</head>
+<body class="activar-page">
+
+  <!-- Ambient Backdrop -->
+  <div class="activar-backdrop-glow" aria-hidden="true"></div>
+
+  <!-- Top Navigation Bar -->
+  <header class="activar-nav">
+    <a href="/" class="activar-nav-brand" aria-label="Volver a Inicio VIDEM">
+      <img src="assets/images/logo-videm.png" alt="Isotipo VIDEM" class="activar-nav-logo" width="32" height="32">
+      <img src="assets/images/videm-text-logo-web.png" alt="VIDEM" class="activar-nav-wordmark" width="110" height="23">
+    </a>
+
+    <div class="activar-portal-badge">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+      </svg>
+      <span>Onboarding VIP</span>
+    </div>
+
+    <div class="activar-nav-actions">
+      <!-- Dark / Light Theme Toggle -->
+      <button class="theme-toggle-btn" id="themeToggleBtn" aria-label="Cambiar tema" style="background: rgba(255,255,255,0.06); border: 1px solid var(--border-subtle); border-radius: 8px; width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-primary);">
+        <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+        </svg>
+        <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+      </button>
+
+      <!-- Asistencia WhatsApp -->
+      <a href="https://wa.me/573015568904?text=Hola,%20estoy%20en%20el%20portal%20de%20activación%20y%20requiero%20asistencia%20técnica" target="_blank" rel="noopener noreferrer" class="btn-nav-support" id="navSupportBtn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+        <span>Conserje en Línea</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="activar-main">
+
+    <!-- Welcome Hero Section -->
+    <section class="welcome-hero">
+      <div class="welcome-status-pill">
+        <span class="welcome-status-dot"></span>
+        <span id="welcomePillText">Enlace Privado VIDEM Aprovisionado</span>
+      </div>
+
+      <h1 class="welcome-title">
+        Bienvenido a tu sala privada, <span class="text-gradient" id="clientNameDisplay">Cinépfilo</span>.
+      </h1>
+
+      <p class="welcome-subtitle">
+        Tu membresía <strong id="clientPlanDisplay">Semestral VIP</strong> está lista. Sigue estos 3 sencillos pasos para vincular tu televisor y disfrutar de la máxima tasa de bits Remux 4K sin compresión en menos de 60 segundos.
+      </p>
+
+      <!-- Telemetry Spec Cards -->
+      <div class="spec-grid">
+        <div class="spec-item">
+          <div class="spec-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+            </svg>
+          </div>
+          <div>
+            <div class="spec-label">Canal Dedicado</div>
+            <div class="spec-val">CDN 40-80 Mbps Remux</div>
+          </div>
+        </div>
+
+        <div class="spec-item">
+          <div class="spec-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
+            </svg>
+          </div>
+          <div>
+            <div class="spec-label">Perfil de Imagen</div>
+            <div class="spec-val">HDR10+ / Dolby Vision</div>
+          </div>
+        </div>
+
+        <div class="spec-item">
+          <div class="spec-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/>
+            </svg>
+          </div>
+          <div>
+            <div class="spec-label">Procesamiento Sonoro</div>
+            <div class="spec-val">Dolby Atmos Espacial</div>
+          </div>
+        </div>
+
+        <div class="spec-item">
+          <div class="spec-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+          </div>
+          <div>
+            <div class="spec-label">Garantía de Enlace</div>
+            <div class="spec-val">Soporte Continuo VIP</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Master Onboarding Box -->
+    <section class="onboarding-card">
+      <div class="section-head-sm">
+        <h3>Selecciona el sistema de tu televisor</h3>
+        <p>Elige tu plataforma para ver las instrucciones específicas de descarga:</p>
+      </div>
+
+      <!-- Platform Switcher Tabs -->
+      <div class="platform-tabs" role="tablist">
+        <button class="platform-btn active" data-platform="lg" role="tab" id="tabLg">
+          <svg class="platform-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M12 17v4"/><path d="M8 21h8"/>
+          </svg>
+          <span>LG webOS (OLED/QNED)</span>
+        </button>
+
+        <button class="platform-btn" data-platform="samsung" role="tab" id="tabSamsung">
+          <svg class="platform-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M12 17v4"/><path d="M8 21h8"/>
+          </svg>
+          <span>Samsung Smart TV (Tizen)</span>
+        </button>
+
+        <button class="platform-btn" data-platform="android" role="tab" id="tabAndroid">
+          <svg class="platform-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M12 17v4"/><path d="M8 21h8"/>
+          </svg>
+          <span>Google TV / Android TV / Sony</span>
+        </button>
+
+        <button class="platform-btn" data-platform="firetv" role="tab" id="tabFiretv">
+          <svg class="platform-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="5 3 19 12 5 21 5 3"/>
+          </svg>
+          <span>Amazon Fire TV Stick</span>
+        </button>
+
+        <button class="platform-btn" data-platform="apple" role="tab" id="tabApple">
+          <svg class="platform-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1 14h-2v-2h2zm0-4h-2V7h2z"/>
+          </svg>
+          <span>Apple TV / PC / Móvil</span>
+        </button>
+      </div>
+
+      <!-- Step by Step Instructions -->
+      <div class="steps-container">
+
+        <!-- Paso 1 -->
+        <div class="step-row">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <h4>Instala la aplicación en tu pantalla</h4>
+            <p id="platformStep1Text">
+              En el control remoto de tu televisor LG, presiona la tecla <strong>Home</strong>, abre la <strong>LG Content Store / Apps</strong> y busca la aplicación <strong>Stremio</strong>. Instálala en cuestión de segundos (es 100% gratuita y oficial).
+            </p>
+            <div class="step-box-alert">
+              💡 <em>Nota VIDEM:</em> No necesitas instalar addons manualmente ni ingresar claves difíciles en tu TV. Nuestro sistema inyectará la calibración directamente desde la nube.
+            </div>
+          </div>
+        </div>
+
+        <!-- Paso 2 -->
+        <div class="step-row">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <h4>Abre Stremio y selecciona inicio con código</h4>
+            <p>
+              Al abrir la aplicación en tu televisor, pulsa sobre la opción <strong>"Iniciar sesión con código QR o enlace web"</strong>. Verás un código corto de 4 a 6 caracteres alfanuméricos en letras grandes (por ejemplo: <strong style="color: var(--accent-cyan); font-family: var(--font-mono);">9A4K</strong>).
+            </p>
+          </div>
+        </div>
+
+        <!-- Paso 3 (El Motor Interactivo de Sincronización) -->
+        <div class="step-row">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <h4>Sincronización Inmediata ("Zero-Friction")</h4>
+            <p>
+              Escribe aquí el código que ves en tu televisor o pulsa el botón directo para autorizar tu pantalla en 1 solo clic:
+            </p>
+
+            <div class="pairing-interactive-box">
+              <label for="pairingCodeInput" style="display: block; font-size: 0.82rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); font-family: var(--font-mono);">
+                Ingresa el código que aparece en tu televisor:
+              </label>
+
+              <div class="pairing-input-row">
+                <input 
+                  type="text" 
+                  id="pairingCodeInput" 
+                  class="pairing-code-input" 
+                  placeholder="Ej: 9A4K" 
+                  maxlength="8" 
+                  autocomplete="off"
+                  autocapitalize="characters"
+                >
+                <button type="button" class="btn-pair-primary" id="btnPairDevice">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                  </svg>
+                  <span>Sincronizar mi Smart TV Ahora</span>
+                </button>
+              </div>
+
+              <!-- Links alternativos y soporte -->
+              <div class="pairing-alt-links">
+                <div>
+                  ¿Prefieres que el asistente lo vincule por ti? 
+                  <a href="https://wa.me/573015568904?text=Hola,%20adjunto%20el%20código%20de%20mi%20Smart%20TV%20para%20activación" target="_blank" rel="noopener noreferrer" class="btn-link-wa" id="waSendCodeLink">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.669-.699c.969.586 1.83.896 2.791.896 3.181 0 5.767-2.587 5.767-5.766.001-3.187-2.575-5.782-5.767-5.782zm0 13.084c-1.121 0-2.221-.301-3.182-.871l-3.535.927.943-3.447c-.628-1.025-.96-2.208-.959-3.421 0-3.693 3.007-6.699 6.733-6.699 3.694 0 6.7 3.006 6.7 6.699 0 3.7-3.007 6.712-6.7 6.712z"/>
+                    </svg>
+                    <span>Enviar código por WhatsApp</span>
+                  </a>
+                </div>
+
+                <div id="pairingFeedbackMsg" style="display: none; font-weight: 600; color: #10B981;">
+                  ✅ Redirigiendo a enlace seguro de Stremio...
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Tips de Fidelidad Cinematográfica -->
+    <section class="tips-section">
+      <div class="section-head-sm" style="text-align: center; margin-bottom: 2rem;">
+        <h3>3 Consejos Clave para la Experiencia Definitiva</h3>
+        <p>Asegúrate de configurar tu sala para disfrutar del bitrate máximo sin interrupciones:</p>
+      </div>
+
+      <div class="tips-grid">
+        <div class="tip-card">
+          <h5>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00E5FF" stroke-width="2">
+              <path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/>
+            </svg>
+            Conexión Wi-Fi 5 GHz o Cable
+          </h5>
+          <p>
+            Los archivos Remux 4K transfieren picos de 60 a 85 Mbps de información pura. Si conectas por Wi-Fi, asegúrate de conectarte a tu red de 5 GHz (no la de 2.4 GHz) o utiliza cable de red para estabilidad absoluta.
+          </p>
+        </div>
+
+        <div class="tip-card">
+          <h5>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6366F1" stroke-width="2">
+              <polygon points="5 3 19 12 5 21 5 3"/>
+            </svg>
+            Selecciona siempre fuentes [RD+]
+          </h5>
+          <p>
+            Al pulsar sobre cualquier película o serie en tu catálogo, las primeras opciones en la parte superior tendrán la etiqueta <strong style="color: var(--accent-cyan); font-family: var(--font-mono);">[RD+]</strong>. Esas son las fuentes servidas desde tu CDN privada de ultra velocidad.
+          </p>
+        </div>
+
+        <div class="tip-card">
+          <h5>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+            </svg>
+            Subtítulos y Audio en Español
+          </h5>
+          <p>
+            Tu perfil ya viene precargado con OpenSubtitles v3 y pistas de audio latino/castellano seleccionadas por defecto. Puedes cambiar la pista de audio o subtítulo con el mando durante la reproducción en cualquier momento.
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Floating Concierge Assistance Button -->
+  <a href="https://wa.me/573015568904?text=Hola,%20tengo%20una%20pregunta%20sobre%20la%20activación%20de%20mi%20Smart%20TV%20en%20VIDEM" target="_blank" rel="noopener noreferrer" class="concierge-fab" id="conciergeFabBtn">
+    <div class="fab-icon-box">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+      </svg>
+    </div>
+    <div class="fab-text">
+      <span class="fab-label">Tech Concierge</span>
+      <span class="fab-title">¿Ayuda asistida?</span>
+    </div>
+  </a>
+
+  <!-- Simple Subpage Footer -->
+  <footer class="activar-footer">
+    <p>
+      VIDEM — Private Tech Concierge & Audiovisual Infrastructure. Todos los derechos reservados.
+      <br>
+      <a href="/">Volver a la página principal</a> · <a href="/#terminos">Términos de Servicio</a>
+    </p>
+  </footer>
+
+  <!-- Activation Logic Script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // 1. Lectura de parámetros en la URL (personalización VIP desde n8n / WhatsApp)
+      const urlParams = new URLSearchParams(window.location.search);
+      const nameParam = urlParams.get('nombre') || urlParams.get('name');
+      const planParam = urlParams.get('plan');
+      const codeParam = urlParams.get('code') || urlParams.get('codigo');
+
+      if (nameParam) {
+        const decodedName = decodeURIComponent(nameParam).trim();
+        document.getElementById('clientNameDisplay').textContent = decodedName;
+      }
+
+      if (planParam) {
+        document.getElementById('clientPlanDisplay').textContent = decodeURIComponent(planParam).trim();
+      }
+
+      const codeInput = document.getElementById('pairingCodeInput');
+      const waSendCodeLink = document.getElementById('waSendCodeLink');
+
+      if (codeParam) {
+        const cleanCode = codeParam.toUpperCase().trim();
+        codeInput.value = cleanCode;
+        updateWaLink(cleanCode);
+      }
+
+      // 2. Control de Plataformas (Tabs de TV)
+      const platformTexts = {
+        lg: "En el control remoto de tu televisor LG, presiona la tecla <strong>Home</strong>, abre la <strong>LG Content Store / Apps</strong> y busca la aplicación <strong>Stremio</strong>. Instálala en cuestión de segundos (es 100% gratuita y oficial).",
+        samsung: "En el control remoto de tu televisor Samsung, presiona <strong>Smart Hub / Home</strong>, entra a la sección <strong>Apps</strong> y en el buscador escribe <strong>Stremio</strong>. Haz clic en 'Descargar' e instálala en tu pantalla.",
+        android: "En tu televisor o TV Box (Sony, Philips, TCL, Xiaomi, Chromecast o Mi Box), abre la tienda oficial <strong>Google Play Store</strong>, busca <strong>Stremio</strong> y presiona <strong>Instalar</strong>.",
+        firetv: "En tu Amazon Fire TV Stick, ve a la opción <strong>Buscar / Search</strong> de la tienda de aplicaciones de Amazon, escribe <strong>Stremio</strong> e instala la versión nativa para Fire OS.",
+        apple: "Para reproducir en Apple TV, iPhone, Mac o PC, abre el navegador y accede a <strong>web.stremio.com</strong> o descarga la versión de escritorio para macOS/Windows. ¡Tus addons y CDN privada se sincronizan al instante!"
+      };
+
+      const platformBtns = document.querySelectorAll('.platform-btn');
+      const step1TextEl = document.getElementById('platformStep1Text');
+
+      platformBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          platformBtns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          const platformKey = btn.getAttribute('data-platform');
+          if (platformTexts[platformKey]) {
+            step1TextEl.innerHTML = platformTexts[platformKey];
+          }
+        });
+      });
+
+      // 3. Formateo y Sincronización del Código de Televisor
+      function updateWaLink(code) {
+        if (waSendCodeLink) {
+          const msg = code 
+            ? `Hola, mi código de TV para activar Videm es: ${code}`
+            : 'Hola, adjunto el código de mi Smart TV para activación';
+          waSendCodeLink.href = `https://wa.me/573015568904?text=${encodeURIComponent(msg)}`;
+        }
+      }
+
+      codeInput.addEventListener('input', (e) => {
+        e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+        updateWaLink(e.target.value.trim());
+      });
+
+      // 4. Acción del Botón Principal de Sincronización
+      const btnPairDevice = document.getElementById('btnPairDevice');
+      const feedbackMsg = document.getElementById('pairingFeedbackMsg');
+
+      btnPairDevice.addEventListener('click', () => {
+        const enteredCode = codeInput.value.trim().toUpperCase();
+        
+        if (!enteredCode) {
+          alert('Por favor escribe el código de 4 a 6 caracteres que aparece en tu televisor (Ej: 9A4K).');
+          codeInput.focus();
+          return;
+        }
+
+        feedbackMsg.style.display = 'block';
+        
+        // Abre el enlace oficial de autorización de Stremio con el código inyectado
+        const stremioLink = `https://stremio.com/link?code=${encodeURIComponent(enteredCode)}`;
+        window.open(stremioLink, '_blank', 'noopener,noreferrer');
+
+        // Notifica también al enlace de WhatsApp en caso de requerir soporte
+        updateWaLink(enteredCode);
+      });
+    });
+  </script>
+</body>
+</html>

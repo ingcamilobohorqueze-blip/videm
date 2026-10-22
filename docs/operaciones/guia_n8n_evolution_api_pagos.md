@@ -85,20 +85,27 @@ docker run -d \
 
 ---
 
-## 3. Configurar la Pasarela de Pagos Automática (Wompi)
+## 3. Configuración de Medios de Pago Oficiales (SumUp & Bancolombia)
 
-Para que las compras con tarjeta o PSE se activen en 5 segundos sin intervención humana:
+VIDEM utiliza dos canales de recaudación directos y libres de fricción:
 
-1. Ingresa a tu panel de [Wompi Colombia](https://comercios.wompi.co).
-2. Ve a **Desarrolladores** ➔ **Seguimiento de Transacciones / Webhooks**.
-3. Registra la URL del Webhook de pagos de n8n:
-   ```text
-   https://tu-n8n.dominio.com/webhook/videm-payment-webhook
-   ```
-4. En **Enlaces de Pago**:
-   - Crea un enlace de pago para el **Plan Semestral** ($240.000 COP / $60 USD).
-   - Crea un enlace de pago para el **Plan Anual** ($440.000 COP / $110 USD).
-   - Pega tu link oficial en la variable `paymentUrlWompi` en el nodo de n8n `Respuesta: Acceso Calificado & Pagos`.
+1. **SumUp (Tarjetas de Crédito/Débito y PSE):**
+   - **Plan Semestral (6 meses - $240.000 COP):** `https://pay.sumup.com/b2c/X4ODXUPY9G`
+   - **Plan Anual (12 meses - $440.000 COP):** `https://pay.sumup.com/b2c/X9P4DBUZ42`
+   - *Ventajas:* Acreditación inmediata, antifraude integrado, permite pago con cualquier tarjeta de crédito/débito o cuenta bancaria PSE.
+
+2. **Transferencia Directa Bancolombia:**
+   - **Cuenta de Ahorros:** `03202411001`
+   - **Titular:** Camilo Andrés Bohórquez Enciso
+   - **C.C.:** 80.257.729
+   - *Compatibilidad:* Recibe sin costo desde Bancolombia, Nequi y Transfiya.
+
+### Aspectos Fiscales y RUT (DIAN)
+- **Clasificación del Servicio:** VIDEM presta servicios de **consultoría técnica especializada, aprovisionamiento de infraestructura privada y curaduría multimedia**, no radiodifusión ni retransmisión televisiva tradicional.
+- **Código de Actividad Económica CIIU recomendado en el RUT:**
+  - **6202:** *Actividades de consultoría informática y actividades de administración de instalaciones informáticas*.
+  - **6209:** *Otras actividades de tecnologías de información y servicios de computación*.
+- **Régimen de IVA:** Como Persona Natural con ingresos anuales inferiores a 3.500 UVT (~$165.000.000 COP en 2026), operas bajo la condición de **No Responsable de IVA** (antiguo Régimen Simplificado, Código de Responsabilidad 49 en el RUT). No requieres cobrar IVA a los clientes finales.
 
 ---
 

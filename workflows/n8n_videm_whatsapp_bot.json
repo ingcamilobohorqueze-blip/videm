@@ -13,7 +13,7 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
       "position": [
-        120,
+        100,
         400
       ]
     },
@@ -44,20 +44,20 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.1,
       "position": [
-        340,
+        320,
         400
       ]
     },
     {
       "parameters": {
-        "jsCode": "// CEREBRO AUTONOMO VIDEM - Evaluacion con Memoria Real de Chat\nconst webhookItem = $(\"Webhook Evolution API (Inbound)\").first().json;\nconst body = webhookItem.body || webhookItem;\nconst historyData = $input.item.json;\n\nlet senderPhone = \"\";\nlet incomingText = \"\";\nlet senderName = \"Cliente\";\nlet messageType = \"text\";\nlet isFromMe = false;\n\nif (body.data) {\n  const data = body.data;\n  isFromMe = data.key?.fromMe || false;\n  senderPhone = (data.key?.remoteJid || \"\").replace(\"@s.whatsapp.net\", \"\");\n  senderName = data.pushName || \"Cliente\";\n  const msg = data.message || {};\n  if (msg.conversation) {\n    incomingText = msg.conversation;\n  } else if (msg.extendedTextMessage?.text) {\n    incomingText = msg.extendedTextMessage.text;\n  } else if (msg.imageMessage) {\n    messageType = \"image\";\n    incomingText = msg.imageMessage.caption || \"[Comprobante Transferencia]\";\n  }\n} else if (body.entry && body.entry[0]?.changes?.[0]?.value?.messages?.[0]) {\n  const msg = body.entry[0].changes[0].value.messages[0];\n  senderPhone = msg.from;\n  senderName = body.entry[0].changes[0].value.contacts?.[0]?.profile?.name || \"Cliente\";\n  if (msg.type === \"text\") incomingText = msg.text.body;\n  if (msg.type === \"image\") { messageType = \"image\"; incomingText = msg.image?.caption || \"[Comprobante]\"; }\n} else {\n  senderPhone = String(body.from || body.phone || \"573103311543\");\n  incomingText = body.text || body.message || \"\";\n  senderName = body.name || \"Cliente\";\n  messageType = body.type || \"text\";\n}\n\nif (isFromMe) return [];\n\nconst normalized = incomingText.toLowerCase().trim();\nconst isStremioPairingCode = /^[A-Za-z0-9]{4,6}$/.test(normalized) && ![\"hola\", \"pago\", \"menu\", \"info\", \"si\", \"no\", \"bien\", \"vale\", \"ok\", \"listo\", \"1\", \"2\", \"3\", \"4\", \"5\", \"6\", \"7\"].includes(normalized);\n\n// Detectar el ultimo mensaje enviado por el bot en el historial de Railway\nconst records = historyData.messages?.records || (Array.isArray(historyData) ? historyData : []);\nlet lastBotMessage = \"\";\nfor (const r of records) {\n  if (r.key?.fromMe) {\n    lastBotMessage = r.message?.conversation || r.message?.extendedTextMessage?.text || \"\";\n    break;\n  }\n}\n\nlet responseText = \"\";\nlet triggerProvisioning = false;\nlet accountData = null;\n\n// 1. CASO ESPECIAL: Comprobante de Pago\nif (messageType === \"image\" || normalized.includes(\"comprobante\") || normalized.includes(\"transferencia\") || /\\b(m\\d{6,12}|neq-\\d+)\\b/i.test(normalized)) {\n  const refMatch = incomingText.match(/M?\\d{6,12}/i) || incomingText.match(/ref[:\\s]*([a-zA-Z0-9]+)/i);\n  const detectedRef = refMatch ? (refMatch[1] || refMatch[0]) : (\"NEQ-\" + Math.floor(100000 + Math.random() * 900000));\n  const randomSuffix = Math.floor(1000 + Math.random() * 9000);\n  const clientEmail = \"videm.vip.\" + randomSuffix + \"@videm.private\";\n  const clientPass = \"Videm4K.\" + randomSuffix + \"!\";\n  const now = new Date();\n  const expDate = new Date(now.getTime() + (180 * 24 * 60 * 60 * 1000)).toLocaleDateString(\"es-CO\", { year: \"numeric\", month: \"long\", day: \"numeric\" });\n  const activationUrl = \"https://videm.tv/activar?nombre=\" + encodeURIComponent(senderName) + \"&plan=Semestral%20VIP\";\n\n  responseText = \"✦ *¡FELICIDADES, \" + senderName.toUpperCase() + \"! PAGO VERIFICADO* 🎬\\n\\nHemos validado tu transferencia con éxito (Ref: *\" + detectedRef + \"*).\\nTu membresía *Semestral VIP* está activa hasta el *\" + expDate + \"*.\\n\\n━━━━━━━━━━━━━━━━━━━━\\n💎 *CREDENCIALES MAESTRAS PRIVADAS:*\\n📧 *Usuario:* `\" + clientEmail + \"`\\n🔑 *Clave:* `\" + clientPass + \"`\\n━━━━━━━━━━━━━━━━━━━━\\n\\n📺 *VINCULA TU SMART TV EN 60 SEGUNDOS:*\\nToca este enlace directo desde tu móvil para activar tu pantalla:\\n👉 \" + activationUrl + \"\\n\\n¡Solo ingresas el código de tu televisor y listo!\";\n  triggerProvisioning = true;\n  accountData = { phone: senderPhone, name: senderName, plan: \"Semestral VIP\", ref: detectedRef, clientEmail, expDate };\n\n// 2. CASO ESPECIAL: Código de TV Stremio\n} else if (isStremioPairingCode) {\n  const code = incomingText.toUpperCase().trim();\n  const activationUrl = \"https://videm.tv/activar?code=\" + code + \"&nombre=\" + encodeURIComponent(senderName);\n  responseText = \"✦ *VIDEM | Enlace de Pantalla Detectado*\\n\\n📺 *Código:* `\" + code + \"`\\n\\nEstamos vinculando tu perfil VIDEM con:\\n✔ CDN Dedicado 40-80 Mbps Remux activo\\n✔ HDR / Dolby Vision y Dolby Atmos habilitados\\n✔ Catálogo curado y depurado\\n\\n⚡ *Autoriza tu pantalla con 1 clic aquí:*\\n👉 \" + activationUrl + \"\\n\\n¡Tu televisor se sincronizará automáticamente! 🍿\";\n\n// 3. CASO ESPECIAL: Respuesta Compuesta (todas las respuestas a la vez)\n} else if ((normalized.includes(\"1\") && normalized.includes(\"2\") && normalized.includes(\"3\")) || (normalized.includes(\"fibra\") && (normalized.includes(\"xiaomi\") || normalized.includes(\"tv\") || normalized.includes(\"lg\") || normalized.includes(\"samsung\")) && (normalized.includes(\"sonido\") || normalized.includes(\"barra\")))) {\n  const paymentUrlWompi = \"https://checkout.wompi.co/l/videm-semestral-60usd?customer_phone=\" + senderPhone;\n  responseText = \"✦ *VIDEM | Calificación Técnica Exitosa* 🍿\\n\\n¡Excelente, \" + senderName + \"! Revisamos tu configuración (\" + incomingText.replace(/\\n/g, \" / \") + \") y tu hogar califica con honores para el estándar privado *Videm* (Remux 4K nativo 40-80 Mbps y audio Dolby Atmos sin pausas).\\n\\n💎 *Tarifa de Consultoría y Aprovisionamiento:*\\n• *Plan Semestral (6 meses completos):* $240.000 COP (~$60 USD)\\n• *Plan Anual (12 meses preferencial):* $440.000 COP (~$110 USD)\\n\\n━━━━━━━━━━━━━━━━━━━━\\n💳 *OPCIÓN 1: Pago Inmediato con Tarjeta / PSE (Activación 100% Automática)*\\n👉 Enlace de pago seguro: \" + paymentUrlWompi + \"\\n\\n📱 *OPCIÓN 2: Transferencia Directa*\\n• *Nequi / Daviplata:* 301 556 8904\\n• *Bancolombia (Ahorros):* (Solicitar número)\\n━━━━━━━━━━━━━━━━━━━━\\n\\n📌 En cuanto realices tu pago o envíes la foto del comprobante aquí, se emitirán tus credenciales y el enlace interactivo de tu pantalla en menos de 2 minutos.\";\n\n// 4. FLUJO CONVERSACIONAL BASADO EN EL ULTIMO MENSAJE DEL BOT\n} else if (lastBotMessage.includes(\"Paso 2 de 3\") && !normalized.includes(\"hola\") && !normalized.includes(\"menu\")) {\n  // El bot acaba de preguntar el PASO 2 (Internet) -> Camilo responde y pasamos al PASO 3 (Audio)\n  responseText = \"✦ *VIDEM | Diagnóstico Técnico (Paso 3 de 3)* 🔊\\n\\n¡Conexión validada! Excelente ancho de banda para transferencias Remux 4K sin compresión.\\n\\n*Paso 3 de 3: ¿Cómo disfrutas el audio en tu sala de cine?*\\n\\n1️⃣ Barra de sonido o Receiver dedicado con Dolby Atmos / eARC (Sonos, Bose, LG, Samsung, Sony, etc.)\\n2️⃣ Barra de sonido estándar 2.1 o Parlantes externos\\n3️⃣ Parlantes integrados del televisor\\n4️⃣ Otro (¿Cuál equipo de audio utilizas?)\\n\\n_👉 Responde con el número de tu opción (1, 2, 3...):_\";\n\n} else if (lastBotMessage.includes(\"Paso 3 de 3\") && !normalized.includes(\"hola\") && !normalized.includes(\"menu\")) {\n  // El bot acaba de preguntar el PASO 3 (Audio) -> Camilo responde y pasamos a CALIFICACION Y PLANES\n  const paymentUrlWompi = \"https://checkout.wompi.co/l/videm-semestral-60usd?customer_phone=\" + senderPhone;\n  responseText = \"✦ *VIDEM | Calificación Técnica Exitosa* 🍿\\n\\n¡Felicidades, \" + senderName + \"! Tu configuración cumple con todos los requisitos para acceder al estándar privado *Videm* (Remux 4K nativo 40-80 Mbps y audio Dolby Atmos sin pausas).\\n\\n💎 *Tarifa de Consultoría y Aprovisionamiento:*\\n• *Plan Semestral (6 meses completos):* $240.000 COP (~$60 USD)\\n• *Plan Anual (12 meses preferencial):* $440.000 COP (~$110 USD)\\n\\n━━━━━━━━━━━━━━━━━━━━\\n💳 *OPCIÓN 1: Pago Inmediato con Tarjeta / PSE (Activación 100% Automática)*\\n👉 Enlace de pago seguro: \" + paymentUrlWompi + \"\\n\\n📱 *OPCIÓN 2: Transferencia Directa*\\n• *Nequi / Daviplata:* 301 556 8904\\n• *Bancolombia (Ahorros):* (Solicitar número)\\n━━━━━━━━━━━━━━━━━━━━\\n\\n📌 En cuanto realices tu pago o envíes la foto del comprobante aquí, se emitirán tus credenciales y el enlace interactivo de tu pantalla en menos de 2 minutos.\";\n\n} else if (lastBotMessage.includes(\"Paso 1 de 3\") && !normalized.includes(\"hola\") && !normalized.includes(\"menu\")) {\n  // El bot acaba de preguntar el PASO 1 (Pantalla) -> Camilo responde y pasamos al PASO 2 (Internet)\n  responseText = \"✦ *VIDEM | Diagnóstico Técnico (Paso 2 de 3)* ⚡\\n\\n¡Perfecto! Hemos registrado tu equipo (\" + incomingText + \"). 📺\\n\\n*Paso 2 de 3: ¿Qué tipo y velocidad de internet tienes en casa?*\\n\\n1️⃣ Fibra Óptica de 300 a 500+ Megas\\n2️⃣ Fibra Óptica de 100 a 200 Megas\\n3️⃣ Conexión Cable coaxial / HFC (50 a 100 Megas)\\n4️⃣ Red móvil 4G/5G o Wi-Fi compartido\\n5️⃣ Otro (¿De cuántos megas aproximadamente?)\\n\\n_👉 Responde con el número de tu opción (1, 2, 3...) o descríbela:_\";\n\n} else {\n  // INICIO / SALUDO / REINICIO -> Enviamos el PASO 1 (Pantalla)\n  responseText = \"✦ *VIDEM | Private Tech Concierge* 🎬\\n\\nHola \" + senderName + \", un gusto saludarte. Soy el conserje técnico de *Videm*.\\n\\nPara garantizarte la experiencia cinematográfica en *Remux 4K nativo, Dolby Vision y Dolby Atmos sin buffering*, validemos 3 datos rápidos de tu equipamiento.\\n\\n*Paso 1 de 3: ¿Qué pantalla o televisor principal usarás?*\\n\\n1️⃣ Smart TV LG (webOS / OLED / QNED)\\n2️⃣ Smart TV Samsung (Tizen)\\n3️⃣ Google TV / Android TV / Sony / TCL\\n4️⃣ Xiaomi Box / TV Box / Mecool\\n5️⃣ Amazon Fire TV Stick 4K\\n6️⃣ Apple TV 4K\\n7️⃣ Otro (¿Cuál marca y modelo?)\\n\\n_👉 Responde con el número de tu opción (1, 2, 3...) o escribe tu modelo:_\\n\\n_Nota: Al continuar autorizas el tratamiento de datos para fines de asistencia técnica._\";\n}\n\nreturn {\n  phone: senderPhone,\n  senderPhone,\n  senderName,\n  responseText,\n  triggerProvisioning,\n  accountData\n};"
+        "jsCode": "// CEREBRO AUTONOMO VIDEM - Evaluacion con Memoria Real de Chat\nconst webhookItem = $(\"Webhook Evolution API (Inbound)\").first().json;\nconst body = webhookItem.body || webhookItem;\nconst historyData = $input.item.json;\n\nlet senderPhone = \"\";\nlet incomingText = \"\";\nlet senderName = \"Cliente\";\nlet messageType = \"text\";\nlet isFromMe = false;\n\nif (body.data) {\n  const data = body.data;\n  isFromMe = data.key?.fromMe || false;\n  senderPhone = (data.key?.remoteJid || \"\").replace(\"@s.whatsapp.net\", \"\");\n  senderName = data.pushName || \"Cliente\";\n  const msg = data.message || {};\n  if (msg.conversation) {\n    incomingText = msg.conversation;\n  } else if (msg.extendedTextMessage?.text) {\n    incomingText = msg.extendedTextMessage.text;\n  } else if (msg.imageMessage) {\n    messageType = \"image\";\n    incomingText = msg.imageMessage.caption || \"[Comprobante Transferencia]\";\n  }\n} else if (body.entry && body.entry[0]?.changes?.[0]?.value?.messages?.[0]) {\n  const msg = body.entry[0].changes[0].value.messages[0];\n  senderPhone = msg.from;\n  senderName = body.entry[0].changes[0].value.contacts?.[0]?.profile?.name || \"Cliente\";\n  if (msg.type === \"text\") incomingText = msg.text.body;\n  if (msg.type === \"image\") { messageType = \"image\"; incomingText = msg.image?.caption || \"[Comprobante]\"; }\n} else {\n  senderPhone = String(body.from || body.phone || \"573103311543\");\n  incomingText = body.text || body.message || \"\";\n  senderName = body.name || \"Cliente\";\n  messageType = body.type || \"text\";\n}\n\nif (isFromMe) return [];\n\nconst normalized = incomingText.toLowerCase().trim();\nconst isStremioPairingCode = /^[A-Za-z0-9]{4,6}$/.test(normalized) && ![\"hola\", \"pago\", \"menu\", \"info\", \"si\", \"no\", \"bien\", \"vale\", \"ok\", \"listo\", \"1\", \"2\", \"3\", \"4\", \"5\", \"6\", \"7\"].includes(normalized);\n\n// Historial de Railway para saber exactamente qué preguntó el bot\nconst records = historyData.messages?.records || (Array.isArray(historyData) ? historyData : []);\nlet lastBotMessage = \"\";\nfor (const r of records) {\n  if (r.key?.fromMe) {\n    lastBotMessage = r.message?.conversation || r.message?.extendedTextMessage?.text || \"\";\n    break;\n  }\n}\n\nlet responseText = \"\";\nlet triggerProvisioning = false;\nlet isQualifiedLead = false;\nlet accountData = null;\n\n// 1. CASO ESPECIAL: Comprobante de Pago\nif (messageType === \"image\" || normalized.includes(\"comprobante\") || normalized.includes(\"transferencia\") || /\\b(m\\d{6,12}|neq-\\d+)\\b/i.test(normalized)) {\n  const refMatch = incomingText.match(/M?\\d{6,12}/i) || incomingText.match(/ref[:\\s]*([a-zA-Z0-9]+)/i);\n  const detectedRef = refMatch ? (refMatch[1] || refMatch[0]) : (\"NEQ-\" + Math.floor(100000 + Math.random() * 900000));\n  const randomSuffix = Math.floor(1000 + Math.random() * 9000);\n  const clientEmail = \"videm.vip.\" + randomSuffix + \"@videm.private\";\n  const clientPass = \"Videm4K.\" + randomSuffix + \"!\";\n  const now = new Date();\n  const expDate = new Date(now.getTime() + (180 * 24 * 60 * 60 * 1000)).toLocaleDateString(\"es-CO\", { year: \"numeric\", month: \"long\", day: \"numeric\" });\n  const activationUrl = \"https://videm.tv/activar?nombre=\" + encodeURIComponent(senderName) + \"&plan=Semestral%20VIP\";\n\n  responseText = \"✦ *¡FELICIDADES, \" + senderName.toUpperCase() + \"! PAGO VERIFICADO* 🎬\\n\\nHemos validado tu transferencia con éxito (Ref: *\" + detectedRef + \"*).\\nTu membresía *Semestral VIP* está activa hasta el *\" + expDate + \"*.\\n\\n━━━━━━━━━━━━━━━━━━━━\\n💎 *CREDENCIALES MAESTRAS PRIVADAS:*\\n📧 *Usuario:* `\" + clientEmail + \"`\\n🔑 *Clave:* `\" + clientPass + \"`\\n━━━━━━━━━━━━━━━━━━━━\\n\\n📺 *VINCULA TU SMART TV EN 60 SEGUNDOS:*\\nToca este enlace directo desde tu móvil para activar tu pantalla:\\n👉 \" + activationUrl + \"\\n\\n¡Solo ingresas el código de tu televisor y listo!\";\n  triggerProvisioning = true;\n  accountData = { phone: senderPhone, name: senderName, plan: \"Semestral VIP\", ref: detectedRef, clientEmail, expDate };\n\n// 2. CASO ESPECIAL: Código de TV Stremio\n} else if (isStremioPairingCode) {\n  const code = incomingText.toUpperCase().trim();\n  const activationUrl = \"https://videm.tv/activar?code=\" + code + \"&nombre=\" + encodeURIComponent(senderName);\n  responseText = \"✦ *VIDEM | Enlace de Pantalla Detectado*\\n\\n📺 *Código:* `\" + code + \"`\\n\\nEstamos vinculando tu perfil VIDEM con:\\n✔ CDN Dedicado 40-80 Mbps Remux activo\\n✔ HDR / Dolby Vision y Dolby Atmos habilitados\\n✔ Catálogo curado y depurado\\n\\n⚡ *Autoriza tu pantalla con 1 clic aquí:*\\n👉 \" + activationUrl + \"\\n\\n¡Tu televisor se sincronizará automáticamente! 🍿\";\n\n// 3. CASO ESPECIAL: Respuesta Compuesta (todas las respuestas a la vez)\n} else if ((normalized.includes(\"1\") && normalized.includes(\"2\") && normalized.includes(\"3\")) || (normalized.includes(\"fibra\") && (normalized.includes(\"xiaomi\") || normalized.includes(\"tv\") || normalized.includes(\"lg\") || normalized.includes(\"samsung\")) && (normalized.includes(\"sonido\") || normalized.includes(\"barra\")))) {\n  const paymentUrlWompi = \"https://checkout.wompi.co/l/videm-semestral-60usd?customer_phone=\" + senderPhone;\n  responseText = \"✦ *VIDEM | Calificación Técnica Exitosa* 🍿\\n\\n¡Excelente, \" + senderName + \"! Revisamos tu configuración (\" + incomingText.replace(/\\n/g, \" / \") + \") y tu hogar califica con honores para el estándar privado *Videm* (Remux 4K nativo 40-80 Mbps y audio Dolby Atmos sin pausas).\\n\\n💎 *Tarifa de Consultoría y Aprovisionamiento:*\\n• *Plan Semestral (6 meses completos):* $240.000 COP (~$60 USD)\\n• *Plan Anual (12 meses preferencial):* $440.000 COP (~$110 USD)\\n\\n━━━━━━━━━━━━━━━━━━━━\\n💳 *OPCIÓN 1: Pago Inmediato con Tarjeta / PSE (Activación 100% Automática)*\\n👉 Enlace de pago seguro: \" + paymentUrlWompi + \"\\n\\n📱 *OPCIÓN 2: Transferencia Directa*\\n• *Nequi / Daviplata:* 301 556 8904\\n• *Bancolombia (Ahorros):* (Solicitar número)\\n━━━━━━━━━━━━━━━━━━━━\\n\\n📌 En cuanto realices tu pago o envíes la foto del comprobante aquí, se emitirán tus credenciales y el enlace interactivo de tu pantalla en menos de 2 minutos.\";\n  isQualifiedLead = true;\n\n// 4. FLUJO CONVERSACIONAL BASADO EN EL ULTIMO MENSAJE DEL BOT\n} else if (lastBotMessage.includes(\"Paso 2 de 3\") && !normalized.includes(\"hola\") && !normalized.includes(\"menu\")) {\n  responseText = \"✦ *VIDEM | Diagnóstico Técnico (Paso 3 de 3)* 🔊\\n\\n¡Conexión validada! Excelente ancho de banda para transferencias Remux 4K sin compresión.\\n\\n*Paso 3 de 3: ¿Cómo disfrutas el audio en tu sala de cine?*\\n\\n1️⃣ Barra de sonido o Receiver dedicado con Dolby Atmos / eARC (Sonos, Bose, LG, Samsung, Sony, etc.)\\n2️⃣ Barra de sonido estándar 2.1 o Parlantes externos\\n3️⃣ Parlantes integrados del televisor\\n4️⃣ Otro (¿Cuál equipo de audio utilizas?)\\n\\n_👉 Responde con el número de tu opción (1, 2, 3...):_\";\n\n} else if (lastBotMessage.includes(\"Paso 3 de 3\") && !normalized.includes(\"hola\") && !normalized.includes(\"menu\")) {\n  const paymentUrlWompi = \"https://checkout.wompi.co/l/videm-semestral-60usd?customer_phone=\" + senderPhone;\n  responseText = \"✦ *VIDEM | Calificación Técnica Exitosa* 🍿\\n\\n¡Felicidades, \" + senderName + \"! Tu configuración cumple con todos los requisitos para acceder al estándar privado *Videm* (Remux 4K nativo 40-80 Mbps y audio Dolby Atmos sin pausas).\\n\\n💎 *Tarifa de Consultoría y Aprovisionamiento:*\\n• *Plan Semestral (6 meses completos):* $240.000 COP (~$60 USD)\\n• *Plan Anual (12 meses preferencial):* $440.000 COP (~$110 USD)\\n\\n━━━━━━━━━━━━━━━━━━━━\\n💳 *OPCIÓN 1: Pago Inmediato con Tarjeta / PSE (Activación 100% Automática)*\\n👉 Enlace de pago seguro: \" + paymentUrlWompi + \"\\n\\n📱 *OPCIÓN 2: Transferencia Directa*\\n• *Nequi / Daviplata:* 301 556 8904\\n• *Bancolombia (Ahorros):* (Solicitar número)\\n━━━━━━━━━━━━━━━━━━━━\\n\\n📌 En cuanto realices tu pago o envíes la foto del comprobante aquí, se emitirán tus credenciales y el enlace interactivo de tu pantalla en menos de 2 minutos.\";\n  isQualifiedLead = true;\n\n} else if (lastBotMessage.includes(\"Paso 1 de 3\") && !normalized.includes(\"hola\") && !normalized.includes(\"menu\")) {\n  responseText = \"✦ *VIDEM | Diagnóstico Técnico (Paso 2 de 3)* ⚡\\n\\n¡Perfecto! Hemos registrado tu equipo (\" + incomingText + \"). 📺\\n\\n*Paso 2 de 3: ¿Qué tipo y velocidad de internet tienes en casa?*\\n\\n1️⃣ Fibra Óptica de 300 a 500+ Megas\\n2️⃣ Fibra Óptica de 100 a 200 Megas\\n3️⃣ Conexión Cable coaxial / HFC (50 a 100 Megas)\\n4️⃣ Red móvil 4G/5G o Wi-Fi compartido\\n5️⃣ Otro (¿De cuántos megas aproximadamente?)\\n\\n_👉 Responde con el número de tu opción (1, 2, 3...) o descríbela:_\";\n\n} else {\n  responseText = \"✦ *VIDEM | Private Tech Concierge* 🎬\\n\\nHola \" + senderName + \", un gusto saludarte. Soy el conserje técnico de *Videm*.\\n\\nPara garantizarte la experiencia cinematográfica en *Remux 4K nativo, Dolby Vision y Dolby Atmos sin buffering*, validemos 3 datos rápidos de tu equipamiento.\\n\\n*Paso 1 de 3: ¿Qué pantalla o televisor principal usarás?*\\n\\n1️⃣ Smart TV LG (webOS / OLED / QNED)\\n2️⃣ Smart TV Samsung (Tizen)\\n3️⃣ Google TV / Android TV / Sony / TCL\\n4️⃣ Xiaomi Box / TV Box / Mecool\\n5️⃣ Amazon Fire TV Stick 4K\\n6️⃣ Apple TV 4K\\n7️⃣ Otro (¿Cuál marca y modelo?)\\n\\n_👉 Responde con el número de tu opción (1, 2, 3...) o escribe tu modelo:_\\n\\n_Nota: Al continuar autorizas el tratamiento de datos para fines de asistencia técnica._\";\n}\n\nreturn {\n  phone: senderPhone,\n  senderPhone,\n  senderName,\n  responseText,\n  triggerProvisioning,\n  isQualifiedLead,\n  accountData\n};"
       },
       "id": "node-cerebro",
       "name": "Cerebro Autónomo VIDEM",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        560,
+        540,
         400
       ]
     },
@@ -88,8 +88,45 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.1,
       "position": [
-        800,
+        780,
         400
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// FILTRO Y FORMATEO DE REGISTROS PARA GOOGLE SHEETS CRM\n// Solo se ejecuta si el cliente completó la calificación o pagó.\n// NO llena filas por mensajes intermedios de chat (Hola, 1, 2, etc.)\nconst item = $input.item.json;\n\nif (!item.triggerProvisioning && !item.isQualifiedLead) {\n  return []; // Detiene la ejecución hacia Google Sheets\n}\n\nconst now = new Date();\nconst fechaCol = now.toLocaleString(\"es-CO\", { timeZone: \"America/Bogota\", year: \"numeric\", month: \"2-digit\", day: \"2-digit\", hour: \"2-digit\", minute: \"2-digit\" });\n\nreturn {\n  Fecha: fechaCol,\n  Telefono: item.phone || item.senderPhone,\n  Nombre: item.senderName || \"Cliente\",\n  Plan: item.accountData?.plan || \"Semestral VIP ($60 USD)\",\n  Estado: item.triggerProvisioning ? \"Activo (Pagado)\" : \"Calificado (Pendiente Pago)\",\n  Usuario_Stremio: item.accountData?.clientEmail || \"-\",\n  Referencia: item.accountData?.ref || \"-\",\n  Vigencia: item.accountData?.expDate || \"-\"\n};"
+      },
+      "id": "node-format-crm",
+      "name": "Filtrar Solo Clientes / Ventas",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        780,
+        600
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1z3k3znhxGgc3xvXLZ8ymEqCWnwf5De9qazw2I_dMaoM",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Hoja 1",
+          "mode": "name"
+        },
+        "options": {}
+      },
+      "id": "node-sheets-clientes",
+      "name": "Google Sheets: Registrar Cliente",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1020,
+        600
       ]
     },
     {
@@ -104,38 +141,21 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
       "position": [
-        120,
-        680
+        100,
+        780
       ]
     },
     {
       "parameters": {
-        "jsCode": "const payload = $input.item.json.body || $input.item.json;\nlet transactionRef = \"\";\nlet amount = 0;\nlet status = \"\";\nlet customerPhone = \"\";\n\nif (payload.data && payload.data.transaction) {\n  const tx = payload.data.transaction;\n  transactionRef = tx.id || tx.reference;\n  amount = (tx.amount_in_cents || 0) / 100;\n  status = tx.status;\n  customerPhone = tx.customer_data?.phone_number || tx.customer_email || \"\";\n} else {\n  transactionRef = payload.reference || (\"TX-\" + Date.now());\n  status = payload.status || \"APPROVED\";\n  amount = payload.amount || 240000;\n  customerPhone = payload.phone || \"573103311543\";\n}\n\nif (status !== \"APPROVED\" && status !== \"Aprobado_Auto\") return [];\n\nconst phone = customerPhone.replace(/[^0-9]/g, \"\");\nconst randomSuffix = Math.floor(1000 + Math.random() * 9000);\nconst clientEmail = \"videm.vip.\" + randomSuffix + \"@videm.private\";\nconst clientPass = \"Videm4K.\" + randomSuffix + \"!\";\nconst now = new Date();\nconst expDate = new Date(now.getTime() + (180 * 24 * 60 * 60 * 1000)).toLocaleDateString(\"es-CO\", { year: \"numeric\", month: \"long\", day: \"numeric\" });\nconst activationUrl = \"https://videm.tv/activar?nombre=Cliente%20VIP&plan=Semestral%20VIP\";\n\nconst responseText = \"✦ *¡FELICIDADES! TU ACCESO VIDEM ESTÁ ACTIVO* 🎬\\n\\nTu pago por pasarela ha sido validado con éxito (Ref: *\" + transactionRef + \"*).\\nTu suscripción *Semestral VIP* está activa hasta el *\" + expDate + \"*.\\n\\n━━━━━━━━━━━━━━━━━━━━\\n💎 *CREDENCIALES PRIVADAS:*\\n📧 *Correo:* `\" + clientEmail + \"`\\n🔑 *Clave:* `\" + clientPass + \"`\\n━━━━━━━━━━━━━━━━━━━━\\n\\n📺 *ACTIVAR SMART TV EN 60 SEGUNDOS:*\\n👉 \" + activationUrl + \"\\n\\n¡Ingresa el código que ves en tu televisor y listo!\";\n\nreturn { phone, responseText, triggerProvisioning: true };"
+        "jsCode": "const payload = $input.item.json.body || $input.item.json;\nlet transactionRef = \"\";\nlet amount = 0;\nlet status = \"\";\nlet customerPhone = \"\";\n\nif (payload.data && payload.data.transaction) {\n  const tx = payload.data.transaction;\n  transactionRef = tx.id || tx.reference;\n  amount = (tx.amount_in_cents || 0) / 100;\n  status = tx.status;\n  customerPhone = tx.customer_data?.phone_number || tx.customer_email || \"\";\n} else {\n  transactionRef = payload.reference || (\"TX-\" + Date.now());\n  status = payload.status || \"APPROVED\";\n  amount = payload.amount || 240000;\n  customerPhone = payload.phone || \"573103311543\";\n}\n\nif (status !== \"APPROVED\" && status !== \"Aprobado_Auto\") return [];\n\nconst phone = customerPhone.replace(/[^0-9]/g, \"\");\nconst randomSuffix = Math.floor(1000 + Math.random() * 9000);\nconst clientEmail = \"videm.vip.\" + randomSuffix + \"@videm.private\";\nconst clientPass = \"Videm4K.\" + randomSuffix + \"!\";\nconst now = new Date();\nconst expDate = new Date(now.getTime() + (180 * 24 * 60 * 60 * 1000)).toLocaleDateString(\"es-CO\", { year: \"numeric\", month: \"long\", day: \"numeric\" });\nconst activationUrl = \"https://videm.tv/activar?nombre=Cliente%20VIP&plan=Semestral%20VIP\";\n\nconst responseText = \"✦ *¡FELICIDADES! TU ACCESO VIDEM ESTÁ ACTIVO* 🎬\\n\\nTu pago por pasarela ha sido validado con éxito (Ref: *\" + transactionRef + \"*).\\nTu suscripción *Semestral VIP* está activa hasta el *\" + expDate + \"*.\\n\\n━━━━━━━━━━━━━━━━━━━━\\n💎 *CREDENCIALES PRIVADAS:*\\n📧 *Correo:* `\" + clientEmail + \"`\\n🔑 *Clave:* `\" + clientPass + \"`\\n━━━━━━━━━━━━━━━━━━━━\\n\\n📺 *ACTIVAR SMART TV EN 60 SEGUNDOS:*\\n👉 \" + activationUrl + \"\\n\\n¡Ingresa el código que ves en tu televisor y listo!\";\n\nreturn {\n  phone,\n  senderPhone: phone,\n  senderName: \"Cliente VIP\",\n  responseText,\n  triggerProvisioning: true,\n  accountData: { plan: \"Semestral VIP\", clientEmail, ref: transactionRef, expDate }\n};"
       },
       "id": "node-proc-gateway",
       "name": "Procesar Pago Pasarela (Wompi/MP)",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        340,
-        680
-      ]
-    },
-    {
-      "parameters": {
-        "operation": "append",
-        "sheetId": "1_TU_ID_DE_GOOGLE_SHEETS_VIDEM",
-        "range": "Clientes!A:G",
-        "options": {}
-      },
-      "id": "node-sheets-clientes",
-      "name": "Google Sheets: Registrar Cliente (Opcional)",
-      "type": "n8n-nodes-base.googleSheets",
-      "typeVersion": 4,
-      "disabled": true,
-      "position": [
-        800,
-        600
+        320,
+        780
       ]
     }
   ],
@@ -171,7 +191,18 @@
             "index": 0
           },
           {
-            "node": "Google Sheets: Registrar Cliente (Opcional)",
+            "node": "Filtrar Solo Clientes / Ventas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtrar Solo Clientes / Ventas": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets: Registrar Cliente",
             "type": "main",
             "index": 0
           }
@@ -198,7 +229,7 @@
             "index": 0
           },
           {
-            "node": "Google Sheets: Registrar Cliente (Opcional)",
+            "node": "Filtrar Solo Clientes / Ventas",
             "type": "main",
             "index": 0
           }

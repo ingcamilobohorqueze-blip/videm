@@ -2,9 +2,10 @@ const fs = require('fs');
 const path = require('path');
 
 const SHEET_ID = '1z3k3znhxGgc3xvXLZ8ymEqCWnwf5De9qazw2I_dMaoM';
+const ADMIN_PHONE = '573103311543';
 
 const workflow = {
-  name: 'VIDEM - Tech Concierge Autonomo (WhatsApp + Pagos + Cuentas)',
+  name: 'VIDEM - Tech Concierge Autonomo (WhatsApp + Pagos + Cuentas + Alertas)',
   nodes: [
     {
       parameters: {
@@ -32,7 +33,7 @@ const workflow = {
         },
         sendBody: true,
         specifyBody: 'json',
-        jsonBody: '={\n  "where": {\n    "key": {\n      "remoteJid": "{{ $json.body?.data?.key?.remoteJid || ($json.body?.entry ? $json.body.entry[0].changes[0].value.messages[0].from + "@s.whatsapp.net" : "573124766620@s.whatsapp.net") }}"\n    }\n  },\n  "limit": 5\n}',
+        jsonBody: '={\n  "where": {\n    "key": {\n      "remoteJid": "{{ $json.body?.data?.key?.remoteJid || ($json.body?.entry ? $json.body.entry[0].changes[0].value.messages[0].from + "@s.whatsapp.net" : "573103311543@s.whatsapp.net") }}"\n    }\n  },\n  "limit": 5\n}',
         options: {}
       },
       id: 'node-fetch-history',
@@ -44,7 +45,7 @@ const workflow = {
     {
       parameters: {
         jsCode: [
-          '// CEREBRO AUTONOMO VIDEM - Evaluacion con Memoria Real y Datos Oficiales',
+          '// CEREBRO AUTONOMO VIDEM - Evaluacion con Memoria Real, Pagos y Alertas a Camilo',
           'const webhookItem = $("Webhook Evolution API (Inbound)").first().json;',
           'const body = webhookItem.body || webhookItem;',
           'const historyData = $input.item.json;',
@@ -76,7 +77,7 @@ const workflow = {
           '  if (msg.type === "text") incomingText = msg.text.body;',
           '  if (msg.type === "image") { messageType = "image"; incomingText = msg.image?.caption || "[Comprobante]"; }',
           '} else {',
-          '  senderPhone = String(body.from || body.phone || "573124766620");',
+          '  senderPhone = String(body.from || body.phone || "573103311543");',
           '  incomingText = body.text || body.message || "";',
           '  senderName = body.name || "Cliente";',
           '  messageType = body.type || "text";',
@@ -100,6 +101,8 @@ const workflow = {
           'let responseText = "";',
           'let triggerProvisioning = false;',
           'let isQualifiedLead = false;',
+          'let isHumanHelpRequested = false;',
+          'let adminAlertText = "";',
           'let accountData = null;',
           '',
           '// DATOS OFICIALES DE PAGO VIDEM',
@@ -126,6 +129,7 @@ const workflow = {
           '  responseText = "✦ *¡FELICIDADES, " + senderName.toUpperCase() + "! PAGO VERIFICADO* 🎬\\n\\nHemos validado tu pago con éxito (Ref: *" + detectedRef + "*).\\nTu membresía *" + planName + "* está activa hasta el *" + expDate + "*.\\n\\n━━━━━━━━━━━━━━━━━━━━\\n💎 *CREDENCIALES MAESTRAS PRIVADAS:*\\n📧 *Usuario:* `" + clientEmail + "`\\n🔑 *Clave:* `" + clientPass + "`\\n━━━━━━━━━━━━━━━━━━━━\\n\\n📺 *VINCULA TU SMART TV EN 60 SEGUNDOS:*\\nToca este enlace directo desde tu móvil para activar tu pantalla:\\n👉 " + activationUrl + "\\n\\n¡Solo ingresas el código de 4 letras de tu televisor y listo!";',
           '  triggerProvisioning = true;',
           '  accountData = { phone: senderPhone, name: senderName, plan: planName + " (" + planCost + ")", ref: detectedRef, clientEmail, expDate };',
+          '  adminAlertText = "💰 *VIDEM ALERT | ¡Nuevo Pago Verificado!* 🎬\\n\\n👤 *Cliente:* " + senderName + "\\n📱 *Teléfono:* +" + senderPhone + "\\n💎 *Plan:* " + planName + " (" + planCost + ")\\n🔢 *Referencia:* " + detectedRef + "\\n📧 *Usuario Creado:* `" + clientEmail + "`\\n📅 *Vigencia:* Hasta " + expDate + "\\n\\n👉 El Welcome Kit y enlace interactivo (https://videm.tv/activar) ya fueron enviados automáticamente.";',
           '',
           '// 2. CASO ESPECIAL: Código de TV Stremio (ej: 9A4K)',
           '} else if (isStremioPairingCode) {',
@@ -138,12 +142,14 @@ const workflow = {
           '  responseText = "✦ *VIDEM | Portal de Clientes & Renovaciones* 🔄\\n\\nHola " + senderName + ", bienvenido a tu canal prioritario.\\n\\nPara renovar tu enlace privado de inmediato:\\n\\n💳 *Opción SumUp (Tarjeta / PSE):*\\n• *Semestral (6 meses - $240.000 COP):*\\n👉 " + sumupSemestral + "\\n• *Anual (12 meses - $440.000 COP):*\\n👉 " + sumupAnual + "\\n\\n━━━━━━━━━━━━━━━━━━━━\\n" + bancolombiaText + "\\n━━━━━━━━━━━━━━━━━━━━\\n\\nEnvía el comprobante por este chat y tu enlace CDN y catálogos se mantendrán activos sin reconfigurar tu pantalla.";',
           '',
           '// 4. CASO ESPECIAL: Consulta Directa de Precios o Planes',
-          '} else if ((normalized.includes("precio") || normalized.includes("costo") || normalized.includes("cuanto vale") || normalized.includes("cuanto cuesta") || normalized.includes("tarifa") || normalized.includes("planes")) && !lastBotMessage.includes("Paso 1") && !lastBotMessage.includes("Paso 2") && !lastBotMessage.includes("Paso 3")) {',
+          '} else if ((normalized.includes("precio") || normalized.includes("costo") || normalized.includes("cuanto vale") || normalized.includes("cuanto cuesta") || normalized.includes("tarifa") || normalized.includes("planes") || normalized.includes("valores")) && !lastBotMessage.includes("Paso 1") && !lastBotMessage.includes("Paso 2") && !lastBotMessage.includes("Paso 3")) {',
           '  responseText = "✦ *VIDEM | Planes y Tarifas VIP* 💎\\n\\nHola " + senderName + ", nuestras membresías de consultoría y streaming sin compresión (4K Remux nativo 40-80 Mbps, Dolby Vision y Dolby Atmos) son:\\n\\n1️⃣ *Membresía Semestral (6 meses):* $240.000 COP\\n2️⃣ *Membresía Anual (12 meses preferencial):* $440.000 COP\\n\\nPara garantizarte cero buffering antes de activar, validemos 3 datos rápidos de tu equipamiento:\\n\\n*Paso 1 de 3: ¿Qué pantalla o televisor principal usarás?*\\n1️⃣ Smart TV LG (webOS / OLED / QNED)\\n2️⃣ Smart TV Samsung (Tizen)\\n3️⃣ Google TV / Android TV / Sony / TCL\\n4️⃣ Xiaomi Box / TV Box / Mecool\\n5️⃣ Amazon Fire TV Stick 4K\\n6️⃣ Apple TV 4K\\n7️⃣ Otro (¿Cuál marca y modelo?)\\n\\n_👉 Responde con el número de tu opción (1, 2, 3...) o tu modelo:_";',
           '',
-          '// 5. CASO ESPECIAL: Asesor Humano',
-          '} else if (normalized.includes("asesor") || normalized.includes("humano") || normalized.includes("persona")) {',
-          '  responseText = "✦ *VIDEM | Asistencia Concierge* 🛎️\\n\\nHe notificado a Camilo de nuestro equipo técnico senior. En breve revisará este chat directamente para atender tu consulta personalizada.\\n\\n_(Si deseas mientras tanto avanzar con la validación de tu Smart TV, solo escribe \\"Empezar\\")_.";',
+          '// 5. CASO ESPECIAL: Asesor Humano / Soporte Personalizado',
+          '} else if (normalized.includes("asesor") || normalized.includes("humano") || normalized.includes("persona") || normalized.includes("hablar con alguien") || normalized.includes("atencion al cliente") || (normalized.includes("soporte") && !normalized.includes("comprobante") && !normalized.includes("pago"))) {',
+          '  responseText = "✦ *VIDEM | Asistencia Concierge* 🛎️\\n\\nHe notificado de inmediato a Camilo de nuestro equipo técnico senior. En breve revisará este chat directamente para atender tu consulta personalizada.\\n\\n_(Si deseas mientras tanto avanzar con la validación técnica de tu pantalla, solo escribe \\"Empezar\\")_.";',
+          '  isHumanHelpRequested = true;',
+          '  adminAlertText = "🛎️ *VIDEM ALERT | Solicitud de Asesor Humano*\\n\\n👤 *Cliente:* " + senderName + "\\n📱 *Teléfono:* +" + senderPhone + "\\n💬 *Mensaje:* \\"" + incomingText + "\\"\\n\\n👉 *Acción Requerida:* Por favor ingresa al WhatsApp oficial para atender su consulta personalizada.";',
           '',
           '// 6. CASO ESPECIAL: Respuesta Compuesta (todas las respuestas a la vez)',
           '} else if ((normalized.includes("1") && normalized.includes("2") && normalized.includes("3")) || (normalized.includes("fibra") && (normalized.includes("xiaomi") || normalized.includes("tv") || normalized.includes("lg") || normalized.includes("samsung")) && (normalized.includes("sonido") || normalized.includes("barra")))) {',
@@ -155,7 +161,7 @@ const workflow = {
           '  responseText = "✦ *VIDEM | Diagnóstico Técnico (Paso 3 de 3)* 🔊\\n\\n¡Conexión validada! Excelente ancho de banda para transferencias Remux 4K sin compresión.\\n\\n*Paso 3 de 3: ¿Cómo disfrutas el audio en tu sala de cine?*\\n\\n1️⃣ Barra de sonido o Receiver dedicado con Dolby Atmos / eARC (Sonos, Bose, LG, Samsung, Sony, etc.)\\n2️⃣ Barra de sonido estándar 2.1 o Parlantes externos\\n3️⃣ Parlantes integrados del televisor\\n4️⃣ Otro (¿Cuál equipo de audio utilizas?)\\n\\n_👉 Responde con el número de tu opción (1, 2, 3...):_\";',
           '',
           '} else if (lastBotMessage.includes("Paso 3 de 3") && !normalized.includes("hola") && !normalized.includes("menu")) {',
-          '  responseText = "✦ *VIDEM | Calificación Técnica Exitosa* 🍿\\n\\n¡Felicidades, " + senderName + "! Tu configuración cumple con todos los requisitos para acceder al estándar privado *Videm* (Remux 4K nativo 40-80 Mbps y audio Dolby Atmos sin pausas).\\n\\n💎 *Tarifas de Consultoría y Aprovisionamiento:*\\n\\n💳 *OPCIÓN 1: PAGO DIGITAL SUMUP (TARJETAS O PSE)*\\n• *Plan Semestral (6 meses completos - $240.000 COP):*\\n👉 " + sumupSemestral + "\\n\\n• *Plan Anual (12 meses preferencial - $440.000 COP):*\\n👉 " + sumupAnual + "\\n\\n━━━━━━━━━━━━━━━━━━━━\\n" + bancolombiaText + "\\n━━━━━━━━━━━━━━━━━━━━\\n\\n📌 *Activación Inmediata:* En cuanto realices tu pago o envíes la foto del comprobante aquí, el bot emite tus credenciales maestras y el enlace interactivo para activar tu televisor en 60 segundos.\";',
+          '  responseText = "✦ *VIDEM | Calificación Técnica Exitosa* 🍿\\n\\n¡Felicidades, " + senderName + "! Tu configuración cumple con todos los requisitos para acceder al estándar privado *Videm* (Remux 4K nativo 40-80 Mbps y audio Dolby Atmos sin pausas).\\n\\n💎 *Tarifas de Consultoría y Aprovisionamiento:*\\n\\n💳 *OPCIÓN 1: PAGO DIGITAL SUMUP (TARJETAS O PSE)*\\n• *Plan Semestral (6 meses completos - $240.000 COP):*\\n👉 " + sumupSemestral + "\\n\\n• *Plan Anual (12 meses preferencial - $440.000 COP):*\\n👉 " + sumupAnual + "\\n\\n━━━━━━━━━━━━━━━━━━━━\\n" + bancolombiaText + "\\n━━━━━━━━━━━━━━━━━━━━\\n\\n📌 *Activación Inmediata:* En cuanto realices tu pago o envíes la foto del comprobante aquí, el bot emite tus credenciales maestras y el enlace interactivo para activar tu televisor en 60 segundos.";',
           '  isQualifiedLead = true;',
           '',
           '} else if (lastBotMessage.includes("Paso 1 de 3") && !normalized.includes("hola") && !normalized.includes("menu")) {',
@@ -172,6 +178,8 @@ const workflow = {
           '  responseText,',
           '  triggerProvisioning,',
           '  isQualifiedLead,',
+          '  isHumanHelpRequested,',
+          '  adminAlertText,',
           '  accountData',
           '};'
         ].join('\n')
@@ -202,29 +210,38 @@ const workflow = {
       name: 'Evolution API: Enviar WhatsApp',
       type: 'n8n-nodes-base.httpRequest',
       typeVersion: 4.1,
-      position: [780, 400]
+      position: [780, 260]
     },
     {
       parameters: {
         jsCode: [
           '// FILTRO Y FORMATEO DE REGISTROS PARA GOOGLE SHEETS CRM',
-          '// Solo se ejecuta si el cliente completó la calificación o pagó.',
+          '// Solo se ejecuta si el cliente califico, pago o solicito asesor.',
           '// NO llena filas por mensajes intermedios de chat (Hola, 1, 2, etc.)',
           'const item = $input.item.json;',
           '',
-          'if (!item.triggerProvisioning && !item.isQualifiedLead) {',
-          '  return []; // Detiene la ejecución hacia Google Sheets',
+          'if (!item.triggerProvisioning && !item.isQualifiedLead && !item.isHumanHelpRequested) {',
+          '  return []; // Detiene la ejecucion hacia Google Sheets',
           '}',
           '',
           'const now = new Date();',
           'const fechaCol = now.toLocaleString("es-CO", { timeZone: "America/Bogota", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" });',
           '',
+          'let estado = "Calificado (Pendiente Pago)";',
+          'let plan = item.accountData?.plan || "Semestral / Anual (En Evaluación)";',
+          'if (item.triggerProvisioning) {',
+          '  estado = "Activo (Pagado)";',
+          '} else if (item.isHumanHelpRequested) {',
+          '  estado = "Requiere Asesor Humano";',
+          '  plan = "Atención Personalizada";',
+          '}',
+          '',
           'return {',
           '  Fecha: fechaCol,',
           '  Telefono: item.phone || item.senderPhone,',
           '  Nombre: item.senderName || "Cliente",',
-          '  Plan: item.accountData?.plan || "Semestral / Anual (En Evaluación)",',
-          '  Estado: item.triggerProvisioning ? "Activo (Pagado)" : "Calificado (Pendiente Pago)",',
+          '  Plan: plan,',
+          '  Estado: estado,',
           '  Usuario_Stremio: item.accountData?.clientEmail || "-",',
           '  Referencia: item.accountData?.ref || "-",',
           '  Vigencia: item.accountData?.expDate || "-"',
@@ -235,7 +252,7 @@ const workflow = {
       name: 'Filtrar Solo Clientes / Ventas',
       type: 'n8n-nodes-base.code',
       typeVersion: 2,
-      position: [780, 600]
+      position: [780, 480]
     },
     {
       parameters: {
@@ -256,7 +273,52 @@ const workflow = {
       name: 'Google Sheets: Registrar Cliente',
       type: 'n8n-nodes-base.googleSheets',
       typeVersion: 4.5,
-      position: [1020, 600]
+      position: [1040, 480]
+    },
+    {
+      parameters: {
+        jsCode: [
+          '// FILTRO DE ALERTAS EN TIEMPO REAL PARA CAMILO',
+          '// Se ejecuta UNICAMENTE si hay solicitud de asesor humano o pago verificado',
+          'const item = $input.item.json;',
+          '',
+          'if (!item.adminAlertText) {',
+          '  return []; // No requiere alerta',
+          '}',
+          '',
+          'return {',
+          '  adminNumber: "' + ADMIN_PHONE + '",',
+          '  adminText: item.adminAlertText',
+          '};'
+        ].join('\n')
+      },
+      id: 'node-filter-admin-alert',
+      name: 'Filtrar Alerta a Camilo',
+      type: 'n8n-nodes-base.code',
+      typeVersion: 2,
+      position: [780, 700]
+    },
+    {
+      parameters: {
+        method: 'POST',
+        url: 'https://evolution-api-production-8353.up.railway.app/message/sendText/VidemProd',
+        sendHeaders: true,
+        headerParameters: {
+          parameters: [
+            { name: 'apikey', value: 'levanna-wa-key-2024' },
+            { name: 'Content-Type', value: 'application/json' }
+          ]
+        },
+        sendBody: true,
+        specifyBody: 'json',
+        jsonBody: '={\n  "number": "{{ $json.adminNumber }}",\n  "text": {{ JSON.stringify($json.adminText) }}\n}',
+        options: {}
+      },
+      id: 'node-send-admin-alert',
+      name: 'Evolution API: Notificar a Camilo',
+      type: 'n8n-nodes-base.httpRequest',
+      typeVersion: 4.1,
+      position: [1040, 700]
     }
   ],
   connections: {
@@ -270,7 +332,8 @@ const workflow = {
       main: [
         [
           { node: 'Evolution API: Enviar WhatsApp', type: 'main', index: 0 },
-          { node: 'Filtrar Solo Clientes / Ventas', type: 'main', index: 0 }
+          { node: 'Filtrar Solo Clientes / Ventas', type: 'main', index: 0 },
+          { node: 'Filtrar Alerta a Camilo', type: 'main', index: 0 }
         ]
       ]
     },
@@ -280,10 +343,17 @@ const workflow = {
           { node: 'Google Sheets: Registrar Cliente', type: 'main', index: 0 }
         ]
       ]
+    },
+    'Filtrar Alerta a Camilo': {
+      main: [
+        [
+          { node: 'Evolution API: Notificar a Camilo', type: 'main', index: 0 }
+        ]
+      ]
     }
   }
 };
 
 const targetPath = path.join(__dirname, 'n8n_videm_whatsapp_bot.json');
 fs.writeFileSync(targetPath, JSON.stringify(workflow, null, 2), 'utf8');
-console.log('Successfully generated workflow with SumUp and Bancolombia at', targetPath);
+console.log('Successfully generated workflow with SumUp, Bancolombia, and Admin Alerts at', targetPath);

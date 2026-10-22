@@ -155,7 +155,9 @@ const workflow = {
           'const phone = item.senderPhone;',
           'const name = item.senderName;',
           '',
-          'const responseText = "✦ *VIDEM | Enlace de Pantalla en Curso*\\n\\n📺 *Código Detectado:* `" + code + "`\\n\\nEstamos vinculando tu perfil VIDEM con:\\n✔ CDN Privado 40-80 Mbps Remux activo\\n✔ HDR / Dolby Vision y Dolby Atmos habilitados\\n✔ Catálogo curado y depurado\\n\\n⚡ Si deseas autorizarlo con 1 clic desde este móvil, pulsa aquí: https://stremio.com/link?code=" + code + "\\n\\n¡Tu televisor se sincronizará automáticamente! 🍿";',
+          'const activationUrl = "https://videm.tv/activar?code=" + code + "&nombre=" + encodeURIComponent(name);',
+          '',
+          'const responseText = "✦ *VIDEM | Enlace de Pantalla Detectado*\\n\\n📺 *Código:* `" + code + "`\\n\\nEstamos vinculando tu perfil VIDEM con:\\n✔ CDN Dedicado 40-80 Mbps Remux activo\\n✔ HDR / Dolby Vision y Dolby Atmos habilitados\\n✔ Catálogo curado y depurado\\n\\n⚡ *Autoriza tu pantalla con 1 clic aquí:*\\n👉 " + activationUrl + "\\n\\n¡Tu televisor se sincronizará automáticamente! 🍿";',
           '',
           'return { senderPhone: phone, senderName: name, stremioCode: code, responseText };'
         ].join('\n')
@@ -295,8 +297,9 @@ const workflow = {
           'const now = new Date();',
           'const expDate = new Date(now.getTime() + (180 * 24 * 60 * 60 * 1000));',
           'const expDateFormatted = expDate.toLocaleDateString("es-CO", { year: "numeric", month: "long", day: "numeric" });',
+          'const activationUrl = "https://videm.tv/activar?nombre=" + encodeURIComponent(name) + "&plan=" + encodeURIComponent(plan);',
           '',
-          'const welcomeKitMessage = "✦ *¡FELICIDADES, " + name.toUpperCase() + "! TU ACCESO VIDEM ESTÁ ACTIVO* 🎬\\n\\nTu pago ha sido validado con éxito (Ref: *" + ref + "*).\\nTu suscripción *" + plan + "* se encuentra aprovisionada hasta el *" + expDateFormatted + "*.\\n\\n━━━━━━━━━━━━━━━━━━━━\\n💎 *TUS CREDENCIALES PRIVADAS DE ACCESO:*\\n📧 *Correo:* `" + clientEmail + "`\\n🔑 *Contraseña:* `" + clientPass + "`\\n━━━━━━━━━━━━━━━━━━━━\\n\\n📺 *CÓMO ACTIVAR TU SMART TV EN 60 SEGUNDOS:*\\n\\n1️⃣ Abre la app *Stremio* en tu televisor (LG webOS, Samsung, Android TV o Fire TV).\\n2️⃣ Selecciona la opción *\\\"Iniciar sesión con código QR o código web\\\"*.\\n3️⃣ *ENVÍAME AQUÍ MISMO EL CÓDIGO DE 4 A 6 LETRAS QUE APARECE EN TU TELEVISOR* (o pulsa este enlace desde tu móvil para autorizarlo: https://stremio.com/link).\\n\\n¡En cuanto lo confirmes, tu pantalla quedará calibrada con películas y series en Remux 4K nativo y Dolby Atmos! 🍿";',
+          'const welcomeKitMessage = "✦ *¡FELICIDADES, " + name.toUpperCase() + "! TU ACCESO VIDEM ESTÁ ACTIVO* 🎬\\n\\nTu pago ha sido validado con éxito (Ref: *" + ref + "*).\\nTu membresía *" + plan + "* se encuentra aprovisionada hasta el *" + expDateFormatted + "*.\\n\\n━━━━━━━━━━━━━━━━━━━━\\n💎 *TUS CREDENCIALES PRIVADAS DE ACCESO:*\\n📧 *Correo:* `" + clientEmail + "`\\n🔑 *Contraseña:* `" + clientPass + "`\\n━━━━━━━━━━━━━━━━━━━━\\n\\n📺 *CÓMO ACTIVAR TU SMART TV EN 60 SEGUNDOS:*\\n\\nEntra a tu portal VIP de activación interactiva:\\n👉 " + activationUrl + "\\n\\nAllí solo debes ingresar el código de 4 letras que aparece en tu televisor y tu pantalla quedará calibrada con películas y series en Remux 4K nativo y Dolby Atmos. 🍿";',
           '',
           'return {',
           '  phone,',
@@ -341,17 +344,17 @@ const workflow = {
     {
       parameters: {
         method: 'POST',
-        url: '={{ $env.EVOLUTION_API_URL || "http://localhost:8080" }}/message/sendText/{{ $env.EVOLUTION_INSTANCE_NAME || "videm-prod" }}',
+        url: 'https://evolution-api-production-8353.up.railway.app/message/sendText/VidemProd',
         sendHeaders: true,
         headerParameters: {
           parameters: [
-            { name: 'apikey', value: '={{ $env.EVOLUTION_API_KEY || "videm-secret-key" }}' },
+            { name: 'apikey', value: 'levanna-wa-key-2024' },
             { name: 'Content-Type', value: 'application/json' }
           ]
         },
         sendBody: true,
         specifyBody: 'json',
-        jsonBody: '={\n  "number": "{{ $json.phone || $json.senderPhone }}",\n  "text": {{ JSON.stringify($json.responseText) }}\n}',
+        jsonBody: '={\n  \"number\": \"{{ $json.phone || $json.senderPhone }}\",\n  \"text\": {{ JSON.stringify($json.responseText) }}\n}',
         options: {}
       },
       id: 'node-send-whatsapp',
@@ -421,4 +424,4 @@ const workflow = {
 
 const targetPath = path.join(__dirname, 'n8n_videm_whatsapp_bot.json');
 fs.writeFileSync(targetPath, JSON.stringify(workflow, null, 2), 'utf8');
-console.log('Successfully generated JSON at', targetPath);
+console.log('Successfully generated JSON with production Railway values at', targetPath);

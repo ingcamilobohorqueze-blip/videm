@@ -1,4 +1,5 @@
 const http = require('http');
+const https = require('https');
 const fs = require('fs');
 const path = require('path');
 
@@ -17,6 +18,40 @@ const MIME_TYPES = {
 
 const server = http.createServer((req, res) => {
   let reqPath = decodeURI(req.url.split('?')[0]);
+
+  // Endpoint de API para obtener el QR fresco en vivo desde Evolution API
+  if (reqPath === '/api/qr-live') {
+    const options = {
+      hostname: 'evolution-api-production-8353.up.railway.app',
+      port: 443,
+      path: '/instance/connect/VidemProd',
+      method: 'GET',
+      headers: {
+        'apikey': 'levanna-wa-key-2024'
+      }
+    };
+
+    const apiReq = https.request(options, (apiRes) => {
+      let data = '';
+      apiRes.on('data', chunk => data += chunk);
+      apiRes.on('end', () => {
+        res.writeHead(200, {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        });
+        res.end(data);
+      });
+    });
+
+    apiReq.on('error', (err) => {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: err.message }));
+    });
+
+    apiReq.end();
+    return;
+  }
+
   if (reqPath === '/') reqPath = '/index.html';
 
   const fullPath = path.join(__dirname, reqPath);

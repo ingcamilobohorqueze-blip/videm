@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vincular WhatsApp VIDEM | Código QR en Vivo</title>
+  <link rel="stylesheet" href="css/tokens.css">
+  <style>
+    body {
+      background: #07090E;
+      color: #FFFFFF;
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 1.5rem;
+      text-align: center;
+      box-sizing: border-box;
+    }
+    .card {
+      background: rgba(18, 22, 34, 0.9);
+      border: 1px solid rgba(0, 240, 255, 0.35);
+      box-shadow: 0 0 50px rgba(0, 240, 255, 0.18);
+      border-radius: 24px;
+      padding: 2.5rem 2rem;
+      max-width: 460px;
+      width: 100%;
+      position: relative;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(0, 240, 255, 0.1);
+      color: #00E5FF;
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      padding: 0.35rem 0.9rem;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 1.25rem;
+    }
+    .dot-live {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10B981;
+      box-shadow: 0 0 10px #10B981;
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(0.8); opacity: 0.4; }
+    }
+    h1 {
+      font-size: 1.55rem;
+      margin: 0 0 0.5rem 0;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+    p {
+      color: #94A3B8;
+      font-size: 0.92rem;
+      margin: 0 0 1.5rem 0;
+      line-height: 1.55;
+    }
+    .qr-container {
+      background: #FFFFFF;
+      padding: 1.15rem;
+      border-radius: 18px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+      min-width: 270px;
+      min-height: 270px;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+      position: relative;
+    }
+    .qr-container img {
+      width: 250px;
+      height: 250px;
+      display: block;
+      object-fit: contain;
+    }
+    .status-text {
+      font-size: 0.85rem;
+      color: #64748B;
+      margin-bottom: 1rem;
+    }
+    .btn-refresh {
+      background: linear-gradient(135deg, #00E5FF, #6366F1);
+      color: #FFFFFF;
+      border: none;
+      padding: 0.75rem 1.75rem;
+      border-radius: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 0.88rem;
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+      transition: all 0.2s;
+    }
+    .btn-refresh:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 30px rgba(0, 240, 255, 0.5);
+    }
+    .connected-box {
+      display: none;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      border-radius: 16px;
+      padding: 2rem 1.5rem;
+      color: #10B981;
+    }
+    .connected-box h2 {
+      margin: 0 0 0.5rem 0;
+      color: #FFFFFF;
+      font-size: 1.4rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="badge">
+      <span class="dot-live"></span>
+      Instancia: VidemProd (En Vivo)
+    </div>
+
+    <div id="unconnectedView">
+      <h1>Conectar WhatsApp VIDEM</h1>
+      <p>Abre WhatsApp en tu teléfono (+57 301 556 8904), ve a <strong>Dispositivos vinculados</strong> ➔ <strong>Vincular un dispositivo</strong> y escanea este código:</p>
+      
+      <div class="qr-container">
+        <img id="qrImage" src="" alt="Cargando código QR...">
+      </div>
+
+      <div class="status-text" id="statusLabel">Cargando código QR en vivo desde Railway...</div>
+
+      <div>
+        <button class="btn-refresh" id="btnManualRefresh" onclick="fetchLiveQR()">🔄 Refrescar Código QR</button>
+      </div>
+    </div>
+
+    <div class="connected-box" id="connectedView">
+      <div style="font-size: 3rem; margin-bottom: 0.5rem;">🎉</div>
+      <h2>¡WhatsApp Conectado!</h2>
+      <p style="color: #A7F3D0;">La instancia <strong>VidemProd</strong> ya está enlazada y lista para recibir mensajes de clientes.</p>
+    </div>
+  </div>
+
+  <script>
+    async function fetchLiveQR() {
+      const statusLabel = document.getElementById('statusLabel');
+      const qrImage = document.getElementById('qrImage');
+      const unconnectedView = document.getElementById('unconnectedView');
+      const connectedView = document.getElementById('connectedView');
+
+      statusLabel.textContent = 'Consultando Evolution API en Railway...';
+
+      try {
+        const res = await fetch('/api/qr-live');
+        const data = await res.json();
+
+        // Si ya está conectado (open / connecting)
+        if (data.instance && (data.instance.status === 'open' || data.instance.state === 'open')) {
+          unconnectedView.style.display = 'none';
+          connectedView.style.display = 'block';
+          return;
+        }
+
+        if (data.base64) {
+          qrImage.src = data.base64;
+          statusLabel.textContent = '⚡ Código QR activo. Se actualiza automáticamente.';
+        } else if (data.qrcode && data.qrcode.base64) {
+          qrImage.src = data.qrcode.base64;
+          statusLabel.textContent = '⚡ Código QR activo. Se actualiza automáticamente.';
+        } else {
+          statusLabel.textContent = 'Esperando generación de QR...';
+        }
+      } catch (err) {
+        statusLabel.textContent = 'Error al consultar Railway. Pulsa refrescar.';
+      }
+    }
+
+    // Cargar de inmediato
+    fetchLiveQR();
+
+    // Auto-refrescar cada 12 segundos para mantener el QR 100% fresco
+    setInterval(fetchLiveQR, 12000);
+  </script>
+</body>
+</html>

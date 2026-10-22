@@ -104,7 +104,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const item = $json;\nconst code = item.rawText.toUpperCase().trim();\nconst phone = item.senderPhone;\nconst name = item.senderName;\n\nconst responseText = \"✦ *VIDEM | Enlace de Pantalla en Curso*\\n\\n📺 *Código Detectado:* `\" + code + \"`\\n\\nEstamos vinculando tu perfil VIDEM con:\\n✔ CDN Privado 40-80 Mbps Remux activo\\n✔ HDR / Dolby Vision y Dolby Atmos habilitados\\n✔ Catálogo curado y depurado\\n\\n⚡ Si deseas autorizarlo con 1 clic desde este móvil, pulsa aquí: https://stremio.com/link?code=\" + code + \"\\n\\n¡Tu televisor se sincronizará automáticamente! 🍿\";\n\nreturn { senderPhone: phone, senderName: name, stremioCode: code, responseText };"
+        "jsCode": "const item = $json;\nconst code = item.rawText.toUpperCase().trim();\nconst phone = item.senderPhone;\nconst name = item.senderName;\n\nconst activationUrl = \"https://videm.tv/activar?code=\" + code + \"&nombre=\" + encodeURIComponent(name);\n\nconst responseText = \"✦ *VIDEM | Enlace de Pantalla Detectado*\\n\\n📺 *Código:* `\" + code + \"`\\n\\nEstamos vinculando tu perfil VIDEM con:\\n✔ CDN Dedicado 40-80 Mbps Remux activo\\n✔ HDR / Dolby Vision y Dolby Atmos habilitados\\n✔ Catálogo curado y depurado\\n\\n⚡ *Autoriza tu pantalla con 1 clic aquí:*\\n👉 \" + activationUrl + \"\\n\\n¡Tu televisor se sincronizará automáticamente! 🍿\";\n\nreturn { senderPhone: phone, senderName: name, stremioCode: code, responseText };"
       },
       "id": "node-flow-pairing",
       "name": "Enlace de Código TV (Zero-Friction)",
@@ -182,7 +182,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const paymentData = $json;\nconst phone = paymentData.senderPhone;\nconst name = paymentData.senderName || \"Apreciado Cliente\";\nconst ref = paymentData.transactionRef;\nconst plan = paymentData.plan || \"Semestral (6 Meses)\";\n\nconst randomSuffix = Math.floor(1000 + Math.random() * 9000);\nconst clientEmail = \"videm.vip.\" + randomSuffix + \"@videm.private\";\nconst clientPass = \"Videm4K.\" + randomSuffix + \"!\";\n\nconst now = new Date();\nconst expDate = new Date(now.getTime() + (180 * 24 * 60 * 60 * 1000));\nconst expDateFormatted = expDate.toLocaleDateString(\"es-CO\", { year: \"numeric\", month: \"long\", day: \"numeric\" });\n\nconst welcomeKitMessage = \"✦ *¡FELICIDADES, \" + name.toUpperCase() + \"! TU ACCESO VIDEM ESTÁ ACTIVO* 🎬\\n\\nTu pago ha sido validado con éxito (Ref: *\" + ref + \"*).\\nTu suscripción *\" + plan + \"* se encuentra aprovisionada hasta el *\" + expDateFormatted + \"*.\\n\\n━━━━━━━━━━━━━━━━━━━━\\n💎 *TUS CREDENCIALES PRIVADAS DE ACCESO:*\\n📧 *Correo:* `\" + clientEmail + \"`\\n🔑 *Contraseña:* `\" + clientPass + \"`\\n━━━━━━━━━━━━━━━━━━━━\\n\\n📺 *CÓMO ACTIVAR TU SMART TV EN 60 SEGUNDOS:*\\n\\n1️⃣ Abre la app *Stremio* en tu televisor (LG webOS, Samsung, Android TV o Fire TV).\\n2️⃣ Selecciona la opción *\\\"Iniciar sesión con código QR o código web\\\"*.\\n3️⃣ *ENVÍAME AQUÍ MISMO EL CÓDIGO DE 4 A 6 LETRAS QUE APARECE EN TU TELEVISOR* (o pulsa este enlace desde tu móvil para autorizarlo: https://stremio.com/link).\\n\\n¡En cuanto lo confirmes, tu pantalla quedará calibrada con películas y series en Remux 4K nativo y Dolby Atmos! 🍿\";\n\nreturn {\n  phone,\n  name,\n  plan,\n  ref,\n  clientEmail,\n  clientPass,\n  expDate: expDateFormatted,\n  responseText: welcomeKitMessage,\n  logEntry: {\n    timestamp: new Date().toISOString(),\n    phone,\n    name,\n    plan,\n    ref,\n    clientEmail,\n    status: \"Activo\"\n  }\n};"
+        "jsCode": "const paymentData = $json;\nconst phone = paymentData.senderPhone;\nconst name = paymentData.senderName || \"Apreciado Cliente\";\nconst ref = paymentData.transactionRef;\nconst plan = paymentData.plan || \"Semestral (6 Meses)\";\n\nconst randomSuffix = Math.floor(1000 + Math.random() * 9000);\nconst clientEmail = \"videm.vip.\" + randomSuffix + \"@videm.private\";\nconst clientPass = \"Videm4K.\" + randomSuffix + \"!\";\n\nconst now = new Date();\nconst expDate = new Date(now.getTime() + (180 * 24 * 60 * 60 * 1000));\nconst expDateFormatted = expDate.toLocaleDateString(\"es-CO\", { year: \"numeric\", month: \"long\", day: \"numeric\" });\nconst activationUrl = \"https://videm.tv/activar?nombre=\" + encodeURIComponent(name) + \"&plan=\" + encodeURIComponent(plan);\n\nconst welcomeKitMessage = \"✦ *¡FELICIDADES, \" + name.toUpperCase() + \"! TU ACCESO VIDEM ESTÁ ACTIVO* 🎬\\n\\nTu pago ha sido validado con éxito (Ref: *\" + ref + \"*).\\nTu membresía *\" + plan + \"* se encuentra aprovisionada hasta el *\" + expDateFormatted + \"*.\\n\\n━━━━━━━━━━━━━━━━━━━━\\n💎 *TUS CREDENCIALES PRIVADAS DE ACCESO:*\\n📧 *Correo:* `\" + clientEmail + \"`\\n🔑 *Contraseña:* `\" + clientPass + \"`\\n━━━━━━━━━━━━━━━━━━━━\\n\\n📺 *CÓMO ACTIVAR TU SMART TV EN 60 SEGUNDOS:*\\n\\nEntra a tu portal VIP de activación interactiva:\\n👉 \" + activationUrl + \"\\n\\nAllí solo debes ingresar el código de 4 letras que aparece en tu televisor y tu pantalla quedará calibrada con películas y series en Remux 4K nativo y Dolby Atmos. 🍿\";\n\nreturn {\n  phone,\n  name,\n  plan,\n  ref,\n  clientEmail,\n  clientPass,\n  expDate: expDateFormatted,\n  responseText: welcomeKitMessage,\n  logEntry: {\n    timestamp: new Date().toISOString(),\n    phone,\n    name,\n    plan,\n    ref,\n    clientEmail,\n    status: \"Activo\"\n  }\n};"
       },
       "id": "node-auto-provisioning",
       "name": "Generador Autónomo de Cuentas (SOP)",
@@ -212,13 +212,13 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $env.EVOLUTION_API_URL || \"http://localhost:8080\" }}/message/sendText/{{ $env.EVOLUTION_INSTANCE_NAME || \"videm-prod\" }}",
+        "url": "https://evolution-api-production-8353.up.railway.app/message/sendText/VidemProd",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "apikey",
-              "value": "={{ $env.EVOLUTION_API_KEY || \"videm-secret-key\" }}"
+              "value": "levanna-wa-key-2024"
             },
             {
               "name": "Content-Type",

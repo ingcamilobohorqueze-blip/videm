@@ -263,7 +263,7 @@ const workflow = {
     },
     {
       parameters: {
-        operation: 'append',
+        operation: 'appendOrUpdate',
         documentId: {
           __rl: true,
           value: SHEET_ID,
@@ -273,6 +273,13 @@ const workflow = {
           __rl: true,
           value: 'Hoja 1',
           mode: 'name'
+        },
+        columns: {
+          mappingMode: 'autoMapInputData',
+          value: {},
+          matchingColumns: [
+            'Telefono'
+          ]
         },
         options: {}
       },

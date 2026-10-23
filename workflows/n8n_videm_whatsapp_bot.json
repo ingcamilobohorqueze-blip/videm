@@ -107,7 +107,7 @@
     },
     {
       "parameters": {
-        "operation": "append",
+        "operation": "appendOrUpdate",
         "documentId": {
           "__rl": true,
           "value": "1z3k3znhxGgc3xvXLZ8ymEqCWnwf5De9qazw2I_dMaoM",
@@ -117,6 +117,13 @@
           "__rl": true,
           "value": "Hoja 1",
           "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "Telefono"
+          ]
         },
         "options": {}
       },

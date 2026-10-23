@@ -40,6 +40,17 @@
           "value": "public, max-age=86400, stale-while-revalidate=604800"
         }
       ]
+  ],
+  "redirects": [
+    {
+      "source": "/wa",
+      "destination": "https://wa.me/573015568904?text=Hola,%20vi%20la%20publicacion%20en%20Marketplace%20y%20quiero%20calibrar%20mi%20TV",
+      "permanent": false
+    },
+    {
+      "source": "/chat",
+      "destination": "https://wa.me/573015568904?text=Hola,%20quiero%20probar%20VIDEM",
+      "permanent": false
     }
   ]
 }

@@ -85,14 +85,14 @@ docker run -d \
 
 ---
 
-## 3. Configuración de Medios de Pago Oficiales (SumUp & Bancolombia)
+## 3. Configuración de Medios de Pago Oficiales (Mercado Pago & Bancolombia)
 
 VIDEM utiliza dos canales de recaudación directos y libres de fricción:
 
-1. **SumUp (Tarjetas de Crédito/Débito y PSE):**
-   - **Plan Semestral (6 meses - $240.000 COP):** `https://pay.sumup.com/b2c/X4ODXUPY9G`
-   - **Plan Anual (12 meses - $440.000 COP):** `https://pay.sumup.com/b2c/X9P4DBUZ42`
-   - *Ventajas:* Acreditación inmediata, antifraude integrado, permite pago con cualquier tarjeta de crédito/débito o cuenta bancaria PSE.
+1. **Mercado Pago (Tarjetas a Cuotas, PSE, Nequi y Mercado Crédito):**
+   - **Plan Semestral (6 meses - $240.000 COP):** `https://mpago.li/2XG62h2`
+   - **Plan Anual (12 meses - $440.000 COP):** `https://mpago.li/1wAw8DE`
+   - *Ventajas:* Links 100% permanentes y reutilizables, acreditación inmediata, permite pago con tarjeta de crédito hasta 36 cuotas, PSE, Nequi, Daviplata y Mercado Crédito.
 
 2. **Transferencia Directa Bancolombia:**
    - **Cuenta de Ahorros:** `03202411001`

@@ -71,7 +71,7 @@ console.log('CRM Google Sheets:', executeCRM(t2), '\n');
 // 3. Cliente completa diagnóstico y se califica
 console.log('--- TEST 3: Cliente completa Paso 3 de audio ("1") ---');
 const t3 = executeCerebro('1', 'Paso 3 de 3: ¿Cómo disfrutas el audio en tu sala de cine?');
-console.log('Respuesta al cliente (Calificación + SumUp + Bancolombia):\n' + t3.responseText.substring(0, 200) + '...\n');
+console.log('Respuesta al cliente (Calificación + Mercado Pago + Bancolombia):\n' + t3.responseText + '\n');
 console.log('Alerta a Camilo (no es alerta crítica):', executeAlertFilter(t3));
 console.log('CRM Google Sheets (Lead Calificado):', executeCRM(t3), '\n');
 
@@ -85,8 +85,8 @@ console.log('Texto mensaje:\n' + alert4.adminText + '\n');
 console.log('CRM Google Sheets (Venta Pagada):', executeCRM(t4), '\n');
 
 // 5. Cliente reporta pago Anual
-console.log('--- TEST 5: Cliente paga Plan Anual SumUp ("Pagué el anual por SumUp ref 994821") ---');
-const t5 = executeCerebro('Pagué el anual por SumUp ref 994821', 'Calificación...');
+console.log('--- TEST 5: Cliente paga Plan Anual Mercado Pago ("Pagué el anual por Mercado Pago ref 994821") ---');
+const t5 = executeCerebro('Pagué el anual por Mercado Pago ref 994821', 'Calificación...');
 const alert5 = executeAlertFilter(t5);
 console.log('💰 ALERTA DE PAGO ANUAL A CAMILO:\nNúmero destino:', alert5.adminNumber);
 console.log('Texto mensaje:\n' + alert5.adminText + '\n');

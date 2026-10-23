@@ -106,12 +106,12 @@ const workflow = {
           'let accountData = null;',
           '',
           '// DATOS OFICIALES DE PAGO VIDEM',
-          'const sumupSemestral = "https://pay.sumup.com/b2c/X4ODXUPY9G";',
-          'const sumupAnual = "https://pay.sumup.com/b2c/X9P4DBUZ42";',
+          'const mpSemestral = "https://mpago.li/2XG62h2";',
+          'const mpAnual = "https://mpago.li/1wAw8DE";',
           'const bancolombiaText = "🏦 *OPCIÓN 2: TRANSFERENCIA BANCARIA DIRECTA*\\n• *Bancolombia (Ahorros):* `03202411001`\\n• *Titular:* Camilo Andrés Bohórquez Enciso\\n• *C.C.:* 80.257.729\\n_(Acepta transferencias directas de Bancolombia, Nequi y Transfiya sin costo adicional)_";',
           '',
           '// 1. CASO ESPECIAL: Comprobante o Notificación de Pago Recibido',
-          'const isPayment = messageType === "image" || normalized.includes("comprobante") || normalized.includes("transferencia") || normalized.includes("transferi") || normalized.includes("pague") || normalized.includes("pago") || normalized.includes("recibo") || normalized.includes("voucher") || /\\b(m\\d{6,12}|neq-\\d+|sumup|bancolombia)\\b/i.test(normalized) || (/\\b\\d{6,12}\\b/.test(normalized) && (normalized.includes("ref") || normalized.includes("listo") || normalized.includes("ya") || normalized.includes("anual") || normalized.includes("semestral")));',
+          'const isPayment = messageType === "image" || normalized.includes("comprobante") || normalized.includes("transferencia") || normalized.includes("transferi") || normalized.includes("pague") || normalized.includes("pago") || normalized.includes("recibo") || normalized.includes("voucher") || /\\b(m\\d{6,12}|neq-\\d+|sumup|mercadopago|mpago|bancolombia)\\b/i.test(normalized) || (/\\b\\d{6,12}\\b/.test(normalized) && (normalized.includes("ref") || normalized.includes("listo") || normalized.includes("ya") || normalized.includes("anual") || normalized.includes("semestral")));',
           'if (isPayment) {',
           '  const refMatch = incomingText.match(/M?\\d{6,12}/i) || incomingText.match(/ref[:\\s]*([a-zA-Z0-9]+)/i);',
           '  const detectedRef = refMatch ? (refMatch[1] || refMatch[0]) : ("TX-" + Math.floor(100000 + Math.random() * 900000));',
@@ -146,7 +146,7 @@ const workflow = {
           '',
           '// 3. CASO ESPECIAL: Solicitud de Renovaciones',
           '} else if (normalized.includes("renov") || normalized.includes("extender")) {',
-          '  responseText = "✦ *VIDEM | Portal de Clientes & Renovaciones* 🔄\\n\\nHola " + senderName + ", bienvenido a tu canal prioritario.\\n\\nPara renovar tu enlace privado de inmediato:\\n\\n💳 *Opción SumUp (Tarjeta / PSE):*\\n• *Semestral (6 meses - $240.000 COP):*\\n👉 " + sumupSemestral + "\\n• *Anual (12 meses - $440.000 COP):*\\n👉 " + sumupAnual + "\\n\\n━━━━━━━━━━━━━━━━━━━━\\n" + bancolombiaText + "\\n━━━━━━━━━━━━━━━━━━━━\\n\\nEnvía el comprobante por este chat y tu enlace CDN y catálogos se mantendrán activos sin reconfigurar tu pantalla.";',
+          '  responseText = "✦ *VIDEM | Portal de Clientes & Renovaciones* 🔄\\n\\nHola " + senderName + ", bienvenido a tu canal prioritario.\\n\\nPara renovar tu enlace privado de inmediato:\\n\\n💳 *Opción Mercado Pago (Tarjetas a Cuotas / PSE):*\\n• *Semestral (6 meses - $240.000 COP):*\\n👉 " + mpSemestral + "\\n• *Anual (12 meses - $440.000 COP):*\\n👉 " + mpAnual + "\\n\\n━━━━━━━━━━━━━━━━━━━━\\n" + bancolombiaText + "\\n━━━━━━━━━━━━━━━━━━━━\\n\\nEnvía el comprobante por este chat y tu enlace CDN y catálogos se mantendrán activos sin reconfigurar tu pantalla.";',
           '',
           '// 4. CASO ESPECIAL: Consulta Directa de Precios o Planes',
           '} else if ((normalized.includes("precio") || normalized.includes("costo") || normalized.includes("cuanto vale") || normalized.includes("cuanto cuesta") || normalized.includes("tarifa") || normalized.includes("planes") || normalized.includes("valores")) && !lastBotMessage.includes("Paso 1") && !lastBotMessage.includes("Paso 2") && !lastBotMessage.includes("Paso 3")) {',
@@ -160,7 +160,7 @@ const workflow = {
           '',
           '// 6. CASO ESPECIAL: Respuesta Compuesta (todas las respuestas a la vez)',
           '} else if ((normalized.includes("1") && normalized.includes("2") && normalized.includes("3")) || (normalized.includes("fibra") && (normalized.includes("xiaomi") || normalized.includes("tv") || normalized.includes("lg") || normalized.includes("samsung")) && (normalized.includes("sonido") || normalized.includes("barra")))) {',
-          '  responseText = "✦ *VIDEM | Calificación Técnica Exitosa* 🍿\\n\\n¡Excelente, " + senderName + "! Revisamos tu configuración (" + incomingText.replace(/\\n/g, " / ") + ") y tu hogar califica con honores para el estándar privado *Videm* (Remux 4K nativo 40-80 Mbps y audio Dolby Atmos sin pausas).\\n\\n💎 *Tarifas de Consultoría y Aprovisionamiento:*\\n\\n💳 *OPCIÓN 1: PAGO DIGITAL SUMUP (TARJETAS O PSE)*\\n• *Plan Semestral (6 meses completos - $240.000 COP):*\\n👉 " + sumupSemestral + "\\n\\n• *Plan Anual (12 meses preferencial - $440.000 COP):*\\n👉 " + sumupAnual + "\\n\\n━━━━━━━━━━━━━━━━━━━━\\n" + bancolombiaText + "\\n━━━━━━━━━━━━━━━━━━━━\\n\\n📌 *Activación Inmediata:* En cuanto realices tu pago o envíes la foto del comprobante aquí, el bot emite tus credenciales maestras y el enlace interactivo para activar tu televisor en 60 segundos.";',
+          '  responseText = "✦ *VIDEM | Calificación Técnica Exitosa* 🍿\\n\\n¡Excelente, " + senderName + "! Revisamos tu configuración (" + incomingText.replace(/\\n/g, " / ") + ") y tu hogar califica con honores para el estándar privado *Videm* (Remux 4K nativo 40-80 Mbps y audio Dolby Atmos sin pausas).\\n\\n💎 *Tarifas de Consultoría y Aprovisionamiento:*\\n\\n💳 *OPCIÓN 1: PAGO DIGITAL MERCADO PAGO (TARJETAS A CUOTAS O PSE)*\\n• *Plan Semestral (6 meses completos - $240.000 COP):*\\n👉 " + mpSemestral + "\\n\\n• *Plan Anual (12 meses preferencial - $440.000 COP):*\\n👉 " + mpAnual + "\\n_(Acepta tarjetas de crédito hasta 36 cuotas, PSE, Nequi, Daviplata y Mercado Crédito)_\\n\\n━━━━━━━━━━━━━━━━━━━━\\n" + bancolombiaText + "\\n━━━━━━━━━━━━━━━━━━━━\\n\\n📌 *Activación Inmediata:* En cuanto realices tu pago o envíes la foto del comprobante aquí, el bot emite tus credenciales maestras y el enlace interactivo para activar tu televisor en 60 segundos.";',
           '  isQualifiedLead = true;',
           '',
           '// 7. FLUJO CONVERSACIONAL BASADO EN EL HISTORIAL DE RAILWAY',
@@ -168,7 +168,7 @@ const workflow = {
           '  responseText = "✦ *VIDEM | Diagnóstico Técnico (Paso 3 de 3)* 🔊\\n\\n¡Conexión validada! Excelente ancho de banda para transferencias Remux 4K sin compresión.\\n\\n*Paso 3 de 3: ¿Cómo disfrutas el audio en tu sala de cine?*\\n\\n1️⃣ Barra de sonido o Receiver dedicado con Dolby Atmos / eARC (Sonos, Bose, LG, Samsung, Sony, etc.)\\n2️⃣ Barra de sonido estándar 2.1 o Parlantes externos\\n3️⃣ Parlantes integrados del televisor\\n4️⃣ Otro (¿Cuál equipo de audio utilizas?)\\n\\n_👉 Responde con el número de tu opción (1, 2, 3...):_\";',
           '',
           '} else if (lastBotMessage.includes("Paso 3 de 3") && !normalized.includes("hola") && !normalized.includes("menu")) {',
-          '  responseText = "✦ *VIDEM | Calificación Técnica Exitosa* 🍿\\n\\n¡Felicidades, " + senderName + "! Tu configuración cumple con todos los requisitos para acceder al estándar privado *Videm* (Remux 4K nativo 40-80 Mbps y audio Dolby Atmos sin pausas).\\n\\n💎 *Tarifas de Consultoría y Aprovisionamiento:*\\n\\n💳 *OPCIÓN 1: PAGO DIGITAL SUMUP (TARJETAS O PSE)*\\n• *Plan Semestral (6 meses completos - $240.000 COP):*\\n👉 " + sumupSemestral + "\\n\\n• *Plan Anual (12 meses preferencial - $440.000 COP):*\\n👉 " + sumupAnual + "\\n\\n━━━━━━━━━━━━━━━━━━━━\\n" + bancolombiaText + "\\n━━━━━━━━━━━━━━━━━━━━\\n\\n📌 *Activación Inmediata:* En cuanto realices tu pago o envíes la foto del comprobante aquí, el bot emite tus credenciales maestras y el enlace interactivo para activar tu televisor en 60 segundos.";',
+          '  responseText = "✦ *VIDEM | Calificación Técnica Exitosa* 🍿\\n\\n¡Felicidades, " + senderName + "! Tu configuración cumple con todos los requisitos para acceder al estándar privado *Videm* (Remux 4K nativo 40-80 Mbps y audio Dolby Atmos sin pausas).\\n\\n💎 *Tarifas de Consultoría y Aprovisionamiento:*\\n\\n💳 *OPCIÓN 1: PAGO DIGITAL MERCADO PAGO (TARJETAS A CUOTAS O PSE)*\\n• *Plan Semestral (6 meses completos - $240.000 COP):*\\n👉 " + mpSemestral + "\\n\\n• *Plan Anual (12 meses preferencial - $440.000 COP):*\\n👉 " + mpAnual + "\\n_(Acepta tarjetas de crédito hasta 36 cuotas, PSE, Nequi, Daviplata y Mercado Crédito)_\\n\\n━━━━━━━━━━━━━━━━━━━━\\n" + bancolombiaText + "\\n━━━━━━━━━━━━━━━━━━━━\\n\\n📌 *Activación Inmediata:* En cuanto realices tu pago o envíes la foto del comprobante aquí, el bot emite tus credenciales maestras y el enlace interactivo para activar tu televisor en 60 segundos.";',
           '  isQualifiedLead = true;',
           '',
           '} else if (lastBotMessage.includes("Paso 1 de 3") && !normalized.includes("hola") && !normalized.includes("menu")) {',
@@ -363,4 +363,4 @@ const workflow = {
 
 const targetPath = path.join(__dirname, 'n8n_videm_whatsapp_bot.json');
 fs.writeFileSync(targetPath, JSON.stringify(workflow, null, 2), 'utf8');
-console.log('Successfully generated workflow with SumUp, Bancolombia, and Admin Alerts at', targetPath);
+console.log('Successfully generated workflow with Mercado Pago, Bancolombia, and Admin Alerts at', targetPath);

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Portal de Activación y Enlace de Pantalla | VIDEM</title>
-  <meta name="description" content="Guía interactiva paso a paso para sincronizar tu Smart TV o TV Box con la infraestructura privada de streaming de alta fidelidad de VIDEM en 60 segundos.">
+  <meta name="description" content="Portal interactivo de calibración y sincronización en tiempo real para enlazar tu Smart TV con la infraestructura privada 4K Remux de VIDEM.">
   <meta name="robots" content="noindex, follow">
 
   <!-- Google Fonts -->
@@ -74,7 +74,7 @@
       </h1>
 
       <p class="welcome-subtitle">
-        Tu membresía <strong id="clientPlanDisplay">Semestral VIP</strong> está lista. Sigue estos 3 sencillos pasos para vincular tu televisor y disfrutar de la máxima tasa de bits Remux 4K sin compresión en menos de 60 segundos.
+        Tu membresía <strong id="clientPlanDisplay">Semestral VIP</strong> está en proceso de calibración y enlace. Revisa el termómetro de aprovisionamiento en vivo a continuación e ingresa el código de tu Smart TV para disfrutar del estándar Remux 4K sin compresión.
       </p>
 
       <!-- Telemetry Spec Cards -->
@@ -125,6 +125,104 @@
             <div class="spec-label">Garantía de Enlace</div>
             <div class="spec-val">Soporte Continuo VIP</div>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Concierge Provisioning Tracker (Termómetro en Tiempo Real estilo Domino's Pizza) -->
+    <section class="concierge-tracker-card" id="provisioningTracker">
+      <div class="tracker-header">
+        <div class="tracker-header-left">
+          <div class="tracker-live-badge">
+            <span class="tracker-pulse-dot"></span>
+            <span>CALIBRACIÓN TÉCNICA EN VIVO</span>
+          </div>
+          <h2 class="tracker-title">Termómetro de Aprovisionamiento VIDEM</h2>
+          <p class="tracker-subtitle">
+            Asignando ancho de banda CDN dedicado (40-80 Mbps) y calibrando perfil 4K Remux con Dolby Atmos para tu sala privada.
+          </p>
+        </div>
+        <div class="tracker-header-right">
+          <div class="tracker-eta-box">
+            <span class="tracker-eta-label">ESTIMADO RESTANTE</span>
+            <span class="tracker-eta-val" id="trackerEtaTimer">02:45</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Barra de Progreso Global -->
+      <div class="tracker-progress-bar-container">
+        <div class="tracker-progress-bar-fill" id="trackerProgressBar" style="width: 75%;"></div>
+      </div>
+
+      <!-- Los 4 Estados del Termómetro (Domino's Style) -->
+      <div class="tracker-steps-grid">
+        <!-- Paso 1 -->
+        <div class="tracker-step is-completed" id="trackerStep1">
+          <div class="tracker-step-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+          </div>
+          <div class="tracker-step-info">
+            <div class="tracker-step-num">Fase 01</div>
+            <div class="tracker-step-title">Pago Validado</div>
+            <div class="tracker-step-desc">Cupo CDN privado asignado</div>
+          </div>
+        </div>
+
+        <!-- Paso 2 -->
+        <div class="tracker-step is-completed" id="trackerStep2">
+          <div class="tracker-step-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+          </div>
+          <div class="tracker-step-info">
+            <div class="tracker-step-num">Fase 02</div>
+            <div class="tracker-step-title">Credenciales Maestras</div>
+            <div class="tracker-step-desc">Perfil VIDEM VIP generado</div>
+          </div>
+        </div>
+
+        <!-- Paso 3 -->
+        <div class="tracker-step is-active" id="trackerStep3">
+          <div class="tracker-step-icon" id="trackerStep3Icon">
+            <div class="tracker-spinner"></div>
+          </div>
+          <div class="tracker-step-info">
+            <div class="tracker-step-num">Fase 03</div>
+            <div class="tracker-step-title">Calibrando 4K Remux</div>
+            <div class="tracker-step-desc" id="trackerStep3Desc">Inyectando Dolby Vision & Atmos</div>
+          </div>
+        </div>
+
+        <!-- Paso 4 -->
+        <div class="tracker-step" id="trackerStep4">
+          <div class="tracker-step-icon" id="trackerStep4Icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+              <line x1="8" y1="21" x2="16" y2="21"/>
+              <line x1="12" y1="17" x2="12" y2="21"/>
+            </svg>
+          </div>
+          <div class="tracker-step-info">
+            <div class="tracker-step-num">Fase 04</div>
+            <div class="tracker-step-title">Sincronizar Smart TV</div>
+            <div class="tracker-step-desc" id="trackerStep4Desc">Ingresa el código abajo</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Banner de Estado Dinámico -->
+      <div class="tracker-banner" id="trackerStatusBanner">
+        <div class="tracker-banner-icon" id="trackerBannerIcon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+          </svg>
+        </div>
+        <div class="tracker-banner-text" id="trackerBannerText">
+          <strong>Calibración en sintonía fina:</strong> Tus servidores dedicados de alta velocidad están listos. Sigue los pasos de abajo para abrir la app en tu Smart TV y autorizarla con tu código de 4 letras.
         </div>
       </div>
     </section>
@@ -387,12 +485,57 @@
         }
       }
 
+      // Referencias a los elementos del Termómetro / Tracker
+      const trackerStep3 = document.getElementById('trackerStep3');
+      const trackerStep3Icon = document.getElementById('trackerStep3Icon');
+      const trackerStep3Desc = document.getElementById('trackerStep3Desc');
+      const trackerStep4 = document.getElementById('trackerStep4');
+      const trackerStep4Icon = document.getElementById('trackerStep4Icon');
+      const trackerStep4Desc = document.getElementById('trackerStep4Desc');
+      const trackerProgressBar = document.getElementById('trackerProgressBar');
+      const trackerEtaTimer = document.getElementById('trackerEtaTimer');
+      const trackerBannerText = document.getElementById('trackerBannerText');
+      const trackerStatusBanner = document.getElementById('trackerStatusBanner');
+
+      // 4. Temporizador de Calibración Concierge en Vivo (~3 a 5 min)
+      let secondsLeft = 165; // ~2 min 45 seg
+      const timerInterval = setInterval(() => {
+        if (secondsLeft <= 10) {
+          clearInterval(timerInterval);
+          if (trackerEtaTimer.textContent !== '¡SINCRONIZADO!') {
+            trackerEtaTimer.textContent = 'FINALIZANDO';
+          }
+          return;
+        }
+        secondsLeft--;
+        const mins = Math.floor(secondsLeft / 60);
+        const secs = secondsLeft % 60;
+        if (trackerEtaTimer.textContent !== '¡SINCRONIZADO!') {
+          trackerEtaTimer.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+      }, 1000);
+
+      function handleCodeChange(code) {
+        updateWaLink(code);
+        if (code.length >= 4) {
+          trackerStep4Desc.textContent = `Código [${code}] listo para vincular`;
+          trackerStep4.classList.add('is-active');
+        } else {
+          trackerStep4Desc.textContent = 'Ingresa el código abajo';
+          trackerStep4.classList.remove('is-active');
+        }
+      }
+
+      if (codeInput.value) {
+        handleCodeChange(codeInput.value.trim().toUpperCase());
+      }
+
       codeInput.addEventListener('input', (e) => {
         e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-        updateWaLink(e.target.value.trim());
+        handleCodeChange(e.target.value.trim());
       });
 
-      // 4. Acción del Botón Principal de Sincronización
+      // 5. Acción del Botón Principal de Sincronización
       const btnPairDevice = document.getElementById('btnPairDevice');
       const feedbackMsg = document.getElementById('pairingFeedbackMsg');
 
@@ -403,6 +546,37 @@
           alert('Por favor escribe el código de 4 a 6 caracteres que aparece en tu televisor (Ej: 9A4K).');
           codeInput.focus();
           return;
+        }
+
+        // Detener timer y marcar éxito absoluto
+        clearInterval(timerInterval);
+        trackerEtaTimer.textContent = '¡LISTO!';
+        trackerProgressBar.style.width = '100%';
+
+        // Completar Fase 3
+        trackerStep3.classList.remove('is-active');
+        trackerStep3.classList.add('is-completed');
+        trackerStep3Icon.innerHTML = `
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>`;
+        trackerStep3Desc.textContent = '4K Remux & Atmos activados';
+
+        // Completar Fase 4
+        trackerStep4.classList.remove('is-active');
+        trackerStep4.classList.add('is-completed');
+        trackerStep4Icon.innerHTML = `
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>`;
+        trackerStep4Desc.textContent = `TV Enlazado (${enteredCode})`;
+
+        // Actualizar Banner
+        if (trackerStatusBanner) {
+          trackerStatusBanner.style.borderColor = 'rgba(16, 185, 129, 0.4)';
+          trackerStatusBanner.style.background = 'rgba(16, 185, 129, 0.08)';
+          trackerBannerText.innerHTML = `
+            <strong style="color: #10B981;">🎉 ¡Enlace de pantalla completado!</strong> Tu Smart TV se sincronizará automáticamente en pocos segundos con el catálogo y bitrate 4K sin compresión.`;
         }
 
         feedbackMsg.style.display = 'block';

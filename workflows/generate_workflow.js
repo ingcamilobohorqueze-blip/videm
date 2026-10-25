@@ -250,7 +250,7 @@ const workflow = {
           '}',
           '',
           'return {',
-          '  phone: senderPhone,',
+          '  phone: rawJid,',
           '  senderPhone,',
           '  senderName,',
           '  responseText,',

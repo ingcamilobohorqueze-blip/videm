@@ -33,19 +33,20 @@ const workflow = {
         },
         sendBody: true,
         specifyBody: 'json',
-        jsonBody: '={\n  "where": {\n    "key": {\n      "remoteJid": "{{ $json.body?.data?.key?.remoteJid || ($json.body?.entry ? $json.body.entry[0].changes[0].value.messages[0].from + "@s.whatsapp.net" : "573103311543@s.whatsapp.net") }}"\n    }\n  },\n  "limit": 5\n}',
+        jsonBody: '={\n  "where": {\n    "key": {\n      "remoteJid": "{{ $json.body?.data?.key?.remoteJid || $json.body?.phone || $json.body?.remoteJid || ($json.body?.senderPhone ? $json.body?.senderPhone + \"@s.whatsapp.net\" : \"\") }}"\n    }\n  },\n  "take": 8\n}',
         options: {}
       },
       id: 'node-fetch-history',
       name: 'Buscar Historial en Railway',
       type: 'n8n-nodes-base.httpRequest',
       typeVersion: 4.1,
-      position: [320, 400]
+      position: [320, 400],
+      continueOnFail: true
     },
     {
       parameters: {
         jsCode: [
-          '// CEREBRO AUTONOMO VIDEM - Evaluacion con Memoria Real, Pagos y Alertas a Camilo',
+          '// CEREBRO CONCIERGE VIP VIDEM - ATENCION NATURAL, LANEROS, CODIGOS TV Y ALERTAS A CAMILO',
           'const webhookItem = $("Webhook Evolution API (Inbound)").first().json;',
           'const body = webhookItem.body || webhookItem;',
           'const historyData = $input.item.json;',
@@ -99,14 +100,16 @@ const workflow = {
           'const normalized = incomingText.toLowerCase().normalize("NFD").replace(/[\\u0300-\\u036f]/g, "").trim();',
           'const isStremioPairingCode = /^[A-Za-z0-9]{4,6}$/.test(incomingText.trim()) && !["hola", "pago", "menu", "info", "si", "no", "bien", "vale", "ok", "listo", "1", "2", "3", "4", "5", "6", "7"].includes(normalized);',
           '',
-          '// Historial de Railway para saber exactamente que pregunto el bot',
+          '// Extraer historial previo para contexto y alertas a Camilo',
           'const records = historyData.messages?.records || (Array.isArray(historyData) ? historyData : []);',
-          'let lastBotMessage = "";',
-          'for (const r of records) {',
-          '  if (r.key?.fromMe) {',
-          '    lastBotMessage = r.message?.conversation || r.message?.extendedTextMessage?.text || "";',
-          '    break;',
-          '  }',
+          'let chatTranscript = "";',
+          'if (records.length > 0) {',
+          '  const recent = records.slice(0, 6).reverse();',
+          '  chatTranscript = recent.map(r => {',
+          '    const role = r.key?.fromMe ? "Conserje VIDEM" : senderName;',
+          '    const txt = r.message?.conversation || r.message?.extendedTextMessage?.text || (r.message?.imageMessage ? "[Foto/Comprobante]" : "[Mensaje]");',
+          '    return "• *" + role + ":* " + txt;',
+          '  }).join("\\n");',
           '}',
           '',
           'let responseText = "";',
@@ -147,46 +150,96 @@ const workflow = {
           '  triggerProvisioning = true;',
           '  accountData = { phone: senderPhone, name: senderName, plan: planName + " (" + planCost + ")", ref: detectedRef, clientEmail, expDate };',
           '  const statusAlert = isBusinessHours ? "⚡ *Estado:* En horario de atención (Calibración en curso 3-5 min)" : "🌙 *Estado:* Horario nocturno (Activar a las 8:00 AM)";',
-          '  adminAlertText = "💰 *VIDEM ALERT | ¡NUEVA VENTA VERIFICADA!* 🎬\\n\\n👤 *Cliente:* " + senderName + "\\n📱 *WhatsApp:* +" + senderPhone + "\\n💎 *Plan:* " + planName + " (" + planCost + ")\\n🔢 *Ref:* " + detectedRef + "\\n" + statusAlert + "\\n\\n━━━━━━━━━━━━━━━━━━━━\\n🛠️ *RECORDATORIO DE DESPACHO Y CALIBRACIÓN (3-5 min):*\\n\\n🕵️‍♂️ *1. Abrir Incógnito (Ctrl + Shift + N)*\\n👉 https://real-debrid.com\\n_(Nunca uses tu cuenta personal para no mezclar suscripciones)_\\n\\n✉️ *2. Registro en Real-Debrid (Vía Catch-All Videm):*\\n• Email: `vip." + randomSuffix + "@videm.tv`\\n• User: `videm_vip_" + randomSuffix + "`\\n• Pass: `Videm4K." + randomSuffix + "!`\\n_(El correo de confirmación de RD llegará a tu Gmail habitual en segundos)_\\n\\n💳 *3. Comprar Membresía (" + (isAnual ? "360 días" : "180 días = 16€") + "):*\\n👉 https://real-debrid.com/premium\\n\\n🔑 *4. Copiar API Token:*\\n👉 https://real-debrid.com/apitoken\\n\\n🍿 *5. Cuenta Stremio del Cliente:*\\n📧 `" + clientEmail + "`\\n🔑 `" + clientPass + "`\\n👉 Web: https://web.stremio.com\\n\\n⚡ *6. Instalar Torrentio con el Token:*\\n👉 https://torrentio.strem.fun/configure\\n\\n📺 *7. Vincular Smart TV del Cliente:*\\n👉 https://www.stremio.com/link\\n━━━━━━━━━━━━━━━━━━━━\\n✅ *Google Sheets:* Registrado como Activo.";',
+          '  adminAlertText = [',
+          '    "💰 *VIDEM ALERT | ¡NUEVA VENTA VERIFICADA!* 🎬",',
+          '    "",',
+          '    "👤 *Cliente:* " + senderName,',
+          '    "📱 *WhatsApp:* +" + senderPhone,',
+          '    "💎 *Plan:* " + planName + " (" + planCost + ")",',
+          '    "🔢 *Ref:* " + detectedRef,',
+          '    statusAlert,',
+          '    "",',
+          '    "📜 *HISTORIAL PREVIO:*",',
+          '    chatTranscript || "_(Comprobante adjunto)_",',
+          '    "",',
+          '    "👉 *Chatear con el cliente en 1 clic:*",',
+          '    "https://wa.me/" + senderPhone,',
+          '    "",',
+          '    "━━━━━━━━━━━━━━━━━━━━",',
+          '    "🛠️ *DESPACHO INMEDIATO (3-5 min):*",',
+          '    "1. Registrar en RD: `vip." + randomSuffix + "@videm.tv` / `videm_vip_" + randomSuffix + "` / `Videm4K." + randomSuffix + "!`",',
+          '    "2. Comprar membresía (" + (isAnual ? "360 días" : "180 días = 16€") + ") y copiar API token",',
+          '    "3. Instalar Torrentio RD y vincular Smart TV en: https://link.stremio.com"',
+          '  ].join("\\n");',
           '',
-          '// 2. CASO ESPECIAL: Código de TV Stremio (ej: 9A4K)',
+          '// 2. CASO ESPECIAL: Código de TV Stremio para Vincular Pantalla (ej: 9A4K o ABCD)',
           '} else if (isStremioPairingCode) {',
           '  const code = incomingText.toUpperCase().trim();',
-          '  const activationUrl = "https://videm.tv/activar?code=" + code + "&nombre=" + encodeURIComponent(senderName);',
-          '  responseText = "✦ *VIDEM | Enlace de Pantalla Detectado*\\n\\n📺 *Código:* `" + code + "`\\n\\nEstamos vinculando tu perfil VIDEM con:\\n✔ CDN Dedicado 40-80 Mbps Remux activo\\n✔ HDR / Dolby Vision y Dolby Atmos habilitados\\n✔ Catálogo curado y depurado\\n\\n⚡ *Autoriza tu pantalla con 1 clic aquí:*\\n👉 " + activationUrl + "\\n\\n¡Tu televisor se sincronizará automáticamente! 🍿";',
+          '  const directLinkUrl = "https://link.stremio.com/" + code;',
+          '  responseText = "✦ *VIDEM | Enlace de Pantalla Recibido* 📺\\n\\nCódigo detectado: `*" + code + "*`\\n\\nEstamos asociando tu televisor a nuestra infraestructura privada:\\n✔ 4K Remux nativo 60–85 Mbps activo\\n✔ Dolby Vision & Dolby Atmos habilitados\\n✔ Cero buffering, sin compresión ni publicidad\\n\\n⚡ Camilo y el equipo técnico están validando la sincronización en vivo. En un momento tu televisor se reiniciará automáticamente con VIDEM listo para disfrutar. 🍿";',
+          '  isHumanHelpRequested = true;',
+          '  adminAlertText = [',
+          '    "📺 *VIDEM ALERT | ¡CÓDIGO DE TV RECIBIDO PARA CALIBRACIÓN!*",',
+          '    "",',
+          '    "👤 *Cliente:* " + senderName,',
+          '    "📱 *WhatsApp:* +" + senderPhone,',
+          '    "🔑 *Código de TV:* `" + code + "`",',
+          '    "",',
+          '    "⚡ *ACTIVAR EN 1 CLIC (Abre en tu navegador con la cuenta demo o cliente):*",',
+          '    directLinkUrl,',
+          '    "",',
+          '    "👉 *Chatear con el cliente:*",',
+          '    "https://wa.me/" + senderPhone',
+          '  ].join("\\n");',
           '',
-          '// 3. CASO ESPECIAL: Solicitud de Renovaciones',
+          '// 3. CASO ESPECIAL: Prospectos de Laneros o Solicitudes de Prueba / Demo VIP',
+          '} else if (normalized.includes("laneros") || normalized.includes("zeit") || normalized.includes("nitro") || normalized.includes("foro") || normalized.includes("demo") || (normalized.includes("prueba") && !normalized.includes("comprobante"))) {',
+          '  responseText = "✦ *VIDEM CONCIERGE | Acceso Prioritario* 🎬\\n\\n¡Hola " + senderName + "! Qué gusto saludarte. Te doy una bienvenida VIP a *VIDEM*.\\n\\nCamilo nos dejó indicado tu cupo prioritario de prueba para calibrar tu pantalla y que sientas la fidelidad de nuestro *4K Remux nativo (60–85 Mbps) con Dolby Atmos real* sin compresión.\\n\\nPara enlazarte en 3 minutos sin complicaciones:\\n📺 *1.* Descarga la app *Stremio* en tu Smart TV o Fire TV.\\n🔑 *2.* Al abrirla, la pantalla de tu TV te mostrará un código de 4 letras (ej: `ABCD`) para vincular.\\n💬 *3.* Envíame ese código de 4 letras por este chat y te activamos el enlace de inmediato.\\n\\n¿Ya tienes Stremio instalado en tu pantalla o prefieres que te apoye paso a paso?";',
+          '  isHumanHelpRequested = true;',
+          '  adminAlertText = [',
+          '    "🎟️ *VIDEM ALERT | ¡PROSPECTO VIP DE LANEROS / DEMO DETECTADO!* 🎬",',
+          '    "",',
+          '    "👤 *Cliente:* " + senderName,',
+          '    "📱 *WhatsApp:* +" + senderPhone,',
+          '    "💬 *Mensaje:* \\"" + incomingText + "\\"",',
+          '    "",',
+          '    "📜 *HISTORIAL PREVIO:*",',
+          '    chatTranscript || "_(Primer contacto)_",',
+          '    "",',
+          '    "👉 *Chatear con él en 1 clic:*",',
+          '    "https://wa.me/" + senderPhone',
+          '  ].join("\\n");',
+          '',
+          '// 4. CASO ESPECIAL: Solicitud de Renovaciones',
           '} else if (normalized.includes("renov") || normalized.includes("extender")) {',
           '  responseText = "✦ *VIDEM | Portal de Clientes & Renovaciones* 🔄\\n\\nHola " + senderName + ", bienvenido a tu canal prioritario.\\n\\nPara renovar tu enlace privado de inmediato:\\n\\n💳 *Opción Mercado Pago (Tarjetas a Cuotas / PSE):*\\n• *Semestral (6 meses - $240.000 COP):*\\n👉 " + mpSemestral + "\\n• *Anual (12 meses - $440.000 COP):*\\n👉 " + mpAnual + "\\n\\n━━━━━━━━━━━━━━━━━━━━\\n" + bancolombiaText + "\\n━━━━━━━━━━━━━━━━━━━━\\n\\nEnvía el comprobante por este chat y tu enlace CDN y catálogos se mantendrán activos sin reconfigurar tu pantalla.";',
           '',
-          '// 4. CASO ESPECIAL: Consulta Directa de Precios o Planes',
-          '} else if ((normalized.includes("precio") || normalized.includes("costo") || normalized.includes("cuanto vale") || normalized.includes("cuanto cuesta") || normalized.includes("tarifa") || normalized.includes("planes") || normalized.includes("valores")) && !lastBotMessage.includes("Paso 1") && !lastBotMessage.includes("Paso 2") && !lastBotMessage.includes("Paso 3")) {',
-          '  responseText = "✦ *VIDEM | Planes y Tarifas VIP* 💎\\n\\nHola " + senderName + ", nuestras membresías de consultoría y streaming sin compresión (4K Remux nativo 40-80 Mbps, Dolby Vision y Dolby Atmos) son:\\n\\n1️⃣ *Membresía Semestral (6 meses):* $240.000 COP\\n2️⃣ *Membresía Anual (12 meses preferencial):* $440.000 COP\\n\\nPara garantizarte cero buffering antes de activar, validemos 3 datos rápidos de tu equipamiento:\\n\\n*Paso 1 de 3: ¿Qué pantalla o televisor principal usarás?*\\n1️⃣ Smart TV LG (webOS / OLED / QNED)\\n2️⃣ Smart TV Samsung (Tizen)\\n3️⃣ Google TV / Android TV / Sony / TCL\\n4️⃣ Xiaomi Box / TV Box / Mecool\\n5️⃣ Amazon Fire TV Stick 4K\\n6️⃣ Apple TV 4K\\n7️⃣ Otro (¿Cuál marca y modelo?)\\n\\n_👉 Responde con el número de tu opción (1, 2, 3...) o tu modelo:_";',
+          '// 5. CASO ESPECIAL: Consulta de Precios, Tarifas o Planes',
+          '} else if (normalized.includes("precio") || normalized.includes("costo") || normalized.includes("cuanto vale") || normalized.includes("cuanto cuesta") || normalized.includes("tarifa") || normalized.includes("planes") || normalized.includes("valores")) {',
+          '  responseText = "✦ *VIDEM | Membresías y Tarifas Concierge* 💎\\n\\nHola " + senderName + ", en VIDEM ofrecemos una infraestructura de streaming privado bajo demanda con ancho de banda dedicado a 80 Mbps Remux puro (calidad Blu-ray física, sin compresión ni caídas):\\n\\n🎟️ *Membresía Semestral (6 meses):* $240.000 COP ($40.000/mes)\\n🎟️ *Membresía Anual (12 meses preferencial):* $440.000 COP (Ahorras $40.000)\\n\\n✔ Incluye todo el cine y series en 4K Remux, Dolby Vision y Dolby Atmos.\\n✔ Cero buffering, sin publicidad y calibración asistida en 3 minutos.\\n✔ Compatible con Smart TV LG, Samsung, Android TV, Google TV y Fire TV Stick.\\n\\n💳 *Pagar con Tarjetas o PSE:* " + mpSemestral + "\\n" + bancolombiaText + "\\n\\n¿Deseas activar tu pantalla hoy o tienes alguna duda técnica de tu televisor?";',
+          '  isQualifiedLead = true;',
           '',
-          '// 5. CASO ESPECIAL: Asesor Humano / Soporte Personalizado',
-          '} else if (normalized.includes("asesor") || normalized.includes("humano") || normalized.includes("persona") || normalized.includes("hablar con alguien") || normalized.includes("atencion al cliente") || (normalized.includes("soporte") && !normalized.includes("comprobante") && !normalized.includes("pago"))) {',
-          '  responseText = "✦ *VIDEM | Asistencia Concierge* 🛎️\\n\\nHe notificado de inmediato a Camilo de nuestro equipo técnico senior. En breve revisará este chat directamente para atender tu consulta personalizada.\\n\\n_(Si deseas mientras tanto avanzar con la validación técnica de tu pantalla, solo escribe \\"Empezar\\")_.";',
+          '// 6. CASO ESPECIAL: Asesor Humano / Soporte Personalizado / Duda Compleja',
+          '} else if (normalized.includes("asesor") || normalized.includes("humano") || normalized.includes("persona") || normalized.includes("hablar con alguien") || normalized.includes("camilo") || normalized.includes("atencion al cliente") || normalized.includes("soporte")) {',
+          '  responseText = "✦ *VIDEM | Asistencia Concierge* 🛎️\\n\\nCon mucho gusto, " + senderName + ". Le acabo de transferir esta conversación a Camilo de nuestro equipo técnico senior, junto con el contexto de lo que hemos hablado.\\n\\nEn breve te responderá directamente por acá para brindarte atención personalizada.";',
           '  isHumanHelpRequested = true;',
-          '  adminAlertText = "🛎️ *VIDEM ALERT | Solicitud de Asesor Humano*\\n\\n👤 *Cliente:* " + senderName + "\\n📱 *Teléfono:* +" + senderPhone + "\\n💬 *Mensaje:* \\"" + incomingText + "\\"\\n\\n👉 *Acción Requerida:* Por favor ingresa al WhatsApp oficial para atender su consulta personalizada.";',
+          '  adminAlertText = [',
+          '    "🛎️ *VIDEM ALERT | Solicitud de Asesor Humano*",',
+          '    "",',
+          '    "👤 *Cliente:* " + senderName,',
+          '    "📱 *WhatsApp:* +" + senderPhone,',
+          '    "💬 *Último Mensaje:* \\"" + incomingText + "\\"",',
+          '    "",',
+          '    "📜 *HILO DE LA CONVERSACIÓN RECIENTE:*",',
+          '    chatTranscript || "_(Primer contacto)_",',
+          '    "",',
+          '    "👉 *Chatear con el cliente en 1 clic:*",',
+          '    "https://wa.me/" + senderPhone',
+          '  ].join("\\n");',
           '',
-          '// 6. CASO ESPECIAL: Respuesta Compuesta (todas las respuestas a la vez)',
-          '} else if ((normalized.includes("1") && normalized.includes("2") && normalized.includes("3")) || (normalized.includes("fibra") && (normalized.includes("xiaomi") || normalized.includes("tv") || normalized.includes("lg") || normalized.includes("samsung")) && (normalized.includes("sonido") || normalized.includes("barra")))) {',
-          '  responseText = "✦ *VIDEM | Calificación Técnica Exitosa* 🍿\\n\\n¡Excelente, " + senderName + "! Revisamos tu configuración (" + incomingText.replace(/\\n/g, " / ") + ") y tu hogar califica con honores para el estándar privado *Videm* (Remux 4K nativo 40-80 Mbps y audio Dolby Atmos sin pausas).\\n\\n💎 *Tarifas de Consultoría y Aprovisionamiento:*\\n\\n💳 *OPCIÓN 1: PAGO DIGITAL MERCADO PAGO (TARJETAS A CUOTAS O PSE)*\\n• *Plan Semestral (6 meses completos - $240.000 COP):*\\n👉 " + mpSemestral + "\\n\\n• *Plan Anual (12 meses preferencial - $440.000 COP):*\\n👉 " + mpAnual + "\\n_(Acepta tarjetas de crédito hasta 36 cuotas, PSE, Nequi, Daviplata y Mercado Crédito)_\\n\\n━━━━━━━━━━━━━━━━━━━━\\n" + bancolombiaText + "\\n━━━━━━━━━━━━━━━━━━━━\\n\\n📌 *Activación Asistida:* En cuanto realices tu pago o envíes la foto del comprobante aquí, el bot emite tus credenciales maestras y tu termómetro en vivo para calibrar y sincronizar tu televisor paso a paso (tiempo estimado: 3 a 5 minutos).";',
-          '  isQualifiedLead = true;',
-          '',
-          '// 7. FLUJO CONVERSACIONAL BASADO EN EL HISTORIAL DE RAILWAY',
-          '} else if (lastBotMessage.includes("Paso 2 de 3") && !normalized.includes("hola") && !normalized.includes("menu")) {',
-          '  responseText = "✦ *VIDEM | Diagnóstico Técnico (Paso 3 de 3)* 🔊\\n\\n¡Conexión validada! Excelente ancho de banda para transferencias Remux 4K sin compresión.\\n\\n*Paso 3 de 3: ¿Cómo disfrutas el audio en tu sala de cine?*\\n\\n1️⃣ Barra de sonido o Receiver dedicado con Dolby Atmos / eARC (Sonos, Bose, LG, Samsung, Sony, etc.)\\n2️⃣ Barra de sonido estándar 2.1 o Parlantes externos\\n3️⃣ Parlantes integrados del televisor\\n4️⃣ Otro (¿Cuál equipo de audio utilizas?)\\n\\n_👉 Responde con el número de tu opción (1, 2, 3...):_\";',
-          '',
-          '} else if (lastBotMessage.includes("Paso 3 de 3") && !normalized.includes("hola") && !normalized.includes("menu")) {',
-          '  responseText = "✦ *VIDEM | Calificación Técnica Exitosa* 🍿\\n\\n¡Felicidades, " + senderName + "! Tu configuración cumple con todos los requisitos para acceder al estándar privado *Videm* (Remux 4K nativo 40-80 Mbps y audio Dolby Atmos sin pausas).\\n\\n💎 *Tarifas de Consultoría y Aprovisionamiento:*\\n\\n💳 *OPCIÓN 1: PAGO DIGITAL MERCADO PAGO (TARJETAS A CUOTAS O PSE)*\\n• *Plan Semestral (6 meses completos - $240.000 COP):*\\n👉 " + mpSemestral + "\\n\\n• *Plan Anual (12 meses preferencial - $440.000 COP):*\\n👉 " + mpAnual + "\\n_(Acepta tarjetas de crédito hasta 36 cuotas, PSE, Nequi, Daviplata y Mercado Crédito)_\\n\\n━━━━━━━━━━━━━━━━━━━━\\n" + bancolombiaText + "\\n━━━━━━━━━━━━━━━━━━━━\\n\\n📌 *Activación Asistida:* En cuanto realices tu pago o envíes la foto del comprobante aquí, el bot emite tus credenciales maestras y tu termómetro en vivo para calibrar y sincronizar tu televisor paso a paso (tiempo estimado: 3 a 5 minutos).";',
-          '  isQualifiedLead = true;',
-          '',
-          '} else if (lastBotMessage.includes("Paso 1 de 3") && !normalized.includes("hola") && !normalized.includes("menu")) {',
-          '  responseText = "✦ *VIDEM | Diagnóstico Técnico (Paso 2 de 3)* ⚡\\n\\n¡Perfecto! Hemos registrado tu equipo (" + incomingText + "). 📺\\n\\n*Paso 2 de 3: ¿Qué tipo y velocidad de internet tienes en casa?*\\n\\n1️⃣ Fibra Óptica de 300 a 500+ Megas\\n2️⃣ Fibra Óptica de 100 a 200 Megas\\n3️⃣ Conexión Cable coaxial / HFC (50 a 100 Megas)\\n4️⃣ Red móvil 4G/5G o Wi-Fi compartido\\n5️⃣ Otro (¿De cuántos megas aproximadamente?)\\n\\n_👉 Responde con el número de tu opción (1, 2, 3...) o descríbela:_\";',
-          '',
+          '// 7. RESPUESTA DE BIENVENIDA Y ATENCION CONCIERGE NATURAL',
           '} else {',
-          '  responseText = "✦ *VIDEM | Private Tech Concierge* 🎬\\n\\nHola " + senderName + ", un gusto saludarte. Soy el conserje técnico de *Videm*.\\n\\nPara garantizarte la experiencia cinematográfica en *Remux 4K nativo, Dolby Vision y Dolby Atmos sin buffering*, validemos 3 datos rápidos de tu equipamiento.\\n\\n*Paso 1 de 3: ¿Qué pantalla o televisor principal usarás?*\\n\\n1️⃣ Smart TV LG (webOS / OLED / QNED)\\n2️⃣ Smart TV Samsung (Tizen)\\n3️⃣ Google TV / Android TV / Sony / TCL\\n4️⃣ Xiaomi Box / TV Box / Mecool\\n5️⃣ Amazon Fire TV Stick 4K\\n6️⃣ Apple TV 4K\\n7️⃣ Otro (¿Cuál marca y modelo?)\\n\\n_👉 Responde con el número de tu opción (1, 2, 3...) o escribe tu modelo:_\\n\\n_Nota: Al continuar autorizas el tratamiento de datos para fines de asistencia técnica._\";',
+          '  responseText = "✦ *VIDEM | Private Tech Concierge* 🎬\\n\\nHola " + senderName + ", un gusto saludarte. Soy la conserje de asistencia de *VIDEM*.\\n\\nBrindamos consultoría y enrutamiento privado de streaming para que disfrutes de películas y series en calidad de cine original (*4K Remux a 80 Mbps con Dolby Vision y Dolby Atmos sin pérdidas*) directamente en tu Smart TV o Fire TV, sin compresión y sin pagar 5 suscripciones.\\n\\nCuéntame, ¿qué modelo de televisor o equipo de sonido tienes en tu sala, o en qué te podemos apoyar hoy?";',
           '}',
           '',
           'return {',
@@ -221,7 +274,7 @@ const workflow = {
         },
         sendBody: true,
         specifyBody: 'json',
-        jsonBody: '={\n  "number": "{{ $json.phone || $json.senderPhone }}",\n  "text": {{ JSON.stringify($json.responseText) }}\n}',
+        jsonBody: '={\n  "number": "{{ $json.phone }}",\n  "text": {{ JSON.stringify($json.responseText) }}\n}',
         options: {}
       },
       id: 'node-send-whatsapp',
@@ -233,9 +286,7 @@ const workflow = {
     {
       parameters: {
         jsCode: [
-          '// FILTRO Y FORMATEO DE REGISTROS PARA GOOGLE SHEETS CRM',
-          '// Solo se ejecuta si el cliente califico, pago o solicito asesor.',
-          '// NO llena filas por mensajes intermedios de chat (Hola, 1, 2, etc.)',
+          '// FILTRO Y FORMATEO PARA GOOGLE SHEETS',
           'const item = $input.item.json;',
           '',
           'if (!item.triggerProvisioning && !item.isQualifiedLead && !item.isHumanHelpRequested) {',
@@ -288,14 +339,22 @@ const workflow = {
         columns: {
           mappingMode: 'autoMapInputData',
           value: {},
-          matchingColumns: [
-            'Telefono'
+          matchingColumns: ['Telefono'],
+          schema: [
+            { id: 'Fecha', displayName: 'Fecha', required: false, defaultMatch: false, display: true, type: 'string', canBeUsedToMatch: false },
+            { id: 'Telefono', displayName: 'Telefono', required: false, defaultMatch: false, display: true, type: 'string', canBeUsedToMatch: true },
+            { id: 'Nombre', displayName: 'Nombre', required: false, defaultMatch: false, display: true, type: 'string', canBeUsedToMatch: false },
+            { id: 'Plan', displayName: 'Plan', required: false, defaultMatch: false, display: true, type: 'string', canBeUsedToMatch: false },
+            { id: 'Estado', displayName: 'Estado', required: false, defaultMatch: false, display: true, type: 'string', canBeUsedToMatch: false },
+            { id: 'Usuario_Stremio', displayName: 'Usuario_Stremio', required: false, defaultMatch: false, display: true, type: 'string', canBeUsedToMatch: false },
+            { id: 'Referencia', displayName: 'Referencia', required: false, defaultMatch: false, display: true, type: 'string', canBeUsedToMatch: false },
+            { id: 'Vigencia', displayName: 'Vigencia', required: false, defaultMatch: false, display: true, type: 'string', canBeUsedToMatch: false }
           ]
         },
         options: {}
       },
-      id: 'node-sheets-clientes',
-      name: 'Google Sheets: Registrar Cliente',
+      id: 'node-sheets-crm',
+      name: 'Google Sheets CRM (Actualizar Fila)',
       type: 'n8n-nodes-base.googleSheets',
       typeVersion: 4.5,
       position: [1040, 480]
@@ -304,7 +363,7 @@ const workflow = {
       parameters: {
         jsCode: [
           '// FILTRO DE ALERTAS EN TIEMPO REAL PARA CAMILO',
-          '// Se ejecuta UNICAMENTE si hay solicitud de asesor humano o pago verificado',
+          '// Se ejecuta si hay solicitud de asesor humano, codigo TV, lead Laneros o pago verificado',
           'const item = $input.item.json;',
           '',
           'if (!item.adminAlertText) {',
@@ -363,22 +422,18 @@ const workflow = {
       ]
     },
     'Filtrar Solo Clientes / Ventas': {
-      main: [
-        [
-          { node: 'Google Sheets: Registrar Cliente', type: 'main', index: 0 }
-        ]
-      ]
+      main: [[{ node: 'Google Sheets CRM (Actualizar Fila)', type: 'main', index: 0 }]]
     },
     'Filtrar Alerta a Camilo': {
-      main: [
-        [
-          { node: 'Evolution API: Notificar a Camilo', type: 'main', index: 0 }
-        ]
-      ]
+      main: [[{ node: 'Evolution API: Notificar a Camilo', type: 'main', index: 0 }]]
     }
+  },
+  active: true,
+  settings: {
+    executionOrder: 'v1'
   }
 };
 
-const targetPath = path.join(__dirname, 'n8n_videm_whatsapp_bot.json');
-fs.writeFileSync(targetPath, JSON.stringify(workflow, null, 2), 'utf8');
-console.log('Successfully generated workflow with Mercado Pago, Bancolombia, and Admin Alerts at', targetPath);
+const outputPath = path.join(__dirname, 'n8n_videm_whatsapp_bot.json');
+fs.writeFileSync(outputPath, JSON.stringify(workflow, null, 2), 'utf8');
+console.log('✅ Workflow generado exitosamente en:', outputPath);

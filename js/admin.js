@@ -461,26 +461,82 @@ function copyDemoWhatsAppSuccess() {
   copyText(text, 'Mensaje de Éxito Demo copiado');
 }
 
-function toggleDemoStream(action) {
+const DEMO_EMAIL = 'vip.8294@videm.tv';
+const DEMO_PASS = 'Videm4K.8294!';
+const DEMO_RD_TOKEN = '76N4SFYLKTKDADDLDIAGR6MDKCG7VQT2FMEGTQDQM3X5U2PFU6QQ';
+const DEMO_TORRENTIO_MANIFEST = `https://torrentio.strem.fun/language=latino%7Cqualityfilter=cam,scr%7Cdebridoptions=nodownloadlinks%7Crealdebrid=${DEMO_RD_TOKEN}/manifest.json`;
+
+async function toggleDemoStream(action) {
   const label = document.getElementById('demoStreamLabel');
   const badge = document.getElementById('demoStatusBadge');
+  
+  showToast(action === 'cut' ? '⏳ Cortando señal remota de la cuenta Demo...' : '⏳ Restaurando señal 4K Remux en cuenta Demo...');
 
-  if (action === 'cut') {
-    if (label) label.textContent = '⛔ Señal Cortada (Streams removidos)';
-    if (badge) {
-      badge.innerHTML = '<span class="pulsing-dot" style="background:#EF4444; box-shadow:0 0 8px #EF4444;"></span><span>Demo Desactivada</span>';
-      badge.style.color = '#EF4444';
-      badge.style.borderColor = 'rgba(239,68,68,0.4)';
+  try {
+    // 1. Iniciar sesión en Stremio API
+    const loginRes = await fetch('https://api.strem.io/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: DEMO_EMAIL, password: DEMO_PASS })
+    });
+    const loginData = await loginRes.json();
+    const authKey = loginData.result?.authKey;
+    if (!authKey) throw new Error('No se pudo autenticar en la cuenta Demo');
+
+    // 2. Obtener addons actuales
+    const getRes = await fetch('https://api.strem.io/api/addonCollectionGet', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ authKey, type: 'AddonCollectionGet' })
+    });
+    const getData = await getRes.json();
+    let currentAddons = getData.result?.addons || [];
+
+    if (action === 'cut') {
+      // Filtrar y remover Torrentio RD
+      const cleanAddons = currentAddons.filter(a => a.manifest?.id !== 'com.stremio.torrentio.addon');
+      await fetch('https://api.strem.io/api/addonCollectionSet', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ authKey, type: 'AddonCollectionSet', addons: cleanAddons })
+      });
+
+      if (label) label.textContent = '⛔ Señal Cortada (Streams removidos)';
+      if (badge) {
+        badge.innerHTML = '<span class="pulsing-dot" style="background:#EF4444; box-shadow:0 0 8px #EF4444;"></span><span>Demo Desactivada</span>';
+        badge.style.color = '#EF4444';
+        badge.style.borderColor = 'rgba(239,68,68,0.4)';
+      }
+      showToast('🔒 Acceso Demo cortado con éxito (Streams 4K apagados en la TV)');
+    } else {
+      // Restaurar Torrentio RD
+      const mRes = await fetch(DEMO_TORRENTIO_MANIFEST);
+      const manifest = await mRes.json();
+      const torrentioAddon = {
+        transportUrl: DEMO_TORRENTIO_MANIFEST,
+        transportName: 'http',
+        manifest: manifest
+      };
+      const cleanAddons = currentAddons.filter(a => a.manifest?.id !== 'com.stremio.torrentio.addon');
+      cleanAddons.push(torrentioAddon);
+
+      await fetch('https://api.strem.io/api/addonCollectionSet', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ authKey, type: 'AddonCollectionSet', addons: cleanAddons })
+      });
+
+      if (label) label.textContent = 'Señal activa a 80 Mbps Remux';
+      if (badge) {
+        badge.innerHTML = '<span class="pulsing-dot green"></span><span>Demo 30D Online</span>';
+        badge.style.color = '#10B981';
+        badge.style.borderColor = 'rgba(16,185,129,0.3)';
+      }
+      showToast('⚡ Señal Demo restaurada: Torrentio RD 4K Remux activo en vivo');
     }
-    showToast('🔒 Acceso Demo cortado remotamente');
-  } else {
-    if (label) label.textContent = 'Señal activa a 80 Mbps Remux';
-    if (badge) {
-      badge.innerHTML = '<span class="pulsing-dot green"></span><span>Demo 30D Online</span>';
-      badge.style.color = '#10B981';
-      badge.style.borderColor = 'rgba(16,185,129,0.3)';
-    }
-    showToast('⚡ Señal Demo restaurada exitosamente');
+  } catch (err) {
+    console.error('Error al gestionar señal demo:', err);
+    showToast('⚠️ Error al comunicarse con la cuenta demo: ' + err.message);
   }
 }
 

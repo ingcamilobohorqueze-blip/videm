@@ -8,7 +8,7 @@ const MASTER_PASSWORDS = ['VidemAdmin2026!', 'videm2026', 'camilo2026', 'admin']
 
 // Storage Keys
 const STORAGE_AUTH_KEY = 'videm_admin_authenticated_v1';
-const STORAGE_CLIENTS_KEY = 'videm_admin_crm_clients_v2';
+const STORAGE_CLIENTS_KEY = 'videm_admin_crm_clients_v3';
 
 // State
 let crmClients = [];
@@ -125,17 +125,17 @@ function loadClientsFromStorage() {
   crmClients = [
     {
       id: 'cli-001',
-      name: 'Camilo Andrés Bohórquez (Fundador)',
+      name: 'Camilo Andrés Bohórquez (Línea Personal RD)',
       phone: '+57 310 331 1543',
-      plan: 'Anual Fundadores',
-      price: '$440.000 COP',
-      user: 'cbohorquez1983@videm.tv',
-      pass: 'Videm4K.Master!',
+      plan: 'Membresía Personal (Por Renovar)',
+      price: '16 € (~$72.000 COP)',
+      user: 'cbohorquez1983',
+      pass: '••••••••',
       rdEmail: 'ing.camilo.bohorqueze@gmail.com',
       status: 'Activo',
-      startDate: '2026-10-20T00:00:00',
-      endDate: '2027-10-20T23:59:59',
-      notes: 'Línea de administración y operación comercial de VIDEM. Cuenta Fundadores activa.'
+      startDate: '2026-04-27T00:00:00',
+      endDate: '2026-10-27T23:59:59',
+      notes: 'Cuenta principal personal en Real-Debrid. Vence mañana martes 27 de Octubre a medianoche. Al renovar con 180 días, darle clic a 🔄 para extender.'
     },
     {
       id: 'cli-002',
@@ -154,7 +154,7 @@ function loadClientsFromStorage() {
     {
       id: 'cli-003',
       name: 'John Bedoya (Vecino Conjunto)',
-      phone: '+1 603 999 9968',
+      phone: '160399999680633@lid',
       plan: 'Semestral VIP',
       price: '$240.000 COP',
       user: 'vip.9299@videm.tv',
@@ -163,7 +163,7 @@ function loadClientsFromStorage() {
       status: 'Pendiente',
       startDate: '2026-10-25T18:00:00',
       endDate: '2027-04-25T23:59:59',
-      notes: 'Samsung Q60 Series 55 pulgadas QLED. Probó demo anoche con código Y91E. En seguimiento de pago hoy.'
+      notes: 'Samsung Q60 Series 55 pulgadas QLED. Probó demo anoche con código Y91E. Contacto por canal privado WhatsApp (LID). En seguimiento de pago hoy.'
     }
   ];
 
@@ -265,6 +265,20 @@ function renderCrmTable() {
       year: 'numeric'
     });
 
+    const isLid = client.phone.includes('@lid') || cleanPhone.length > 13 || cleanPhone.startsWith('1522') || cleanPhone.startsWith('16039');
+    const phoneDisplay = isLid
+      ? `<span class="client-phone-link" style="color:var(--text-muted); cursor:help;" title="Identificador interno de privacidad WhatsApp (LID). Abre WhatsApp y busca directamente el chat de: ${escapeHtml(client.name)}">
+           🔒 ${escapeHtml(client.phone)} <span class="badge-lid">LID Privado</span>
+         </span>`
+      : `<a href="https://wa.me/${cleanPhone}" target="_blank" class="client-phone-link" title="Abrir chat en WhatsApp">
+           💬 ${escapeHtml(client.phone)}
+         </a>`;
+
+    const isAnnual = client.plan.includes('Anual');
+    const trancheTag = isAnnual
+      ? `<div class="badge-tranche" title="Estrategia RD: 180 días activos. El CRM te alertará 15 días antes para recargar el tramo 2 (180d) con la reserva.">⚡ Tramo 1/2 RD (180d)</div>`
+      : '';
+
     return `
       <tr data-client-id="${client.id}">
         <td>
@@ -272,15 +286,14 @@ function renderCrmTable() {
             <div class="client-avatar">${initials}</div>
             <div class="client-meta">
               <span class="client-name">${escapeHtml(client.name)}</span>
-              <a href="https://wa.me/${cleanPhone}" target="_blank" class="client-phone-link" title="Abrir chat en WhatsApp">
-                💬 ${escapeHtml(client.phone)}
-              </a>
+              ${phoneDisplay}
             </div>
           </div>
         </td>
         <td>
           <strong>${escapeHtml(client.plan)}</strong>
           <br><small style="color:var(--text-muted);">${escapeHtml(client.price || '')}</small>
+          ${trancheTag}
         </td>
         <td>
           <code style="color:#00F0FF; font-size:0.8rem;">${escapeHtml(client.user)}</code>
@@ -554,7 +567,22 @@ function openClientDetailModal(clientId) {
   document.getElementById('modalClientNotes').value = client.notes || '';
 
   const cleanPhone = client.phone.replace(/[^0-9]/g, '');
-  document.getElementById('modalClientWhatsAppLink').href = `https://wa.me/${cleanPhone}`;
+  const isLid = client.phone.includes('@lid') || cleanPhone.length > 13 || cleanPhone.startsWith('1522') || cleanPhone.startsWith('16039');
+  const waBtn = document.getElementById('modalClientWhatsAppLink');
+  if (waBtn) {
+    if (isLid) {
+      waBtn.href = '#';
+      waBtn.onclick = (e) => {
+        e.preventDefault();
+        alert(`Este contacto utiliza un identificador privado de WhatsApp (LID).\n\nPara chatear con él/ella, abre tu WhatsApp y búscalo por su nombre: "${client.name}". El chat ya está en tu bandeja de entrada.`);
+      };
+      waBtn.innerHTML = '<span>🔒 Chat Privado (Buscar "' + escapeHtml(client.name) + '")</span>';
+    } else {
+      waBtn.href = `https://wa.me/${cleanPhone}`;
+      waBtn.onclick = null;
+      waBtn.innerHTML = '<span>💬 Abrir Chat de WhatsApp</span>';
+    }
+  }
 
   document.getElementById('clientDetailModal').style.display = 'flex';
 }

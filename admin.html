@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VIDEM | Operations Command Center & Tech Concierge CRM</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" type="image/png" href="Logo Videm.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="admin-body">
+
+  <!-- =========================================================================
+       LOGIN LOCKSCREEN MODAL (Protección de Acceso Administrador)
+       ========================================================================= -->
+  <div id="adminAuthModal" class="auth-modal-overlay">
+    <div class="auth-card glass-panel">
+      <div class="auth-badge">
+        <span class="pulsing-dot cyan"></span>
+        <span>VIDEM SECURITY GATEWAY</span>
+      </div>
+      <img src="Logo Videm.png" alt="VIDEM Logo" class="auth-logo">
+      <h1 class="auth-title">Operations Command Center</h1>
+      <p class="auth-subtitle">Ingresa la clave maestra para acceder a la consola de despacho, activación de demos y CRM de clientes.</p>
+      
+      <form id="adminAuthForm" class="auth-form" onsubmit="event.preventDefault(); handleAdminLogin();">
+        <div class="form-group">
+          <label for="adminPass">Contraseña Maestra:</label>
+          <div class="pass-input-wrapper">
+            <input type="password" id="adminPass" class="form-input" placeholder="••••••••••••" autofocus autocomplete="current-password" required>
+            <button type="button" class="btn-toggle-pass" onclick="togglePassVisibility('adminPass')">👁️</button>
+          </div>
+        </div>
+        <div class="form-remember">
+          <label class="checkbox-label">
+            <input type="checkbox" id="rememberSession" checked>
+            <span>Recordar sesión en este dispositivo</span>
+          </label>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">
+          <span>Desbloquear Consola VIP</span>
+          <span class="btn-arrow">→</span>
+        </button>
+        <div id="authErrorMsg" class="auth-error-msg" style="display:none;">
+          ⚠️ Contraseña incorrecta. Intenta nuevamente.
+        </div>
+      </form>
+      <div class="auth-footer">
+        <span>Canal Encriptado • Acceso Exclusivo Camilo Bohórquez</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MAIN DASHBOARD INTERFACE (Se desbloquea tras login)
+       ========================================================================= -->
+  <div id="adminApp" class="admin-app" style="display: none;">
+
+    <!-- Top Navigation Bar -->
+    <header class="admin-header glass-panel">
+      <div class="header-left">
+        <a href="index.html" class="brand-link" title="Ir al Home">
+          <img src="Logo Videm.png" alt="VIDEM" class="header-logo">
+          <div class="brand-info">
+            <span class="brand-title">VIDEM</span>
+            <span class="brand-badge">TECH CONCIERGE COMMAND</span>
+          </div>
+        </a>
+      </div>
+
+      <div class="header-center">
+        <div class="telemetry-pill">
+          <span class="pulsing-dot green"></span>
+          <span>CDN 80 Mbps Remux: <strong>Activo</strong></span>
+        </div>
+        <div class="telemetry-pill">
+          <span class="pulsing-dot cyan"></span>
+          <span>RD Demo Token: <strong>Online</strong></span>
+        </div>
+        <div class="telemetry-pill clock-pill">
+          <span id="liveClock">--:--:--</span>
+          <small>COT (Bogotá)</small>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <a href="https://cbohorquez1983.app.n8n.cloud" target="_blank" class="btn btn-secondary btn-sm" title="Abrir n8n Cloud">
+          <span>⚙️ n8n Bot</span>
+        </a>
+        <a href="https://docs.google.com/spreadsheets" target="_blank" class="btn btn-secondary btn-sm" title="Ver Google Sheets">
+          <span>📊 CRM Sheets</span>
+        </a>
+        <button onclick="handleAdminLogout()" class="btn btn-outline btn-sm" title="Cerrar Sesión">
+          <span>🔒 Salir</span>
+        </button>
+      </div>
+    </header>
+
+    <main class="admin-main">
+
+      <!-- =======================================================================
+           METRICS SUMMARY BAR (KPIs en tiempo real)
+           ======================================================================= -->
+      <section class="metrics-grid">
+        <div class="metric-card glass-panel">
+          <div class="metric-icon">👥</div>
+          <div class="metric-data">
+            <span class="metric-label">Clientes Activos</span>
+            <span class="metric-value" id="kpiActiveClients">2</span>
+          </div>
+          <div class="metric-sub">Suscripciones vigentes</div>
+        </div>
+
+        <div class="metric-card glass-panel">
+          <div class="metric-icon">💎</div>
+          <div class="metric-data">
+            <span class="metric-label">Ingresos Acumulados</span>
+            <span class="metric-value highlight" id="kpiTotalRevenue">$680.000</span>
+          </div>
+          <div class="metric-sub">COP facturados</div>
+        </div>
+
+        <div class="metric-card glass-panel">
+          <div class="metric-icon">🍿</div>
+          <div class="metric-data">
+            <span class="metric-label">Demos en Curso</span>
+            <span class="metric-value cyan-glow" id="kpiActiveDemos">1</span>
+          </div>
+          <div class="metric-sub">Pase de cortesía</div>
+        </div>
+
+        <div class="metric-card glass-panel">
+          <div class="metric-icon">⏳</div>
+          <div class="metric-data">
+            <span class="metric-label">Por Vencer (< 7d)</span>
+            <span class="metric-value warning" id="kpiExpiringSoon">0</span>
+          </div>
+          <div class="metric-sub">Requieren renovación</div>
+        </div>
+      </section>
+
+      <!-- =======================================================================
+           TOP OPERATIONAL GRID: (Demo Card + Client Creation Card)
+           ======================================================================= -->
+      <section class="operations-grid">
+
+        <!-- CARD 1: ACTIVADOR EXPRESS DE DEMOS (10 Segundos) -->
+        <article class="op-card glass-panel" id="cardDemoActivator">
+          <div class="card-header">
+            <div class="card-header-title">
+              <span class="card-tag cyan">DESPACHO INSTANTÁNEO</span>
+              <h2>⚡ Activador de Demos Smart TV</h2>
+            </div>
+            <div class="demo-status-badge" id="demoStatusBadge">
+              <span class="pulsing-dot green"></span>
+              <span>Demo 30D Online</span>
+            </div>
+          </div>
+
+          <p class="card-description">
+            Ingresa el código de 4 letras que el cliente ve en la pantalla de su televisor. Al dar clic, se sincroniza en caliente con la cuenta demo <code>vip.8294@videm.tv</code>.
+          </p>
+
+          <form id="demoLinkForm" onsubmit="event.preventDefault(); executeDemoLink();" class="demo-form">
+            <div class="tv-code-input-box">
+              <label for="demoTvCode">CÓDIGO DE 4 LETRAS DEL TELEVISOR:</label>
+              <div class="code-field-wrapper">
+                <input type="text" id="demoTvCode" class="tv-code-input" placeholder="ABCD" maxlength="6" autocomplete="off" spellcheck="false" required>
+                <button type="submit" class="btn btn-primary btn-lg" id="btnLinkDemo">
+                  <span>🚀 Vincular TV en Vivo</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="demo-quick-actions">
+              <button type="button" class="btn btn-secondary btn-sm" onclick="openStremioLinkTab()">
+                <span>🔗 Abrir link.stremio.com</span>
+              </button>
+              <button type="button" class="btn btn-outline btn-sm" onclick="copyDemoWhatsAppWelcome()">
+                <span>📋 Copiar Mensaje Bienvenida</span>
+              </button>
+              <button type="button" class="btn btn-outline btn-sm" onclick="copyDemoWhatsAppSuccess()">
+                <span>✅ Copiar Mensaje "Ya quedó listo"</span>
+              </button>
+            </div>
+
+            <!-- Kill Switch & Restore Demo Stream -->
+            <div class="demo-kill-switch-box">
+              <div class="kill-switch-info">
+                <strong>Control de Señal Demo:</strong>
+                <span id="demoStreamLabel">Señal activa a 80 Mbps Remux</span>
+              </div>
+              <div class="kill-switch-buttons">
+                <button type="button" class="btn btn-danger btn-sm" onclick="toggleDemoStream('cut')">
+                  <span>🔒 Cortar Acceso Demo</span>
+                </button>
+                <button type="button" class="btn btn-success btn-sm" onclick="toggleDemoStream('restore')">
+                  <span>⚡ Restaurar Señal Demo</span>
+                </button>
+              </div>
+            </div>
+          </form>
+        </article>
+
+        <!-- CARD 2: GENERADOR & APROVISIONAMIENTO DE CLIENTES NUEVOS -->
+        <article class="op-card glass-panel" id="cardClientProvisioning">
+          <div class="card-header">
+            <div class="card-header-title">
+              <span class="card-tag gold">INVENTARIO & FACTURACIÓN</span>
+              <h2>💎 Alta de Cliente & Aprovisionamiento</h2>
+            </div>
+            <button type="button" class="btn btn-outline btn-sm" onclick="generateAutoClientCredentials()">
+              <span>🎲 Generar ID y Claves</span>
+            </button>
+          </div>
+
+          <p class="card-description">
+            Genera las credenciales maestras y calcula la expiración exacta. Deja la cuenta lista para inyectar en Real-Debrid y Stremio.
+          </p>
+
+          <form id="newClientForm" onsubmit="event.preventDefault(); saveNewClient();" class="client-form">
+            <div class="form-row">
+              <div class="form-col">
+                <label for="clientName">Nombre Completo:</label>
+                <input type="text" id="clientName" class="form-input" placeholder="Ej: John Bedoya" required>
+              </div>
+              <div class="form-col">
+                <label for="clientPhone">WhatsApp (Con indicativo):</label>
+                <input type="text" id="clientPhone" class="form-input" placeholder="Ej: +57 317 365 1842" required>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-col">
+                <label for="clientPlan">Membresía / Plan:</label>
+                <select id="clientPlan" class="form-input form-select" onchange="updatePlanDates()" required>
+                  <option value="Semestral VIP" selected>Semestral VIP ($240.000 COP - 180 días) [Recomendado]</option>
+                  <option value="Anual Fundadores">Anual Fundadores ($440.000 COP - 365 días) [Ahorro]</option>
+                  <option value="Pase Mensual Flex">Pase Mensual Flex ($50.000 COP - 30 días) [Señuelo]</option>
+                  <option value="Demo VIP">Pase Demo VIP (Cortesía 2-24h)</option>
+                </select>
+              </div>
+              <div class="form-col">
+                <label for="clientStatus">Estado Inicial:</label>
+                <select id="clientStatus" class="form-input form-select">
+                  <option value="Activo" selected>🟢 Activo (Pagado)</option>
+                  <option value="Pendiente">🟡 Pendiente de Pago</option>
+                  <option value="Demo">🔵 Demo de Cortesía</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Auto-Generated Master Credentials Box -->
+            <div class="credentials-generator-box">
+              <div class="cred-item">
+                <span class="cred-label">Usuario Stremio:</span>
+                <div class="cred-value-wrap">
+                  <input type="text" id="genStremioUser" class="cred-input" readonly value="vip.9299@videm.tv">
+                  <button type="button" class="btn-copy" onclick="copyField('genStremioUser')">📋</button>
+                </div>
+              </div>
+              <div class="cred-item">
+                <span class="cred-label">Contraseña Maestra:</span>
+                <div class="cred-value-wrap">
+                  <input type="text" id="genStremioPass" class="cred-input" readonly value="Videm4K.9299!">
+                  <button type="button" class="btn-copy" onclick="copyField('genStremioPass')">📋</button>
+                </div>
+              </div>
+              <div class="cred-item">
+                <span class="cred-label">E-mail RD (Gmail dot-trick):</span>
+                <div class="cred-value-wrap">
+                  <input type="text" id="genRdEmail" class="cred-input" readonly value="ing.camilobohorquez.e@gmail.com">
+                  <button type="button" class="btn-copy" onclick="copyField('genRdEmail')">📋</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary btn-block">
+                <span>💾 Guardar Cliente en CRM & Ficha VIP</span>
+              </button>
+            </div>
+          </form>
+        </article>
+
+      </section>
+
+      <!-- =======================================================================
+           BOTTOM GRID: CRM & CLIENT LIFETIME DASHBOARD (Tabla con Cronómetros)
+           ======================================================================= -->
+      <section class="crm-section glass-panel">
+        <div class="crm-header">
+          <div class="crm-title-area">
+            <span class="card-tag purple">CLIENTES & SEGUIMIENTO</span>
+            <h2>Gestión de Membresías & Cronómetros de Vencimiento</h2>
+          </div>
+
+          <div class="crm-controls">
+            <div class="search-box">
+              <input type="text" id="crmSearch" class="form-input search-input" placeholder="🔍 Buscar cliente, teléfono o usuario..." oninput="filterClients()">
+            </div>
+            <div class="filter-pills">
+              <button class="pill-btn active" onclick="setFilter('all', this)">Todos</button>
+              <button class="pill-btn" onclick="setFilter('Activo', this)">Activos</button>
+              <button class="pill-btn" onclick="setFilter('Demo', this)">Demos</button>
+              <button class="pill-btn" onclick="setFilter('Pendiente', this)">Pendientes</button>
+            </div>
+            <div class="export-actions">
+              <button class="btn btn-outline btn-sm" onclick="exportClientsJSON()" title="Descargar copia de seguridad en JSON">
+                <span>📥 Respaldar</span>
+              </button>
+              <button class="btn btn-outline btn-sm" onclick="document.getElementById('importFileInput').click()" title="Restaurar copia">
+                <span>📤 Importar</span>
+              </button>
+              <input type="file" id="importFileInput" style="display:none;" accept=".json" onchange="importClientsJSON(event)">
+            </div>
+          </div>
+        </div>
+
+        <!-- CRM Table with Live Countdowns -->
+        <div class="table-responsive">
+          <table class="crm-table">
+            <thead>
+              <tr>
+                <th>CLIENTE</th>
+                <th>PLAN</th>
+                <th>CREDENCIALES</th>
+                <th>ESTADO</th>
+                <th>TIEMPO RESTANTE (CRONÓMETRO)</th>
+                <th>EXPIRACIÓN</th>
+                <th class="text-right">ACCIONES</th>
+              </tr>
+            </thead>
+            <tbody id="crmTableBody">
+              <!-- Rendered via js/admin.js -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Admin Footer -->
+    <footer class="admin-footer">
+      <span>VIDEM Private Tech Concierge • Protocolo Remux 80 Mbps • Versión Consola 2.4</span>
+      <span class="footer-dot">•</span>
+      <a href="activar.html" target="_blank" class="footer-link">Ver Termómetro de Clientes</a>
+      <span class="footer-dot">•</span>
+      <a href="index.html" target="_blank" class="footer-link">Ver Sitio Público</a>
+    </footer>
+
+  </div>
+
+  <!-- =========================================================================
+       MODAL DETALLES DEL CLIENTE (Ficha Técnica 360°)
+       ========================================================================= -->
+  <div id="clientDetailModal" class="auth-modal-overlay" style="display: none;">
+    <div class="detail-card glass-panel">
+      <div class="detail-header">
+        <div class="detail-title-wrap">
+          <span class="card-tag cyan">FICHA TÉCNICA 360°</span>
+          <h2 id="modalClientName">Nombre del Cliente</h2>
+        </div>
+        <button type="button" class="btn-close-modal" onclick="closeClientDetailModal()">✕</button>
+      </div>
+
+      <div class="detail-grid">
+        <div class="detail-item">
+          <span class="detail-label">WhatsApp:</span>
+          <strong id="modalClientPhone">+57 ...</strong>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Membresía:</span>
+          <span id="modalClientPlanBadge" class="badge">Semestral VIP</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Usuario Stremio:</span>
+          <code id="modalClientUser">vip.XXXX@videm.tv</code>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Clave Maestra:</span>
+          <code id="modalClientPass">Videm4K.XXXX!</code>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Fecha de Inicio:</span>
+          <span id="modalClientStartDate">25 Oct 2026</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Fecha de Vencimiento:</span>
+          <span id="modalClientEndDate" class="highlight-date">23 Abr 2027</span>
+        </div>
+      </div>
+
+      <div class="detail-notes-section">
+        <label for="modalClientNotes">Notas Técnicas / Equipamiento:</label>
+        <textarea id="modalClientNotes" class="form-input form-textarea" rows="3" placeholder="Ej: Samsung Q60 55 pulgadas, barra de sonido por HDMI eARC, fibra óptica 200 Mbps..."></textarea>
+      </div>
+
+      <div class="detail-actions">
+        <a id="modalClientWhatsAppLink" href="#" target="_blank" class="btn btn-success">
+          <span>💬 Abrir WhatsApp</span>
+        </a>
+        <button type="button" class="btn btn-secondary" onclick="extendClientSubscription()">
+          <span>🔄 Renovar Membresía (+180d)</span>
+        </button>
+        <button type="button" class="btn btn-primary" onclick="saveClientModalNotes()">
+          <span>💾 Guardar Notas</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Toast -->
+  <div id="toastNotification" class="toast-notification"></div>
+
+  <!-- Scripts -->
+  <script src="js/admin.js"></script>
+</body>
+</html>

@@ -200,6 +200,8 @@ const workflow = {
           '    "⚡ *ACTIVAR EN 1 CLIC (Abre en tu navegador con la cuenta demo o cliente):*",',
           '    directLinkUrl,',
           '    "",',
+          '    "⚠️ *Ojo:* Si tu navegador normal tiene abierta tu cuenta personal, mantén presionado el link de arriba, dale *Copiar* y ábrelo en *Incógnito* donde inicies sesión con la cuenta Demo o Cliente.",',
+          '    "",',
           '    chatActionLink',
           '  ].join("\\n");',
           '',

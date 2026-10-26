@@ -169,23 +169,35 @@
             <div class="tv-code-input-box">
               <label for="demoTvCode">CÓDIGO DE 4 LETRAS DEL TELEVISOR:</label>
               <div class="code-field-wrapper">
-                <input type="text" id="demoTvCode" class="tv-code-input" placeholder="ABCD" maxlength="6" autocomplete="off" spellcheck="false" required>
+                <input type="text" id="demoTvCode" class="tv-code-input" placeholder="ABCD" maxlength="6" autocomplete="off" spellcheck="false" required oninput="updateDemoLinkUrl(this.value)">
                 <button type="submit" class="btn btn-primary btn-lg" id="btnLinkDemo">
                   <span>🚀 Vincular TV en Vivo</span>
                 </button>
               </div>
             </div>
 
+            <!-- Botones de Enlace Rápido e Incógnito -->
             <div class="demo-quick-actions">
-              <button type="button" class="btn btn-secondary btn-sm" onclick="openStremioLinkTab()">
-                <span>🔗 Abrir link.stremio.com</span>
+              <a id="stremioDirectAnchor" href="https://link.stremio.com" target="_blank" class="btn btn-secondary btn-sm" title="Da clic derecho aquí y selecciona 'Abrir enlace en ventana de incógnito'">
+                <span>🕵️ Clic Derecho: Abrir en Incógnito</span>
+              </a>
+              <button type="button" class="btn btn-outline btn-sm" onclick="copyDemoDirectLink()" title="Copiar enlace directo con el código actual para pegarlo en tu ventana de incógnito">
+                <span>📋 Copiar Link para Incógnito</span>
               </button>
               <button type="button" class="btn btn-outline btn-sm" onclick="copyDemoWhatsAppWelcome()">
-                <span>📋 Copiar Mensaje Bienvenida</span>
+                <span>💬 Bienvenida WhatsApp</span>
               </button>
               <button type="button" class="btn btn-outline btn-sm" onclick="copyDemoWhatsAppSuccess()">
-                <span>✅ Copiar Mensaje "Ya quedó listo"</span>
+                <span>✅ Mensaje "Listo"</span>
               </button>
+            </div>
+
+            <!-- Alerta Preventiva: No mezclar con cuenta personal -->
+            <div class="incognito-warning-banner" style="background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 8px; padding: 10px 14px; margin-top: 14px; display: flex; align-items: flex-start; gap: 10px; font-size: 0.8rem; color: #FBBF24; line-height: 1.4;">
+              <span style="font-size: 1.15rem; line-height: 1;">⚠️</span>
+              <div>
+                <strong>Evita vincular tu cuenta personal:</strong> Si tu navegador normal tiene abierta tu sesión personal de Stremio, <u>da clic derecho</u> en el botón gris y elige <em>"Abrir en ventana de incógnito"</em>, o presiona <em>"Copiar Link para Incógnito"</em>. También puedes abrir este panel de administración directamente en una ventana de incógnito (o en un perfil de Chrome exclusivo para VIDEM).
+              </div>
             </div>
 
             <!-- Kill Switch & Restore Demo Stream -->

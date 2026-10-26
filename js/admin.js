@@ -402,7 +402,29 @@ function filterClients() {
 
 // =========================================================================
 // 6. ACTIVADOR DE DEMOS (OPERACIONES)
-// =========================================================================
+function updateDemoLinkUrl(val) {
+  const code = (val || '').toUpperCase().trim();
+  const anchor = document.getElementById('stremioDirectAnchor');
+  if (anchor) {
+    if (code.length >= 4) {
+      anchor.href = `https://link.stremio.com/${code}`;
+      anchor.setAttribute('title', `Clic derecho -> Abrir https://link.stremio.com/${code} en ventana de incógnito`);
+      anchor.innerHTML = `<span>🕵️ Clic Derecho: Abrir (${code}) en Incógnito</span>`;
+    } else {
+      anchor.href = 'https://link.stremio.com';
+      anchor.setAttribute('title', 'Clic derecho -> Abrir en ventana de incógnito');
+      anchor.innerHTML = '<span>🕵️ Clic Derecho: Abrir en Incógnito</span>';
+    }
+  }
+}
+
+function copyDemoDirectLink() {
+  const codeInput = document.getElementById('demoTvCode');
+  const code = (codeInput?.value || '').toUpperCase().trim();
+  const targetUrl = code.length >= 4 ? `https://link.stremio.com/${code}` : 'https://link.stremio.com';
+  
+  copyText(targetUrl, `Enlace copiado (${targetUrl}). ¡Pégalo en tu ventana de Incógnito!`);
+}
 
 function executeDemoLink() {
   const codeInput = document.getElementById('demoTvCode');
@@ -414,12 +436,15 @@ function executeDemoLink() {
     return;
   }
 
-  // Abrir la URL oficial de Stremio Link en una ventana emergente limpia
   const linkUrl = `https://link.stremio.com/${code}`;
-  window.open(linkUrl, '_blank', 'width=500,height=600');
+  
+  // Actualizar también el anchor de clic derecho
+  updateDemoLinkUrl(code);
 
-  showToast(`🚀 Vinculando TV con código ${code} en cuenta demo...`);
-  codeInput.value = '';
+  // Abrir la URL oficial de Stremio Link en una ventana emergente limpia
+  window.open(linkUrl, '_blank', 'width=520,height=620');
+
+  showToast(`🚀 Abriendo Stremio Link (${code}). Si estás en tu sesión personal, usa Clic Derecho -> Incógnito.`);
 }
 
 function openStremioLinkTab() {

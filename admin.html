@@ -326,6 +326,9 @@
               <button class="pill-btn" onclick="setFilter('Pendiente', this)">Pendientes</button>
             </div>
             <div class="export-actions">
+              <button class="btn btn-secondary btn-sm" onclick="resetToRealDates()" title="Restablecer fechas reales en vivo (Camilo vence mañana, John vence el 26 Nov)">
+                <span>🔄 Sincronizar Fechas</span>
+              </button>
               <button class="btn btn-outline btn-sm" onclick="exportClientsJSON()" title="Descargar copia de seguridad en JSON">
                 <span>📥 Respaldar</span>
               </button>
@@ -405,9 +408,15 @@
           <span class="detail-label">Fecha de Inicio:</span>
           <span id="modalClientStartDate">25 Oct 2026</span>
         </div>
-        <div class="detail-item">
+        <div class="detail-item" style="grid-column: 1 / -1;">
           <span class="detail-label">Fecha de Vencimiento:</span>
-          <span id="modalClientEndDate" class="highlight-date">23 Abr 2027</span>
+          <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:4px;">
+            <span id="modalClientEndDate" class="highlight-date" style="font-size:0.95rem;">23 Abr 2027</span>
+            <input type="date" id="modalClientEndDateInput" class="form-input" style="padding:4px 8px; font-size:0.82rem; width:140px; background:rgba(255,255,255,0.06); border:1px solid rgba(0,240,255,0.3); border-radius:6px; color:#00F0FF;">
+            <button type="button" class="btn btn-outline btn-sm" onclick="saveCustomClientDate()" title="Guardar fecha exacta seleccionada">
+              <span>📅 Modificar Fecha</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -434,6 +443,6 @@
   <div id="toastNotification" class="toast-notification"></div>
 
   <!-- Scripts -->
-  <script src="js/admin.js"></script>
+  <script src="js/admin.js?v=2.8"></script>
 </body>
 </html>

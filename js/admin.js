@@ -8,7 +8,7 @@ const MASTER_PASSWORDS = ['VidemAdmin2026!', 'videm2026', 'camilo2026', 'admin']
 
 // Storage Keys
 const STORAGE_AUTH_KEY = 'videm_admin_authenticated_v1';
-const STORAGE_CLIENTS_KEY = 'videm_admin_crm_clients_v3';
+const STORAGE_CLIENTS_KEY = 'videm_admin_crm_clients_v4';
 
 // State
 let crmClients = [];
@@ -155,15 +155,15 @@ function loadClientsFromStorage() {
       id: 'cli-003',
       name: 'John Bedoya (Vecino Conjunto)',
       phone: '160399999680633@lid',
-      plan: 'Semestral VIP',
-      price: '$240.000 COP',
+      plan: 'Pase Mensual Flex',
+      price: '$50.000 COP',
       user: 'vip.9299@videm.tv',
       pass: 'Videm4K.9299!',
       rdEmail: 'ing.camilobohorquez.e@gmail.com',
-      status: 'Pendiente',
-      startDate: '2026-10-25T18:00:00',
-      endDate: '2027-04-25T23:59:59',
-      notes: 'Samsung Q60 Series 55 pulgadas QLED. Probó demo anoche con código Y91E. Contacto por canal privado WhatsApp (LID). En seguimiento de pago hoy.'
+      status: 'Activo',
+      startDate: '2026-10-26T19:00:00',
+      endDate: '2026-11-26T23:59:59',
+      notes: 'Samsung Q60 Series 55 pulgadas QLED. Pago verificado de $50.000 COP (Pase Mensual Flex 30 días). Enlace 4K Remux activo.'
     }
   ];
 

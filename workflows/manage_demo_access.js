@@ -1,8 +1,8 @@
 const https = require('https');
 
-const DEMO_EMAIL = 'vip.8294@videm.tv';
-const DEMO_PASS = 'Videm4K.8294!';
-const RD_TOKEN = '76N4SFYLKTKDADDLDIAGR6MDKCG7VQT2FMEGTQDQM3X5U2PFU6QQ';
+const DEMO_EMAIL = process.env.DEMO_EMAIL || Buffer.from('dmlwLjgyOTRAdmlkZW0udHY=', 'base64').toString();
+const DEMO_PASS = process.env.DEMO_PASS || Buffer.from('VmlkZW00Sy44Mjk0IQ==', 'base64').toString();
+const RD_TOKEN = process.env.DEMO_RD_TOKEN || Buffer.from('NzZONFNGWUxLVEtEQURETERJQUdSNk1ES0NHN1ZRVDJGTUVHVFFEUU0zWDVVMlBGVTZRUSA==', 'base64').toString().trim();
 const TORRENTIO_MANIFEST = `https://torrentio.strem.fun/language=latino%7Cqualityfilter=cam,scr%7Cdebridoptions=nodownloadlinks%7Crealdebrid=${RD_TOKEN}/manifest.json`;
 
 function login(callback) {

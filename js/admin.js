@@ -514,11 +514,6 @@ function copyDemoWhatsAppSuccess() {
   copyText(text, 'Mensaje de Éxito Demo copiado');
 }
 
-const DEMO_EMAIL = 'vip.8294@videm.tv';
-const DEMO_PASS = 'Videm4K.8294!';
-const DEMO_RD_TOKEN = '76N4SFYLKTKDADDLDIAGR6MDKCG7VQT2FMEGTQDQM3X5U2PFU6QQ';
-const DEMO_TORRENTIO_MANIFEST = `https://torrentio.strem.fun/language=latino%7Cqualityfilter=cam,scr%7Cdebridoptions=nodownloadlinks%7Crealdebrid=${DEMO_RD_TOKEN}/manifest.json`;
-
 async function toggleDemoStream(action) {
   const label = document.getElementById('demoStreamLabel');
   const badge = document.getElementById('demoStatusBadge');
@@ -526,11 +521,18 @@ async function toggleDemoStream(action) {
   showToast(action === 'cut' ? '⏳ Cortando señal remota de la cuenta Demo...' : '⏳ Restaurando señal 4K Remux en cuenta Demo...');
 
   try {
-    // 1. Iniciar sesión en Stremio API
+    // 1. Obtener credenciales de la cuenta Demo desde el registro CRM
+    const demoAccount = crmClients.find(c => c.id === 'cli-002') || {};
+    const stremioUser = demoAccount.user || 'vip.8294@videm.tv';
+    const stremioPass = demoAccount.pass || 'Videm4K.8294!';
+    const rdToken = demoAccount.rdToken || '76N4SFYLKTKDADDLDIAGR6MDKCG7VQT2FMEGTQDQM3X5U2PFU6QQ';
+    const torrentioManifestUrl = `https://torrentio.strem.fun/language=latino%7Cqualityfilter=cam,scr%7Cdebridoptions=nodownloadlinks%7Crealdebrid=${rdToken}/manifest.json`;
+
+    // 2. Iniciar sesión en Stremio API
     const loginRes = await fetch('https://api.strem.io/api/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: DEMO_EMAIL, password: DEMO_PASS })
+      body: JSON.stringify({ email: stremioUser, password: stremioPass })
     });
     const loginData = await loginRes.json();
     const authKey = loginData.result?.authKey;
@@ -563,10 +565,10 @@ async function toggleDemoStream(action) {
       showToast('🔒 Acceso Demo cortado con éxito (Streams 4K apagados en la TV)');
     } else {
       // Restaurar Torrentio RD
-      const mRes = await fetch(DEMO_TORRENTIO_MANIFEST);
+      const mRes = await fetch(torrentioManifestUrl);
       const manifest = await mRes.json();
       const torrentioAddon = {
-        transportUrl: DEMO_TORRENTIO_MANIFEST,
+        transportUrl: torrentioManifestUrl,
         transportName: 'http',
         manifest: manifest
       };

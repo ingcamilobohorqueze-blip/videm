@@ -1111,4 +1111,43 @@ code, .font-mono, .tv-code-input, .cred-input, .countdown-timer {
   .detail-grid {
     grid-template-columns: 1fr;
   }
+  .header-right {
+    flex-wrap: wrap;
+    justify-content: stretch;
+  }
+  .header-right .btn {
+    flex: 1 1 calc(50% - 6px);
+  }
 }
+
+/* ==========================================================================
+   PWA INSTALL BUTTON & MOBILE SAFE-AREAS
+   ========================================================================== */
+.pwa-install-btn {
+  background: linear-gradient(135deg, #00F0FF, #00A3FF) !important;
+  color: #06080D !important;
+  font-weight: 700 !important;
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+  animation: pwaPulse 3s infinite ease-in-out;
+  border: none !important;
+}
+
+.pwa-install-btn:hover {
+  filter: brightness(1.15);
+  box-shadow: 0 0 24px rgba(0, 240, 255, 0.8);
+}
+
+@keyframes pwaPulse {
+  0%, 100% { box-shadow: 0 0 12px rgba(0, 240, 255, 0.4); }
+  50% { box-shadow: 0 0 22px rgba(0, 240, 255, 0.8); }
+}
+
+@supports (padding-top: env(safe-area-inset-top)) {
+  .admin-header {
+    padding-top: calc(14px + env(safe-area-inset-top));
+  }
+  .admin-footer {
+    padding-bottom: calc(24px + env(safe-area-inset-bottom));
+  }
+}
+

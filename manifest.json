@@ -1,0 +1,48 @@
+{
+  "name": "VIDEM Command Center",
+  "short_name": "VIDEM Admin",
+  "description": "Centro de Operaciones y Aprovisionamiento VIP VIDEM Concierge",
+  "start_url": "/admin",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#06080D",
+  "theme_color": "#06080D",
+  "orientation": "portrait-primary",
+  "lang": "es-CO",
+  "icons": [
+    {
+      "src": "/assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Vincular Smart TV",
+      "short_name": "Vincular TV",
+      "description": "Vincular televisor Stremio en 0.8s",
+      "url": "/admin#cardDemoActivator",
+      "icons": [{ "src": "/assets/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Clientes CRM",
+      "short_name": "CRM",
+      "description": "Ver lista y estados de suscripción",
+      "url": "/admin#crmSection",
+      "icons": [{ "src": "/assets/icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}

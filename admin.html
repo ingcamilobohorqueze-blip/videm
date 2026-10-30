@@ -2,9 +2,32 @@
 <html lang="es" data-theme="dark">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>VIDEM | Operations Command Center & Tech Concierge CRM</title>
+  <meta name="description" content="Centro de Operaciones y Aprovisionamiento VIP VIDEM Concierge">
   <meta name="robots" content="noindex, nofollow">
+
+  <!-- PWA Web App Manifest -->
+  <link rel="manifest" href="/admin.webmanifest">
+  <meta name="theme-color" content="#06080D">
+  <meta name="background-color" content="#06080D">
+
+  <!-- Apple iOS PWA Capabilities -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="VIDEM Admin">
+  <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="/assets/icons/icon-192.png">
+
+  <!-- Android / Windows PWA Support -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="application-name" content="VIDEM Admin">
+  <meta name="msapplication-TileColor" content="#06080D">
+  <meta name="msapplication-TileImage" content="/assets/icons/icon-192.png">
+
+  <!-- Favicons -->
+  <link rel="icon" type="image/png" sizes="192x192" href="/assets/icons/icon-192.png">
   <link rel="icon" type="image/png" href="Logo Videm.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -88,6 +111,9 @@
       </div>
 
       <div class="header-right">
+        <button id="btnPwaInstall" class="btn btn-primary btn-sm pwa-install-btn" style="display: none;" onclick="triggerPwaInstall()" title="Instalar App en Celular o Escritorio">
+          <span>📲 Instalar App</span>
+        </button>
         <a href="https://cbohorquez1983.app.n8n.cloud" target="_blank" class="btn btn-secondary btn-sm" title="Abrir n8n Cloud">
           <span>⚙️ n8n Bot</span>
         </a>
@@ -148,12 +174,12 @@
            ======================================================================= -->
       <section class="operations-grid">
 
-        <!-- CARD 1: ACTIVADOR EXPRESS DE DEMOS (10 Segundos) -->
+        <!-- CARD 1: VINCULADOR AUTÓNOMO SMART TV (Demos & Clientes) -->
         <article class="op-card glass-panel" id="cardDemoActivator">
           <div class="card-header">
             <div class="card-header-title">
-              <span class="card-tag cyan">DESPACHO INSTANTÁNEO</span>
-              <h2>⚡ Activador de Demos Smart TV</h2>
+              <span class="card-tag cyan">DESPACHO INSTANTÁNEO 100% AUTÓNOMO</span>
+              <h2>⚡ Vinculador Smart TV (Demos & Clientes)</h2>
             </div>
             <div class="demo-status-badge" id="demoStatusBadge">
               <span class="pulsing-dot green"></span>
@@ -162,42 +188,83 @@
           </div>
 
           <p class="card-description">
-            Ingresa el código de 4 letras que el cliente ve en la pantalla de su televisor. Al dar clic, se sincroniza en caliente con la cuenta demo <code>vip.8294@videm.tv</code>.
+            Ingresa las 4 letras que el cliente ve en su televisor. El sistema autentica la cuenta elegida e inyecta la llave en caliente directamente a la pantalla en menos de 1 segundo (sin abrir ventanas ni salir de la consola).
           </p>
 
-          <form id="demoLinkForm" onsubmit="event.preventDefault(); executeDemoLink();" class="demo-form">
+          <form id="demoLinkForm" onsubmit="event.preventDefault(); executeAutonomousLink();" class="demo-form">
+            
+            <!-- Selector de Cuenta Destino -->
+            <div class="form-group" style="margin-bottom: 14px;">
+              <label for="linkTargetSelect" style="display:block; font-size:0.75rem; font-weight:700; color:#00F0FF; margin-bottom:6px; letter-spacing:0.05em;">
+                1. SELECCIONA LA CUENTA VIDEM A VINCULAR EN LA TV:
+              </label>
+              <select id="linkTargetSelect" class="form-input form-select" onchange="onLinkTargetSelectChange()" style="width: 100%; border-color: rgba(0, 240, 255, 0.4); font-weight:600; background:#0B0F17;">
+                <option value="demo" selected>🔵 Cuenta Demo VIDEM 4K (vip.8294@videm.tv) [Pase Cortesía]</option>
+                <!-- Opciones dinámicas de clientes pobladas por JavaScript -->
+              </select>
+            </div>
+
+            <!-- Campos manuales si se selecciona 'manual' -->
+            <div id="manualAccountFields" style="display:none; background:rgba(0,240,255,0.03); border:1px dashed rgba(0,240,255,0.3); border-radius:8px; padding:10px 12px; margin-bottom:14px;">
+              <div class="form-row" style="margin-bottom:0;">
+                <div class="form-col">
+                  <label for="manualStremioUser" style="font-size:0.75rem;">Usuario / E-mail Stremio:</label>
+                  <input type="text" id="manualStremioUser" class="form-input" placeholder="usuario@videm.tv">
+                </div>
+                <div class="form-col">
+                  <label for="manualStremioPass" style="font-size:0.75rem;">Contraseña:</label>
+                  <input type="password" id="manualStremioPass" class="form-input" placeholder="••••••••">
+                </div>
+              </div>
+            </div>
+
+            <!-- Código de 4 letras y botón de vinculación -->
             <div class="tv-code-input-box">
-              <label for="demoTvCode">CÓDIGO DE 4 LETRAS DEL TELEVISOR:</label>
+              <label for="demoTvCode">2. CÓDIGO DE 4 LETRAS QUE SALE EN LA SMART TV:</label>
               <div class="code-field-wrapper">
-                <input type="text" id="demoTvCode" class="tv-code-input" placeholder="ABCD" maxlength="6" autocomplete="off" spellcheck="false" required oninput="updateDemoLinkUrl(this.value)">
-                <button type="submit" class="btn btn-primary btn-lg" id="btnLinkDemo">
-                  <span>🚀 Vincular TV en Vivo</span>
+                <input type="text" id="demoTvCode" class="tv-code-input" placeholder="ABCD" maxlength="6" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" inputmode="text" required oninput="this.value = this.value.toUpperCase(); updateDemoLinkUrl(this.value)">
+                <button type="submit" class="btn btn-primary btn-lg" id="btnLinkDemo" style="min-width: 220px;">
+                  <span id="btnLinkDemoText">🚀 Vincular TV en Vivo</span>
                 </button>
               </div>
             </div>
 
-            <!-- Botones de Enlace Rápido e Incógnito -->
+            <!-- Panel de Resultado & Telemetría en Vivo (Aparece tras vincular) -->
+            <div id="linkLiveTelemetryBox" style="display:none; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.35); border-radius: 10px; padding: 12px 16px; margin-bottom: 16px; transition: all 0.3s ease;">
+              <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:8px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span class="pulsing-dot green"></span>
+                  <strong style="color:#10B981; font-size:0.92rem;" id="telemetryTitle">🎉 ¡Televisor Vinculado con Éxito!</strong>
+                </div>
+                <span id="telemetryLatency" style="font-size:0.72rem; color:var(--text-muted); font-family:var(--font-mono);">0.3s</span>
+              </div>
+              <p id="telemetryDetail" style="font-size:0.8rem; color:#CBD5E1; margin-bottom:10px; line-height:1.4;">
+                La pantalla ha quedado sincronizada con la red CDN privada VIDEM a 80 Mbps Remux.
+              </p>
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button type="button" class="btn btn-success btn-sm" id="btnSendWhatsAppDelivery" onclick="openWhatsAppDeliveryChat()">
+                  <span>💬 Enviar Confirmación por WhatsApp</span>
+                </button>
+                <button type="button" class="btn btn-outline btn-sm" onclick="copyDeliverySuccessMessage()">
+                  <span>📋 Copiar Texto Listo</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Botones de Enlace Rápido y Mensajes -->
             <div class="demo-quick-actions">
-              <a id="stremioDirectAnchor" href="https://link.stremio.com" target="_blank" class="btn btn-secondary btn-sm" title="Da clic derecho aquí y selecciona 'Abrir enlace en ventana de incógnito'">
-                <span>🕵️ Clic Derecho: Abrir en Incógnito</span>
-              </a>
-              <button type="button" class="btn btn-outline btn-sm" onclick="copyDemoDirectLink()" title="Copiar enlace directo con el código actual para pegarlo en tu ventana de incógnito">
-                <span>📋 Copiar Link para Incógnito</span>
-              </button>
               <button type="button" class="btn btn-outline btn-sm" onclick="copyDemoWhatsAppWelcome()">
                 <span>💬 Bienvenida WhatsApp</span>
               </button>
               <button type="button" class="btn btn-outline btn-sm" onclick="copyDemoWhatsAppSuccess()">
                 <span>✅ Mensaje "Listo"</span>
               </button>
-            </div>
-
-            <!-- Alerta Preventiva: No mezclar con cuenta personal -->
-            <div class="incognito-warning-banner" style="background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 8px; padding: 10px 14px; margin-top: 14px; display: flex; align-items: flex-start; gap: 10px; font-size: 0.8rem; color: #FBBF24; line-height: 1.4;">
-              <span style="font-size: 1.15rem; line-height: 1;">⚠️</span>
-              <div>
-                <strong>Evita vincular tu cuenta personal:</strong> Si tu navegador normal tiene abierta tu sesión personal de Stremio, <u>da clic derecho</u> en el botón gris y elige <em>"Abrir en ventana de incógnito"</em>, o presiona <em>"Copiar Link para Incógnito"</em>. También puedes abrir este panel de administración directamente en una ventana de incógnito (o en un perfil de Chrome exclusivo para VIDEM).
-              </div>
+              <button type="button" class="btn btn-outline btn-sm" onclick="clearTvCodeInput()">
+                <span>🧹 Limpiar</span>
+              </button>
+              <a id="stremioDirectAnchor" href="https://link.stremio.com" target="_blank" class="btn btn-outline btn-sm" style="color:var(--text-muted); font-size:0.75rem;" title="Enlace manual de respaldo">
+                <span>↗️ stremio.com/link (Respaldo)</span>
+              </a>
             </div>
 
             <!-- Kill Switch & Restore Demo Stream -->
@@ -234,7 +301,7 @@
             Genera las credenciales maestras y calcula la expiración exacta. Deja la cuenta lista para inyectar en Real-Debrid y Stremio.
           </p>
 
-          <form id="newClientForm" onsubmit="event.preventDefault(); saveNewClient();" class="client-form">
+          <form id="newClientForm" onsubmit="event.preventDefault(); saveNewClient(false);" class="client-form">
             <div class="form-row">
               <div class="form-col">
                 <label for="clientName">Nombre Completo:</label>
@@ -266,10 +333,6 @@
               </div>
             </div>
 
-            <div id="planFinTip" style="font-size:0.75rem; color:var(--text-muted); background:rgba(0, 240, 255, 0.04); border-left: 2px solid #00F0FF; padding: 6px 10px; border-radius: 4px; margin-bottom: 12px; line-height: 1.4;">
-              💡 <strong>Estrategia RD (Planes Anuales):</strong> Real-Debrid permite acumular compras (stacking). Puedes comprar dos veces 180 días (16 € + 16 €) seguidas para dejar 360 días activos desde el día 1, o comprar 180 días ahora y guardar $75.000 COP en tu reserva. El cronómetro del CRM te avisará para recargar el segundo tramo sin interrumpir el servicio.
-            </div>
-
             <!-- Auto-Generated Master Credentials Box -->
             <div class="credentials-generator-box">
               <div class="cred-item">
@@ -295,9 +358,25 @@
               </div>
             </div>
 
-            <div class="form-actions">
-              <button type="submit" class="btn btn-primary btn-block">
-                <span>💾 Guardar Cliente en CRM & Ficha VIP</span>
+            <!-- Campo de Token Real-Debrid para aprovisionamiento directo -->
+            <div class="form-group" style="margin-bottom: 14px;">
+              <label for="clientRdToken" style="font-size:0.75rem; color:#00F0FF; font-weight:700;">
+                🔑 Token API Real-Debrid (Opcional para inyección automática de Torrentio 4K):
+              </label>
+              <div style="display:flex; gap:8px;">
+                <input type="text" id="clientRdToken" class="form-input font-mono" placeholder="Ej: 76N4SFYLKTKDADDLDIAGR6MDKCG7VQT2FMEGTQDQM3X5U2PFU6QQ" style="font-size:0.8rem;">
+                <button type="button" class="btn btn-secondary btn-sm" onclick="verifyRdTokenInForm()" title="Verificar validez del token en Real-Debrid">
+                  <span>🔍 Validar</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="form-actions" style="display:flex; gap:10px; flex-wrap:wrap;">
+              <button type="submit" class="btn btn-primary" style="flex:1; min-width:200px;">
+                <span>💾 Guardar en CRM</span>
+              </button>
+              <button type="button" class="btn btn-success" id="btnSaveAndProvision" onclick="saveNewClient(true)" style="flex:1; min-width:220px;" title="Guarda el cliente e inyecta Torrentio RD 4K Remux automáticamente a Stremio Cloud">
+                <span>⚡ Guardar & Aprovisionar 4K</span>
               </button>
             </div>
           </form>
@@ -418,6 +497,18 @@
             </button>
           </div>
         </div>
+        <div class="detail-item" style="grid-column: 1 / -1;">
+          <span class="detail-label">Token API Real-Debrid:</span>
+          <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:4px;">
+            <input type="text" id="modalClientRdToken" class="form-input font-mono" placeholder="Pegar token de Real-Debrid para aprovisionar" style="flex:1; font-size:0.8rem; background:rgba(255,255,255,0.04); border-color:rgba(0,240,255,0.3);">
+            <button type="button" class="btn btn-secondary btn-sm" onclick="saveModalRdToken()" title="Guardar Token">
+              <span>💾 Guardar</span>
+            </button>
+            <button type="button" class="btn btn-success btn-sm" onclick="provisionClientFromModal()" title="Inyectar Torrentio RD 4K Remux en su cuenta Stremio Cloud">
+              <span>⚡ Aprovisionar 4K</span>
+            </button>
+          </div>
+        </div>
       </div>
 
       <div class="detail-notes-section">
@@ -425,17 +516,43 @@
         <textarea id="modalClientNotes" class="form-input form-textarea" rows="3" placeholder="Ej: Samsung Q60 55 pulgadas, barra de sonido por HDMI eARC, fibra óptica 200 Mbps..."></textarea>
       </div>
 
-      <div class="detail-actions">
+      <div class="detail-actions" style="flex-wrap:wrap; gap:8px;">
+        <button type="button" class="btn btn-primary" onclick="quickLinkCurrentModalClient()" title="Cargar este cliente en el Vinculador de TV superior">
+          <span>📺 Vincular Smart TV</span>
+        </button>
         <a id="modalClientWhatsAppLink" href="#" target="_blank" class="btn btn-success">
           <span>💬 Abrir WhatsApp</span>
         </a>
         <button type="button" class="btn btn-secondary" onclick="extendClientSubscription()">
-          <span>🔄 Renovar Membresía (+180d)</span>
+          <span>🔄 Renovar (+180d)</span>
         </button>
-        <button type="button" class="btn btn-primary" onclick="saveClientModalNotes()">
+        <button type="button" class="btn btn-outline" onclick="saveClientModalNotes()">
           <span>💾 Guardar Notas</span>
         </button>
       </div>
+    </div>
+  </div>
+
+  <!-- iOS Safari PWA Install Modal -->
+  <div id="iosInstallModal" class="auth-modal-overlay" style="display: none;" onclick="if(event.target === this) closeIosInstallModal()">
+    <div class="auth-card glass-panel" style="max-width: 420px; text-align: center;">
+      <div class="auth-badge">
+        <span class="pulsing-dot cyan"></span>
+        <span>INSTALAR EN IPHONE / IPAD</span>
+      </div>
+      <img src="assets/icons/apple-touch-icon.png" alt="VIDEM" style="width: 72px; height: 72px; border-radius: 18px; margin: 12px auto; box-shadow: 0 8px 24px rgba(0, 240, 255, 0.3);">
+      <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 8px;">Instalar VIDEM Admin</h3>
+      <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 18px;">
+        Opera la vinculación de Smart TVs desde tu celular como una app nativa a pantalla completa:
+      </p>
+      <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 14px; text-align: left; font-size: 0.82rem; line-height: 1.6; margin-bottom: 18px;">
+        <p>1️⃣ Pulsa el botón <strong>Compartir</strong> en la barra de Safari (el cuadrado con la flecha hacia arriba ⎋).</p>
+        <p style="margin-top: 8px;">2️⃣ Desliza hacia abajo y presiona <strong>"Agregar a inicio"</strong> (icono ➕).</p>
+        <p style="margin-top: 8px;">3️⃣ Toca <strong>"Agregar"</strong> en la esquina superior derecha.</p>
+      </div>
+      <button class="btn btn-primary btn-block" onclick="closeIosInstallModal()">
+        <span>¡Listo, Entendido!</span>
+      </button>
     </div>
   </div>
 
@@ -443,6 +560,6 @@
   <div id="toastNotification" class="toast-notification"></div>
 
   <!-- Scripts -->
-  <script src="js/admin.js?v=2.8"></script>
+  <script src="js/admin.js?v=3.0"></script>
 </body>
 </html>

@@ -83,6 +83,7 @@ function initDashboard() {
   startLiveCountdowns();
   updateMetrics();
   renderCrmTable();
+  populateLinkTargetAccounts();
   generateAutoClientCredentials();
 }
 
@@ -368,6 +369,9 @@ function renderCrmTable() {
         </td>
         <td class="text-right">
           <div class="action-buttons">
+            <button class="btn btn-outline btn-sm" style="color:#00F0FF; border-color:rgba(0,240,255,0.3);" onclick="quickLinkClientTv('${client.id}')" title="Vincular Smart TV a este cliente en 1 Clic">
+              📺 TV
+            </button>
             <button class="btn btn-secondary btn-sm" onclick="openClientDetailModal('${client.id}')" title="Ver Ficha Técnica 360°">
               👁️ Ficha
             </button>
@@ -384,6 +388,7 @@ function renderCrmTable() {
   }).join('');
 
   updateAllCountdowns();
+  populateLinkTargetAccounts();
 }
 
 function startLiveCountdowns() {
@@ -454,64 +459,275 @@ function filterClients() {
 }
 
 // =========================================================================
-// 6. ACTIVADOR DE DEMOS (OPERACIONES)
+// 6. VINCULADOR AUTÓNOMO SMART TV & DESPACHO
+// =========================================================================
+
+let lastDeliveryData = {
+  name: 'Invitado Demo',
+  phone: '',
+  code: '',
+  accountName: 'Cuenta Demo VIDEM 4K',
+  accountEmail: 'vip.8294@videm.tv'
+};
+
+function populateLinkTargetAccounts() {
+  const select = document.getElementById('linkTargetSelect');
+  if (!select) return;
+
+  const currentVal = select.value || 'demo';
+
+  // Demo siempre de primera
+  let html = `<option value="demo">🔵 Cuenta Demo VIDEM 4K (vip.8294@videm.tv) [Pase Cortesía]</option>`;
+
+  // Listar clientes activos y demos registrados en CRM
+  crmClients.forEach(c => {
+    if (c.id === 'cli-002') return; // ya representada en Demo
+    const badge = c.status === 'Demo' ? '🔵' : (c.status === 'Activo' ? '🟢' : '🟡');
+    html += `<option value="${c.id}">${badge} ${escapeHtml(c.name)} (${escapeHtml(c.user)}) [${escapeHtml(c.plan)}]</option>`;
+  });
+
+  html += `<option value="manual">⚙️ Ingresar otra cuenta manual...</option>`;
+
+  select.innerHTML = html;
+  if ([...select.options].some(o => o.value === currentVal)) {
+    select.value = currentVal;
+  }
+}
+
+function onLinkTargetSelectChange() {
+  const select = document.getElementById('linkTargetSelect');
+  const manualBox = document.getElementById('manualAccountFields');
+  if (!select || !manualBox) return;
+
+  if (select.value === 'manual') {
+    manualBox.style.display = 'block';
+  } else {
+    manualBox.style.display = 'none';
+  }
+}
+
 function updateDemoLinkUrl(val) {
   const code = (val || '').toUpperCase().trim();
   const anchor = document.getElementById('stremioDirectAnchor');
   if (anchor) {
     if (code.length >= 4) {
       anchor.href = `https://link.stremio.com/${code}`;
-      anchor.setAttribute('title', `Clic derecho -> Abrir https://link.stremio.com/${code} en ventana de incógnito`);
-      anchor.innerHTML = `<span>🕵️ Clic Derecho: Abrir (${code}) en Incógnito</span>`;
+      anchor.innerHTML = `<span>↗️ Abrir (${code}) en stremio.com/link</span>`;
     } else {
       anchor.href = 'https://link.stremio.com';
-      anchor.setAttribute('title', 'Clic derecho -> Abrir en ventana de incógnito');
-      anchor.innerHTML = '<span>🕵️ Clic Derecho: Abrir en Incógnito</span>';
+      anchor.innerHTML = `<span>↗️ stremio.com/link (Respaldo)</span>`;
     }
   }
 }
 
-function copyDemoDirectLink() {
-  const codeInput = document.getElementById('demoTvCode');
-  const code = (codeInput?.value || '').toUpperCase().trim();
-  const targetUrl = code.length >= 4 ? `https://link.stremio.com/${code}` : 'https://link.stremio.com';
-  
-  copyText(targetUrl, `Enlace copiado (${targetUrl}). ¡Pégalo en tu ventana de Incógnito!`);
+function clearTvCodeInput() {
+  const input = document.getElementById('demoTvCode');
+  if (input) {
+    input.value = '';
+    input.focus();
+  }
+  const telemetry = document.getElementById('linkLiveTelemetryBox');
+  if (telemetry) telemetry.style.display = 'none';
+  showToast('🧹 Campo de código limpio. Listo para nuevo TV.');
 }
 
-function executeDemoLink() {
+async function executeAutonomousLink() {
   const codeInput = document.getElementById('demoTvCode');
   const code = (codeInput?.value || '').toUpperCase().trim();
+  const btn = document.getElementById('btnLinkDemo');
+  const btnText = document.getElementById('btnLinkDemoText');
+  const telemetryBox = document.getElementById('linkLiveTelemetryBox');
 
   if (!code || code.length < 4) {
-    showToast('⚠️ Ingresa un código válido de 4 a 6 letras');
+    showToast('⚠️ Ingresa el código de 4 a 6 letras del televisor');
     codeInput?.focus();
     return;
   }
 
-  const linkUrl = `https://link.stremio.com/${code}`;
-  
-  // Actualizar también el anchor de clic derecho
-  updateDemoLinkUrl(code);
+  // 1. Determinar cuenta destino (Demo, Cliente CRM o Manual)
+  const targetSelect = document.getElementById('linkTargetSelect');
+  const targetVal = targetSelect ? targetSelect.value : 'demo';
 
-  // Abrir la URL oficial de Stremio Link en una ventana emergente limpia
-  window.open(linkUrl, '_blank', 'width=520,height=620');
+  let targetUser = '';
+  let targetPass = '';
+  let targetName = 'Cuenta Demo';
+  let targetPhone = '';
+  let targetClientObj = null;
 
-  showToast(`🚀 Abriendo Stremio Link (${code}). Si estás en tu sesión personal, usa Clic Derecho -> Incógnito.`);
+  if (targetVal === 'demo') {
+    const demoAcc = crmClients.find(c => c.id === 'cli-002') || {};
+    targetUser = demoAcc.user || 'vip.8294@videm.tv';
+    targetPass = demoAcc.pass || 'Videm4K.8294!';
+    targetName = 'Pase Demo Cortesía VIDEM';
+    targetPhone = demoAcc.phone || '';
+  } else if (targetVal === 'manual') {
+    targetUser = (document.getElementById('manualStremioUser')?.value || '').trim();
+    targetPass = (document.getElementById('manualStremioPass')?.value || '').trim();
+    targetName = targetUser;
+    if (!targetUser || !targetPass) {
+      showToast('⚠️ Ingresa el usuario y contraseña de la cuenta manual');
+      return;
+    }
+  } else {
+    // Cliente del CRM
+    targetClientObj = crmClients.find(c => c.id === targetVal);
+    if (!targetClientObj) {
+      showToast('⚠️ Cliente no encontrado en el CRM');
+      return;
+    }
+    targetUser = targetClientObj.user;
+    targetPass = targetClientObj.pass;
+    targetName = targetClientObj.name;
+    targetPhone = targetClientObj.phone;
+  }
+
+  // Feedback en botón
+  if (btn) btn.disabled = true;
+  if (btnText) btnText.textContent = '⏳ Vinculando TV en vivo...';
+  const t0 = performance.now();
+
+  try {
+    // PASO A: Autenticarse en Stremio para obtener authKey
+    const loginRes = await fetch('https://api.strem.io/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: targetUser, password: targetPass })
+    });
+    const loginData = await loginRes.json();
+    const authKey = loginData.result?.authKey;
+
+    if (!authKey) {
+      throw new Error(loginData.error?.message || 'Error al iniciar sesión en Stremio con ' + targetUser);
+    }
+
+    // PASO B: Vincular directamente mediante la API interna de Stremio Link
+    let linkSuccess = false;
+    let errorDetail = '';
+
+    try {
+      const linkRes = await fetch(`https://link.stremio.com/api/write?code=${code}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ authKey })
+      });
+      const linkData = await linkRes.json();
+      if (linkData.success) {
+        linkSuccess = true;
+      } else {
+        errorDetail = linkData.error?.message || 'Código rechazado por Stremio';
+      }
+    } catch (corsErr) {
+      console.warn('Direct fetch error, probando proxy local en serve.js...', corsErr);
+      // Fallback a través del backend local si el navegador bloquea
+      const srvRes = await fetch('/api/link-device', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, authKey })
+      });
+      const srvData = await srvRes.json();
+      if (srvData.success) {
+        linkSuccess = true;
+      } else {
+        errorDetail = srvData.error || 'Fallo de enlace en proxy';
+      }
+    }
+
+    if (!linkSuccess) {
+      throw new Error(errorDetail || 'No se pudo vincular el código. Verifica que el TV siga en la pantalla de enlace.');
+    }
+
+    const elapsed = ((performance.now() - t0) / 1000).toFixed(2) + 's';
+
+    // Guardar estado de entrega para WhatsApp
+    lastDeliveryData = {
+      name: targetName,
+      phone: targetPhone,
+      code: code,
+      accountName: targetName,
+      accountEmail: targetUser
+    };
+
+    // Actualizar notas del cliente si es del CRM
+    if (targetClientObj) {
+      const nowStr = new Date().toLocaleDateString('es-CO') + ' ' + new Date().toLocaleTimeString('es-CO');
+      targetClientObj.notes = (targetClientObj.notes || '') + `\n[${nowStr}] 📺 Smart TV vinculada en vivo con código ${code}.`;
+      saveClientsToStorage();
+    }
+
+    // Desplegar telemetría en vivo
+    if (telemetryBox) {
+      telemetryBox.style.display = 'block';
+      const titleEl = document.getElementById('telemetryTitle');
+      const latencyEl = document.getElementById('telemetryLatency');
+      const detailEl = document.getElementById('telemetryDetail');
+
+      if (titleEl) titleEl.textContent = `🎉 ¡Televisor (${code}) Vinculado con Éxito!`;
+      if (latencyEl) latencyEl.textContent = `Latencia: ${elapsed}`;
+      if (detailEl) {
+        detailEl.innerHTML = `Sincronizado a: <strong>${escapeHtml(targetName)}</strong> (<code>${escapeHtml(targetUser)}</code>).<br>El televisor ya cargó en vivo el catálogo 4K Remux a 80 Mbps sin compresión.`;
+      }
+    }
+
+    showToast(`🚀 ¡Éxito! Pantalla (${code}) enlazada a ${targetName} en ${elapsed}`);
+
+  } catch (err) {
+    console.error('Error al vincular TV:', err);
+    showToast('⚠️ ' + err.message);
+  } finally {
+    if (btn) btn.disabled = false;
+    if (btnText) btnText.textContent = '🚀 Vincular TV en Vivo';
+  }
 }
 
-function openStremioLinkTab() {
-  window.open('https://link.stremio.com', '_blank');
+function quickLinkClientTv(clientId) {
+  const client = crmClients.find(c => c.id === clientId);
+  if (!client) return;
+
+  const select = document.getElementById('linkTargetSelect');
+  if (select) {
+    select.value = clientId;
+    onLinkTargetSelectChange();
+  }
+
+  // Scroll suave al card de vinculación
+  const card = document.getElementById('cardDemoActivator');
+  if (card) {
+    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  // Focalizar input del código
+  const codeInput = document.getElementById('demoTvCode');
+  if (codeInput) {
+    codeInput.value = '';
+    codeInput.focus();
+  }
+
+  showToast(`📺 Cliente "${client.name}" seleccionado. Ingresa las 4 letras de su televisor.`);
 }
 
-function copyDemoWhatsAppWelcome() {
-  const text = `✦ *VIDEM CONCIERGE | Acceso de Cortesía* 🍿\n\n¡Hola! Bienvenido a tu prueba de streaming 4K Remux nativo sin compresión.\n\nPara enlazarte en 1 minuto:\n📺 1. Abre la tienda de aplicaciones de tu Smart TV o Fire TV y busca: *Stremio*.\n🔑 2. Al abrirla te saldrá un código de 4 letras para vincular (ej: 9A4K).\n💬 3. Envíame esas 4 letras por acá y te activamos el enlace de inmediato.`;
-  copyText(text, 'Mensaje de Bienvenida Demo copiado');
+function openWhatsAppDeliveryChat() {
+  const { name, phone } = lastDeliveryData;
+  const cleanPhone = (phone || '').replace(/[^0-9]/g, '');
+  const message = getFormattedDeliveryMessage();
+
+  if (cleanPhone && cleanPhone.length >= 10 && !cleanPhone.includes('lid')) {
+    const url = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
+    window.open(url, '_blank');
+  } else {
+    // Copiar y avisar
+    copyText(message, 'Mensaje de entrega copiado. Pégalo en el chat de ' + name);
+  }
 }
 
-function copyDemoWhatsAppSuccess() {
-  const text = `¡Listo! Ya quedó enlazado tu televisor a nuestra infraestructura privada. 🍿🎬\n\nMira tu pantalla: verás que ya cargó todo el catálogo. Pon cualquier película reciente (como Dune 2 o Top Gun), dale al primer enlace de arriba (Torrentio 4K Remux) y enciende esa barra de sonido.\n\n¡Me cuentas qué tal se ve y se escucha en tu sala!`;
-  copyText(text, 'Mensaje de Éxito Demo copiado');
+function copyDeliverySuccessMessage() {
+  const message = getFormattedDeliveryMessage();
+  copyText(message, 'Mensaje de Confirmación copiado al portapapeles');
+}
+
+function getFormattedDeliveryMessage() {
+  const { name } = lastDeliveryData;
+  const firstName = name.split(' ')[0] || 'Estimado';
+  return `✦ *VIDEM TECH CONCIERGE | Activación Exitosa* 🍿🎬\n\n¡Listo, ${firstName}! Tu televisor ya quedó enlazado a nuestra infraestructura privada de alta fidelidad.\n\n📺 *¿Qué verás en tu pantalla en este momento?*\n1. Todo el catálogo organizado por tendencias y estrenos 2024/2026.\n2. Al abrir cualquier título, selecciona en la parte superior el primer enlace con la etiqueta *[RD+]*.\n3. Calidad nativa 4K Remux de 40 a 80 Mbps con audio envolvente Dolby Atmos / Dolby Vision.\n\n¡Enciende esa barra de sonido y disfruta la función! Quedo a tu entera disposición aquí en el chat para cualquier inquietud técnica.`;
 }
 
 async function toggleDemoStream(action) {
@@ -624,7 +840,7 @@ function updatePlanDates() {
   // Opcional para previsualizar expiración
 }
 
-function saveNewClient() {
+async function saveNewClient(andProvision = false) {
   const name = document.getElementById('clientName').value.trim();
   const phone = document.getElementById('clientPhone').value.trim();
   const plan = document.getElementById('clientPlan').value;
@@ -632,6 +848,7 @@ function saveNewClient() {
   const user = document.getElementById('genStremioUser').value;
   const pass = document.getElementById('genStremioPass').value;
   const rdEmail = document.getElementById('genRdEmail').value;
+  const rdToken = (document.getElementById('clientRdToken')?.value || '').trim();
 
   if (!name || !phone) {
     showToast('⚠️ Completa el nombre y teléfono del cliente');
@@ -657,6 +874,7 @@ function saveNewClient() {
     user,
     pass,
     rdEmail,
+    rdToken: rdToken || '',
     status,
     startDate: now.toISOString(),
     endDate,
@@ -667,12 +885,114 @@ function saveNewClient() {
   saveClientsToStorage();
   renderCrmTable();
 
+  // Si se solicitó aprovisionamiento automático en la nube
+  if (andProvision) {
+    if (!rdToken) {
+      showToast('⚠️ Para aprovisionar en la nube, ingresa el Token API de Real-Debrid.');
+    } else {
+      showToast('⏳ Aprovisionando Torrentio RD 4K en Stremio Cloud...');
+      const ok = await provisionStremioAccountCloud(user, pass, rdToken);
+      if (ok) {
+        newClient.notes += `\n[${new Date().toLocaleDateString('es-CO')}]: Torrentio RD 4K Remux aprovisionado en Stremio Cloud.`;
+        saveClientsToStorage();
+        showToast(`⚡ ¡Cliente ${name} aprovisionado exitosamente en Stremio Cloud!`);
+      }
+    }
+  } else {
+    showToast(`✅ Cliente ${name} guardado con éxito en CRM`);
+  }
+
   // Limpiar campos y regenerar
   document.getElementById('clientName').value = '';
   document.getElementById('clientPhone').value = '';
+  if (document.getElementById('clientRdToken')) document.getElementById('clientRdToken').value = '';
   generateAutoClientCredentials();
+}
 
-  showToast(`✅ Cliente ${name} guardado con éxito`);
+async function verifyRdTokenInForm() {
+  const tokenInput = document.getElementById('clientRdToken');
+  const token = (tokenInput?.value || '').trim();
+  if (!token) {
+    showToast('⚠️ Pega primero el token de Real-Debrid para validar');
+    tokenInput?.focus();
+    return;
+  }
+
+  showToast('⏳ Verificando token con Real-Debrid API...');
+  try {
+    const res = await fetch('https://api.real-debrid.com/rest/1.0/user', {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    const data = await res.json();
+    if (data.id && data.username) {
+      const daysLeft = Math.max(0, Math.round((new Date(data.expiration).getTime() - Date.now()) / (1000 * 60 * 60 * 24)));
+      showToast(`🟢 Token RD Válido: Usuario "${data.username}", ${daysLeft} días Premium activos.`);
+    } else {
+      throw new Error(data.error || 'Token inválido o expirado en Real-Debrid');
+    }
+  } catch(err) {
+    showToast('⚠️ ' + err.message);
+  }
+}
+
+async function provisionStremioAccountCloud(email, password, rdToken) {
+  try {
+    // 1. Intentar backend helper de serve.js si está disponible
+    try {
+      const srvRes = await fetch('/api/provision-stremio', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, rdToken })
+      });
+      const srvData = await srvRes.json();
+      if (srvData.success) {
+        return true;
+      }
+    } catch(e) {
+      console.warn('Backend proxy no disponible, ejecutando en frontend...', e);
+    }
+
+    // 2. Ejecutar directo en Stremio API
+    const loginRes = await fetch('https://api.strem.io/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const loginData = await loginRes.json();
+    const authKey = loginData.result?.authKey;
+    if (!authKey) throw new Error(loginData.error?.message || 'Error al iniciar sesión en Stremio');
+
+    const manifestUrl = `https://torrentio.strem.fun/language=latino%7Cqualityfilter=cam,scr%7Cdebridoptions=nodownloadlinks%7Crealdebrid=${rdToken}/manifest.json`;
+    const mRes = await fetch(manifestUrl);
+    const manifest = await mRes.json();
+
+    const getRes = await fetch('https://api.strem.io/api/addonCollectionGet', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ authKey, type: 'AddonCollectionGet' })
+    });
+    const getData = await getRes.json();
+    let currentAddons = getData.result?.addons || [];
+
+    const cleanAddons = currentAddons.filter(a => a.manifest?.id !== 'com.stremio.torrentio.addon');
+    cleanAddons.push({
+      transportUrl: manifestUrl,
+      transportName: 'http',
+      manifest
+    });
+
+    await fetch('https://api.strem.io/api/addonCollectionSet', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ authKey, type: 'AddonCollectionSet', addons: cleanAddons })
+    });
+
+    return true;
+  } catch(err) {
+    console.error('Error al aprovisionar Stremio:', err);
+    showToast('⚠️ Error al aprovisionar Stremio: ' + err.message);
+    return false;
+  }
 }
 
 // =========================================================================
@@ -706,6 +1026,11 @@ function openClientDetailModal(clientId) {
     dateInput.value = client.endDate.substring(0, 10);
   }
 
+  const rdTokenInput = document.getElementById('modalClientRdToken');
+  if (rdTokenInput) {
+    rdTokenInput.value = client.rdToken || '';
+  }
+
   document.getElementById('modalClientNotes').value = client.notes || '';
 
   const cleanPhone = client.phone.replace(/[^0-9]/g, '');
@@ -732,6 +1057,46 @@ function openClientDetailModal(clientId) {
 function closeClientDetailModal() {
   document.getElementById('clientDetailModal').style.display = 'none';
   selectedClientId = null;
+}
+
+function saveModalRdToken() {
+  if (!selectedClientId) return;
+  const client = crmClients.find(c => c.id === selectedClientId);
+  if (!client) return;
+
+  const token = (document.getElementById('modalClientRdToken')?.value || '').trim();
+  client.rdToken = token;
+  saveClientsToStorage();
+  showToast('💾 Token de Real-Debrid guardado en ficha del cliente');
+}
+
+async function provisionClientFromModal() {
+  if (!selectedClientId) return;
+  const client = crmClients.find(c => c.id === selectedClientId);
+  if (!client) return;
+
+  const token = (document.getElementById('modalClientRdToken')?.value || '').trim() || client.rdToken;
+  if (!token) {
+    showToast('⚠️ Pega primero el Token de Real-Debrid');
+    return;
+  }
+
+  showToast('⏳ Aprovisionando Torrentio RD 4K en Stremio Cloud...');
+  const ok = await provisionStremioAccountCloud(client.user, client.pass, token);
+  if (ok) {
+    client.rdToken = token;
+    client.notes = (client.notes || '') + `\n[${new Date().toLocaleDateString('es-CO')}]: Torrentio RD 4K Remux aprovisionado en Stremio Cloud.`;
+    saveClientsToStorage();
+    document.getElementById('modalClientNotes').value = client.notes;
+    showToast(`⚡ ¡${client.name} aprovisionado exitosamente en Stremio Cloud!`);
+  }
+}
+
+function quickLinkCurrentModalClient() {
+  if (!selectedClientId) return;
+  const id = selectedClientId;
+  closeClientDetailModal();
+  quickLinkClientTv(id);
 }
 
 function saveClientModalNotes() {
@@ -884,7 +1249,83 @@ function escapeHtml(str) {
     .replace(/'/g, '&#039;');
 }
 
+// =========================================================================
+// 11. PROGRESSIVE WEB APP (PWA) & MOBILE INTEGRATION
+// =========================================================================
+
+let deferredPwaPrompt = null;
+
+// Capturar evento de instalación de PWA en navegadores compatibles (Android / Chromium)
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPwaPrompt = e;
+  const btn = document.getElementById('btnPwaInstall');
+  if (btn) btn.style.display = 'inline-flex';
+});
+
+// Registrar Service Worker para PWA
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then((reg) => {
+        console.log('[VIDEM PWA] Service Worker registrado exitosamente:', reg.scope);
+      })
+      .catch((err) => {
+        console.warn('[VIDEM PWA] Error al registrar Service Worker:', err);
+      });
+  });
+}
+
+function checkPwaDisplayState() {
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+  const btn = document.getElementById('btnPwaInstall');
+  if (!btn) return;
+
+  if (isStandalone) {
+    btn.style.display = 'none';
+  } else {
+    // Si no está instalada, mostrar el botón para permitir acceso rápido
+    btn.style.display = 'inline-flex';
+  }
+}
+
+function triggerPwaInstall() {
+  const isIos = /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+
+  if (isStandalone) {
+    showToast('✅ Ya estás operando VIDEM Admin en modo PWA instalada.');
+    return;
+  }
+
+  if (deferredPwaPrompt) {
+    deferredPwaPrompt.prompt();
+    deferredPwaPrompt.userChoice.then((choiceResult) => {
+      if (choiceResult.outcome === 'accepted') {
+        showToast('🎉 ¡VIDEM Admin instalada en tu pantalla principal!');
+      }
+      deferredPwaPrompt = null;
+    });
+  } else if (isIos) {
+    openIosInstallModal();
+  } else {
+    showToast('📱 En el menú del navegador (⋮), pulsa "Instalar aplicación" o "Agregar a pantalla principal".');
+  }
+}
+
+function openIosInstallModal() {
+  const modal = document.getElementById('iosInstallModal');
+  if (modal) modal.style.display = 'flex';
+}
+
+function closeIosInstallModal() {
+  const modal = document.getElementById('iosInstallModal');
+  if (modal) modal.style.display = 'none';
+}
+
 // Global initialization on DOM ready
 document.addEventListener('DOMContentLoaded', () => {
   checkExistingAuth();
+  checkPwaDisplayState();
 });
+

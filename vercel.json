@@ -64,6 +64,12 @@
       ]
     }
   ],
+  "rewrites": [
+    {
+      "source": "/api/addon/(.*)",
+      "destination": "/api/addon?path=$1"
+    }
+  ],
   "redirects": [
     {
       "source": "/wa",

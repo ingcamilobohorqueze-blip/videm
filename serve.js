@@ -20,6 +20,37 @@ const MIME_TYPES = {
 const server = http.createServer((req, res) => {
   let reqPath = decodeURI(req.url.split('?')[0]);
 
+  // Polyfills para compatibilidad con handlers serverless
+  if (!res.status) {
+    res.status = function(code) { res.statusCode = code; return res; };
+  }
+  if (!res.json) {
+    res.json = function(data) {
+      res.setHeader('Content-Type', 'application/json; charset=utf-8');
+      res.end(JSON.stringify(data));
+      return res;
+    };
+  }
+
+  // Endpoint Stremio Addon Proxy Maestro (/api/addon/*)
+  if (reqPath.startsWith('/api/addon')) {
+    const addonHandler = require('./api/addon.js');
+    addonHandler(req, res);
+    return;
+  }
+
+  // Endpoint Toggle Demo Signal (/api/toggle-demo-signal)
+  if (reqPath === '/api/toggle-demo-signal') {
+    const toggleHandler = require('./api/toggle-demo-signal.js');
+    let b = '';
+    req.on('data', c => b += c);
+    req.on('end', () => {
+      try { req.body = JSON.parse(b || '{}'); } catch(e) { req.body = {}; }
+      toggleHandler(req, res);
+    });
+    return;
+  }
+
   // Endpoint de API para obtener el QR fresco en vivo desde Evolution API
   if (reqPath === '/api/qr-live') {
     const options = {

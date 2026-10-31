@@ -562,13 +562,17 @@ async function executeAutonomousLink() {
       throw new Error(loginData.error?.message || 'Error al iniciar sesión en Stremio con ' + targetUser);
     }
 
-    // PASO A.1: Si es la cuenta Demo, asegurar AUTOMÁTICAMENTE que Torrentio RD esté activo en Stremio Cloud
+    // PASO A.1: Si es la cuenta Demo, asegurar AUTOMÁTICAMENTE la señal y el Addon Maestro VIDEM
     if (targetVal === 'demo') {
       try {
-        const demoAcc = crmClients.find(c => c.id === 'cli-002') || {};
-        const rdToken = demoAcc.rdToken || '76N4SFYLKTKDADDLDIAGR6MDKCG7VQT2FMEGTQDQM3X5U2PFU6QQ';
-        const manifestUrl = `https://torrentio.strem.fun/language=latino%7Cqualityfilter=cam,scr%7Cdebridoptions=nodownloadlinks%7Crealdebrid=${rdToken}/manifest.json`;
-        
+        // 1. Encender la señal del Proxy Maestro en tiempo real
+        fetch('/api/toggle-demo-signal', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'restore' })
+        }).catch(() => {});
+
+        // 2. Asegurar que el addon VIDEM 4K Cinema esté registrado en la cuenta
         const getRes = await fetch('https://api.strem.io/api/addonCollectionGet', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -576,55 +580,47 @@ async function executeAutonomousLink() {
         });
         const getData = await getRes.json();
         const existingAddons = getData.result?.addons || [];
-        const hasTorrentio = existingAddons.some(a => a.manifest?.id === 'com.stremio.torrentio.addon');
+        const hasVidem = existingAddons.some(a => a.manifest?.id === 'tv.videm.cinema');
 
-        if (!hasTorrentio) {
-          console.log('🔄 Torrentio no estaba presente. Auto-restaurando antes de vincular...');
-          let manifest = null;
-          try {
-            const mRes = await fetch(manifestUrl);
-            manifest = await mRes.json();
-          } catch(e) {
-            manifest = {
-              id: "com.stremio.torrentio.addon",
-              version: "0.0.15",
-              name: "Torrentio RD",
-              description: "Provides torrent streams from scraped torrent providers.",
-              catalogs: [{ id: "torrentio-realdebrid", name: "RealDebrid", type: "other", extra: [{ name: "skip" }] }],
-              resources: [
-                { name: "stream", types: ["movie", "series", "anime"], idPrefixes: ["tt", "kitsu"] },
-                { name: "meta", types: ["other"], idPrefixes: ["realdebrid"] }
-              ],
-              types: ["movie", "series", "anime", "other"],
-              background: "https://torrentio.strem.fun/images/background_v1.jpg",
-              logo: "https://torrentio.strem.fun/images/logo_v1.png",
-              behaviorHints: { configurable: true, configurationRequired: false }
-            };
-          }
-          const cleanAddons = existingAddons.filter(a => a.manifest?.id !== 'com.stremio.torrentio.addon');
+        if (!hasVidem) {
+          console.log('🔄 Addon VIDEM 4K Cinema no presente. Auto-instalando en Stremio Cloud...');
+          const videmManifest = {
+            id: 'tv.videm.cinema',
+            version: '1.0.0',
+            name: 'VIDEM 4K Cinema',
+            description: 'Infraestructura privada VIDEM en ultra alta definición 4K Remux Dolby Atmos',
+            resources: ['stream'],
+            types: ['movie', 'series', 'anime'],
+            idPrefixes: ['tt', 'kitsu'],
+            catalogs: [],
+            background: 'https://videm.tv/assets/images/plan_lluvia_bogota_cine.jpg',
+            logo: 'https://videm.tv/assets/icons/icon-192.png',
+            behaviorHints: { configurable: false, configurationRequired: false }
+          };
+          const cleanAddons = existingAddons.filter(a => a.manifest?.id !== 'tv.videm.cinema');
           cleanAddons.push({
-            transportUrl: manifestUrl,
+            transportUrl: 'https://videm.tv/api/addon/manifest.json',
             transportName: 'http',
-            manifest
+            manifest: videmManifest
           });
           await fetch('https://api.strem.io/api/addonCollectionSet', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ authKey, type: 'AddonCollectionSet', addons: cleanAddons })
           });
-          console.log('✅ Torrentio RD auto-restaurado en Stremio Cloud con éxito.');
-
-          const badge = document.getElementById('demoStatusBadge');
-          if (badge) {
-            badge.innerHTML = '<span class="pulsing-dot green"></span><span>Demo 30D Online</span>';
-            badge.style.color = '#10B981';
-            badge.style.borderColor = 'rgba(16,185,129,0.3)';
-          }
-          const label = document.getElementById('demoStreamLabel');
-          if (label) label.textContent = 'Señal activa a 80 Mbps Remux';
+          console.log('✅ Addon VIDEM 4K Cinema instalado con éxito.');
         }
+
+        const badge = document.getElementById('demoStatusBadge');
+        if (badge) {
+          badge.innerHTML = '<span class="pulsing-dot green"></span><span>Demo 30D Online</span>';
+          badge.style.color = '#10B981';
+          badge.style.borderColor = 'rgba(16,185,129,0.3)';
+        }
+        const label = document.getElementById('demoStreamLabel');
+        if (label) label.textContent = 'Señal activa a 80 Mbps Remux';
       } catch(addonErr) {
-        console.warn('Advertencia en auto-restauración de addons:', addonErr);
+        console.warn('Advertencia en preparación de addons:', addonErr);
       }
     }
 
@@ -767,124 +763,40 @@ async function toggleDemoStream(action) {
   const label = document.getElementById('demoStreamLabel');
   const badge = document.getElementById('demoStatusBadge');
   
-  showToast(action === 'cut' ? '⏳ Cortando señal remota de la cuenta Demo...' : '⏳ Restaurando señal 4K Remux en cuenta Demo...');
+  showToast(action === 'cut' ? '⏳ Cortando señal en vivo de la cuenta Demo...' : '⏳ Restaurando señal 4K Remux en cuenta Demo...');
 
   try {
-    // 1. Obtener credenciales de la cuenta Demo desde el registro CRM
-    const demoAccount = crmClients.find(c => c.id === 'cli-002') || {};
-    const stremioUser = demoAccount.user || 'vip.8294@videm.tv';
-    const stremioPass = demoAccount.pass || 'Videm4K.8294!';
-    const rdToken = demoAccount.rdToken || '76N4SFYLKTKDADDLDIAGR6MDKCG7VQT2FMEGTQDQM3X5U2PFU6QQ';
-    const torrentioManifestUrl = `https://torrentio.strem.fun/language=latino%7Cqualityfilter=cam,scr%7Cdebridoptions=nodownloadlinks%7Crealdebrid=${rdToken}/manifest.json`;
+    const savedAuthKey = localStorage.getItem('videm_active_demo_tv_authKey') || '';
 
-    // 2. Iniciar sesión en Stremio API
-    const loginRes = await fetch('https://api.strem.io/api/login', {
+    // 1. Invocar el Conmutador de Control Total VIDEM
+    const res = await fetch('/api/toggle-demo-signal', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: stremioUser, password: stremioPass })
+      body: JSON.stringify({ action, authKey: savedAuthKey })
     });
-    const loginData = await loginRes.json();
-    const authKey = loginData.result?.authKey;
-    if (!authKey) throw new Error('No se pudo autenticar en la cuenta Demo');
-
-    // 2. Obtener addons actuales
-    const getRes = await fetch('https://api.strem.io/api/addonCollectionGet', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ authKey, type: 'AddonCollectionGet' })
-    });
-    const getData = await getRes.json();
-    let currentAddons = getData.result?.addons || [];
+    const resData = await res.json();
 
     if (action === 'cut') {
-      const savedAuthKey = localStorage.getItem('videm_active_demo_tv_authKey') || '';
-      
-      // 1. Matar descargas activas en Real-Debrid CDN y desloguear TV anterior
-      try {
-        await fetch('/api/cut-demo', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ authKey: savedAuthKey })
-        });
-      } catch(apiErr) {
-        console.warn('Fallo llamada a /api/cut-demo:', apiErr);
-      }
-
-      // 2. Si hay authKey guardada, intentar revocarla directamente en Stremio Cloud
-      if (savedAuthKey) {
-        try {
-          await fetch('https://api.strem.io/api/logout', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ authKey: savedAuthKey })
-          });
-        } catch(e) {}
-      }
       localStorage.removeItem('videm_active_demo_tv_authKey');
-
-      // 3. Remover Torrentio de la cuenta como seguro extra
-      const cleanAddons = currentAddons.filter(a => a.manifest?.id !== 'com.stremio.torrentio.addon');
-      await fetch('https://api.strem.io/api/addonCollectionSet', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ authKey, type: 'AddonCollectionSet', addons: cleanAddons })
-      });
-
-      if (label) label.textContent = '⛔ Señal Cortada (CDN apagado y TV desvinculado)';
+      if (label) label.textContent = '⛔ Señal Cortada (Proxy apagado y CDN purgado)';
       if (badge) {
         badge.innerHTML = '<span class="pulsing-dot" style="background:#EF4444; box-shadow:0 0 8px #EF4444;"></span><span>Demo Desactivada</span>';
         badge.style.color = '#EF4444';
         badge.style.borderColor = 'rgba(239,68,68,0.4)';
       }
-      showToast('🔒 Acceso Demo cortado con éxito: CDN congelado y TV previa deslogueada.');
+      showToast('🔒 Acceso Demo cortado con éxito: CDN congelado y señal VIDEM apagada en 0 segundos.');
     } else {
-      // Restaurar Torrentio RD
-      let manifest = null;
-      try {
-        const mRes = await fetch(torrentioManifestUrl);
-        manifest = await mRes.json();
-      } catch(e) {
-        manifest = {
-          id: "com.stremio.torrentio.addon",
-          version: "0.0.15",
-          name: "Torrentio RD",
-          description: "Provides torrent streams from scraped torrent providers.",
-          catalogs: [{ id: "torrentio-realdebrid", name: "RealDebrid", type: "other", extra: [{ name: "skip" }] }],
-          resources: [
-            { name: "stream", types: ["movie", "series", "anime"], idPrefixes: ["tt", "kitsu"] },
-            { name: "meta", types: ["other"], idPrefixes: ["realdebrid"] }
-          ],
-          types: ["movie", "series", "anime", "other"],
-          background: "https://torrentio.strem.fun/images/background_v1.jpg",
-          logo: "https://torrentio.strem.fun/images/logo_v1.png",
-          behaviorHints: { configurable: true, configurationRequired: false }
-        };
-      }
-      const torrentioAddon = {
-        transportUrl: torrentioManifestUrl,
-        transportName: 'http',
-        manifest: manifest
-      };
-      const cleanAddons = currentAddons.filter(a => a.manifest?.id !== 'com.stremio.torrentio.addon');
-      cleanAddons.push(torrentioAddon);
-
-      await fetch('https://api.strem.io/api/addonCollectionSet', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ authKey, type: 'AddonCollectionSet', addons: cleanAddons })
-      });
-
       if (label) label.textContent = 'Señal activa a 80 Mbps Remux';
       if (badge) {
         badge.innerHTML = '<span class="pulsing-dot green"></span><span>Demo 30D Online</span>';
         badge.style.color = '#10B981';
         badge.style.borderColor = 'rgba(16,185,129,0.3)';
       }
-      showToast('⚡ Señal Demo restaurada: Torrentio RD 4K Remux activo en vivo');
+      showToast('⚡ Señal Demo restaurada: Motor 4K Remux activo en vivo.');
     }
   } catch (err) {
     console.error('Error al gestionar señal demo:', err);
-    showToast('⚠️ Error al comunicarse con la cuenta demo: ' + err.message);
+    showToast('⚠️ Error al comunicarse con el conmutador de señal: ' + err.message);
   }
 }
 

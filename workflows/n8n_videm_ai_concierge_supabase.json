@@ -1,0 +1,216 @@
+{
+  "name": "VIDEM - AI Concierge & Smart TV Queue Manager (Supabase + Evolution)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "videm-whatsapp-webhook",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "node-webhook-in",
+      "name": "Webhook Evolution API (Inbound)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [100, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Normalizar y filtrar mensajes de Evolution API\nconst body = $input.item.json.body || $input.item.json;\n\nlet senderPhone = \"\";\nlet incomingText = \"\";\nlet senderName = \"Cliente\";\nlet isFromMe = false;\nlet isGroup = false;\nlet rawJid = \"\";\n\nif (body.data) {\n  const data = body.data;\n  isFromMe = data.key?.fromMe || false;\n  rawJid = data.key?.remoteJid || \"\";\n  isGroup = rawJid.includes(\"@g.us\") || Boolean(data.isGroup || body.isGroup);\n  const altJid = data.key?.remoteJidAlt || \"\";\n  senderPhone = (altJid || rawJid).replace(\"@s.whatsapp.net\", \"\").replace(\"@lid\", \"\").replace(\"@g.us\", \"\");\n  senderName = data.pushName || \"Cliente\";\n  const msg = data.message || {};\n  if (msg.conversation) incomingText = msg.conversation;\n  else if (msg.extendedTextMessage?.text) incomingText = msg.extendedTextMessage.text;\n  else if (msg.imageMessage?.caption) incomingText = msg.imageMessage.caption;\n}\n\n// Ignorar grupos o mensajes propios\nif (isFromMe || isGroup || !senderPhone || !incomingText) {\n  return [];\n}\n\nreturn [{\n  json: {\n    senderPhone,\n    senderName,\n    incomingText,\n    rawJid\n  }\n}];"
+      },
+      "id": "node-filter-input",
+      "name": "Filtrar y Normalizar",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [320, 300]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.incomingText }}",
+        "options": {
+          "systemMessage": "=Eres el Conserje Técnico Ejecutivo de VIDEM (Plataforma VIP de Streaming de Cine 4K Remux sin compresión, sin anuncios y audio de sala de cine).\n\nCLIENTE ACTUAL:\n- Nombre: {{ $json.senderName }}\n- Teléfono: {{ $json.senderPhone }}\n\nTU MISIÓN:\n1. Responder con tono elegante, tecnológico, cálido y conciso (estilo conserje de hotel 5 estrellas).\n2. Explicar el servicio si tienen dudas: 4K Remux real a 80 Mbps, catálogo de cine y estrenos completos (Halloween, cartelera, series), funciona directo en Smart TVs (Samsung, LG, Google TV, Firestick, Xiaomi) con la app gratuita Stremio.\n3. GESTIÓN DE CORTESÍA (2 HORAS):\n   - Ofrecemos pases de cortesía de 2 Horas para calibrar el televisor.\n   - Si el cliente te da un código de televisor (de 4 a 6 letras, ej: ABCD, 9K4X), USA INMEDIATAMENTE la herramienta `gestionar_demo_tv`.\n   - La herramienta te dirá si se activó EN VIVO o si quedó EN COLA DE ESPERA por turnos.\n   - Si quedó en cola, dale su turno y su hora estimada de inicio, y explícale que si no desea esperar puede activar de inmediato cualquier membresía oficial.\n4. PLANES Y PRECIOS DISPONIBLES:\n   - 1 Mes VIP: $55.000 COP (~$14 USD) -> Ideal para probar un mes completo sin compromiso.\n   - 6 Meses VIP: $240.000 COP (~$60 USD) -> El más vendido ($40.000/mes).\n   - 12 Meses VIP (Anual): $440.000 COP (~$110 USD) -> Máximo ahorro ($36.600/mes).\n5. SI EL CLIENTE QUIERE PAGAR O PIDE CUENTAS:\n   - NUNCA inventes números de cuenta ni apruebes pagos ficticios.\n   - Ejecuta la herramienta `escalar_a_camilo` indicando el plan que le interesa.\n   - Dile amablemente que Camilo (el ingeniero principal) ya recibió su solicitud y le enviará los datos oficiales de pago en 1 minuto."
+        }
+      },
+      "id": "node-ai-agent",
+      "name": "AI Agent Concierge VIDEM",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [560, 300]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o-mini",
+        "options": {
+          "temperature": 0.3
+        }
+      },
+      "id": "node-openai-model",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [440, 520]
+    },
+    {
+      "parameters": {
+        "tableName": "chat_messages",
+        "sessionId": "={{ $('Filtrar y Normalizar').item.json.senderPhone }}"
+      },
+      "id": "node-postgres-memory",
+      "name": "Supabase Postgres Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.1,
+      "position": [580, 520]
+    },
+    {
+      "parameters": {
+        "name": "gestionar_demo_tv",
+        "description": "Activa o encola la Smart TV del cliente para una prueba de 2 horas. Requiere tv_code (código de 4 a 6 letras del TV) y opcionalmente tv_brand.",
+        "parameters": {
+          "properties": {
+            "tv_code": {
+              "type": "string",
+              "description": "El código de 4 o 6 letras que aparece en la pantalla del televisor del cliente (ej: ABCD)"
+            },
+            "tv_brand": {
+              "type": "string",
+              "description": "Marca del televisor (Samsung, LG, Firestick, etc.) si el cliente la mencionó"
+            }
+          },
+          "required": ["tv_code"],
+          "type": "object"
+        }
+      },
+      "id": "tool-gestionar-demo",
+      "name": "Tool: Gestionar Demo TV",
+      "type": "@n8n/n8n-nodes-langchain.toolCustom",
+      "typeVersion": 1,
+      "position": [720, 520]
+    },
+    {
+      "parameters": {
+        "name": "escalar_a_camilo",
+        "description": "Notifica de inmediato a Camilo por WhatsApp cuando el cliente quiere pagar, pide datos de transferencia, o requiere asistencia humana urgente.",
+        "parameters": {
+          "properties": {
+            "motivo": {
+              "type": "string",
+              "description": "Motivo exacto: ej. 'Desea pagar plan de 1 mes por Nequi' o 'Problema con la app'"
+            },
+            "plan_interes": {
+              "type": "string",
+              "description": "Plan elegido: 1_mes, semestral o anual"
+            }
+          },
+          "required": ["motivo"],
+          "type": "object"
+        }
+      },
+      "id": "tool-escalar-camilo",
+      "name": "Tool: Escalar a Camilo",
+      "type": "@n8n/n8n-nodes-langchain.toolCustom",
+      "typeVersion": 1,
+      "position": [880, 520]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://evolution-api-production-8353.up.railway.app/message/sendText/VidemProd",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "apikey", "value": "levanna-wa-key-2024" },
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"{{ $('Filtrar y Normalizar').item.json.senderPhone }}\",\n  \"options\": {\n    \"delay\": 1200,\n    \"presence\": \"composing\",\n    \"linkPreview\": false\n  },\n  \"textMessage\": {\n    \"text\": \"{{ $json.output }}\"\n  }\n}"
+      },
+      "id": "node-send-reply",
+      "name": "Enviar Respuesta por WhatsApp",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [950, 300]
+    }
+  ],
+  "connections": {
+    "Webhook Evolution API (Inbound)": {
+      "main": [
+        [
+          {
+            "node": "Filtrar y Normalizar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtrar y Normalizar": {
+      "main": [
+        [
+          {
+            "node": "AI Agent Concierge VIDEM",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent Concierge VIDEM",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Postgres Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent Concierge VIDEM",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tool: Gestionar Demo TV": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent Concierge VIDEM",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tool: Escalar a Camilo": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent Concierge VIDEM",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent Concierge VIDEM": {
+      "main": [
+        [
+          {
+            "node": "Enviar Respuesta por WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

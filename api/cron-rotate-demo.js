@@ -209,6 +209,31 @@ module.exports = async (req, res) => {
         const newStart = now;
         const newEnd = new Date(now.getTime() + (2 * 60 * 60 * 1000));
 
+        // Purgar streams CDN anteriores en Real-Debrid para evitar conflicto de múltiples IPs
+        try {
+          const rdRes = await new Promise((resolve) => {
+            https.get('https://api.real-debrid.com/rest/1.0/downloads', {
+              headers: { 'Authorization': 'Bearer ' + DEMO_RD_TOKEN }
+            }, (r) => {
+              let d = '';
+              r.on('data', c => d += c);
+              r.on('end', () => { try { resolve(JSON.parse(d)); } catch(e) { resolve([]); } });
+            }).on('error', () => resolve([]));
+          });
+          if (Array.isArray(rdRes)) {
+            for (const item of rdRes) {
+              await new Promise((resolve) => {
+                const dReq = https.request('https://api.real-debrid.com/rest/1.0/downloads/delete/' + item.id, {
+                  method: 'DELETE',
+                  headers: { 'Authorization': 'Bearer ' + DEMO_RD_TOKEN }
+                }, resolve);
+                dReq.on('error', resolve);
+                dReq.end();
+              });
+            }
+          }
+        } catch(e) {}
+
         // Vincular televisor asegurando Torrentio RD previamente
         const authKey = await getStremioAuthKey();
         await ensureDemoAddons(authKey);

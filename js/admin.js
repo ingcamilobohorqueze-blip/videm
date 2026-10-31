@@ -675,6 +675,11 @@ async function executeAutonomousLink() {
       accountEmail: targetUser
     };
 
+    if (targetVal === 'demo') {
+      localStorage.setItem('videm_active_demo_tv_authKey', authKey);
+      localStorage.setItem('videm_active_demo_tv_code', code);
+    }
+
     // Actualizar notas del cliente si es del CRM
     if (targetClientObj) {
       const nowStr = new Date().toLocaleDateString('es-CO') + ' ' + new Date().toLocaleTimeString('es-CO');
@@ -792,7 +797,32 @@ async function toggleDemoStream(action) {
     let currentAddons = getData.result?.addons || [];
 
     if (action === 'cut') {
-      // Filtrar y remover Torrentio RD
+      const savedAuthKey = localStorage.getItem('videm_active_demo_tv_authKey') || '';
+      
+      // 1. Matar descargas activas en Real-Debrid CDN y desloguear TV anterior
+      try {
+        await fetch('/api/cut-demo', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ authKey: savedAuthKey })
+        });
+      } catch(apiErr) {
+        console.warn('Fallo llamada a /api/cut-demo:', apiErr);
+      }
+
+      // 2. Si hay authKey guardada, intentar revocarla directamente en Stremio Cloud
+      if (savedAuthKey) {
+        try {
+          await fetch('https://api.strem.io/api/logout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ authKey: savedAuthKey })
+          });
+        } catch(e) {}
+      }
+      localStorage.removeItem('videm_active_demo_tv_authKey');
+
+      // 3. Remover Torrentio de la cuenta como seguro extra
       const cleanAddons = currentAddons.filter(a => a.manifest?.id !== 'com.stremio.torrentio.addon');
       await fetch('https://api.strem.io/api/addonCollectionSet', {
         method: 'POST',
@@ -800,13 +830,13 @@ async function toggleDemoStream(action) {
         body: JSON.stringify({ authKey, type: 'AddonCollectionSet', addons: cleanAddons })
       });
 
-      if (label) label.textContent = '⛔ Señal Cortada (Streams removidos)';
+      if (label) label.textContent = '⛔ Señal Cortada (CDN apagado y TV desvinculado)';
       if (badge) {
         badge.innerHTML = '<span class="pulsing-dot" style="background:#EF4444; box-shadow:0 0 8px #EF4444;"></span><span>Demo Desactivada</span>';
         badge.style.color = '#EF4444';
         badge.style.borderColor = 'rgba(239,68,68,0.4)';
       }
-      showToast('🔒 Acceso Demo cortado con éxito (Streams 4K apagados en la TV)');
+      showToast('🔒 Acceso Demo cortado con éxito: CDN congelado y TV previa deslogueada.');
     } else {
       // Restaurar Torrentio RD
       let manifest = null;

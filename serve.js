@@ -53,6 +53,83 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  // Endpoint para cortar acceso demo (mata descargas activas en Real-Debrid y desloguea el TV en Stremio)
+  if (reqPath === '/api/cut-demo' && req.method === 'POST') {
+    let body = '';
+    req.on('data', c => body += c);
+    req.on('end', async () => {
+      try {
+        const payload = JSON.parse(body || '{}');
+        const DEMO_RD_TOKEN = '76N4SFYLKTKDADDLDIAGR6MDKCG7VQT2FMEGTQDQM3X5U2PFU6QQ';
+        let deletedDownloads = 0;
+        let tvLoggedOut = false;
+
+        // 1. Eliminar descargas activas en Real-Debrid CDN
+        try {
+          const rdRes = await new Promise((resolve) => {
+            https.get('https://api.real-debrid.com/rest/1.0/downloads', {
+              headers: { 'Authorization': 'Bearer ' + DEMO_RD_TOKEN }
+            }, (res) => {
+              let d = '';
+              res.on('data', c => d += c);
+              res.on('end', () => {
+                try { resolve(JSON.parse(d)); } catch(e) { resolve([]); }
+              });
+            }).on('error', () => resolve([]));
+          });
+
+          if (Array.isArray(rdRes)) {
+            for (const item of rdRes) {
+              await new Promise((resolve) => {
+                const dReq = https.request('https://api.real-debrid.com/rest/1.0/downloads/delete/' + item.id, {
+                  method: 'DELETE',
+                  headers: { 'Authorization': 'Bearer ' + DEMO_RD_TOKEN }
+                }, () => resolve());
+                dReq.on('error', () => resolve());
+                dReq.end();
+              });
+              deletedDownloads++;
+            }
+          }
+        } catch(rdE) {
+          console.warn('Error purgando descargas en serve.js:', rdE.message);
+        }
+
+        // 2. Desloguear sesión del TV si se envía authKey
+        if (payload.authKey) {
+          try {
+            await new Promise((resolve) => {
+              const postD = JSON.stringify({ authKey: payload.authKey });
+              const lReq = https.request('https://api.strem.io/api/logout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(postD) }
+              }, (lRes) => {
+                let lD = '';
+                lRes.on('data', c => lD += c);
+                lRes.on('end', () => {
+                  try {
+                    if (JSON.parse(lD).result?.success) tvLoggedOut = true;
+                  } catch(e) {}
+                  resolve();
+                });
+              });
+              lReq.on('error', () => resolve());
+              lReq.write(postD);
+              lReq.end();
+            });
+          } catch(lE) {}
+        }
+
+        res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+        res.end(JSON.stringify({ success: true, deletedDownloads, tvLoggedOut }));
+      } catch(e) {
+        res.writeHead(500, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+        res.end(JSON.stringify({ success: false, error: e.message }));
+      }
+    });
+    return;
+  }
+
   // Endpoint de API para vincular Smart TV de forma 100% autónoma
   if (reqPath === '/api/link-device' && req.method === 'POST') {
     let body = '';

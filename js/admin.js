@@ -177,45 +177,7 @@ function loadClientsFromStorage() {
     return;
   }
 
-  // Auto-corrección / migración forzada para que coincidan con la realidad operativa
-  let needsSave = false;
-
-  // 1. Corregir cuenta de Camilo si tiene fecha vieja de 2028 (539 días)
-  const camiloAcc = crmClients.find(c => c.id === 'cli-001');
-  if (camiloAcc && (new Date(camiloAcc.endDate).getFullYear() > 2026 || camiloAcc.plan.includes('Anual'))) {
-    camiloAcc.name = 'Camilo Andrés Bohórquez (Línea Personal RD)';
-    camiloAcc.plan = 'Membresía Personal (Por Renovar)';
-    camiloAcc.price = '16 € (~$72.000 COP)';
-    camiloAcc.user = 'cbohorquez1983';
-    camiloAcc.pass = '••••••••';
-    camiloAcc.rdEmail = 'ing.camilo.bohorqueze@gmail.com';
-    camiloAcc.status = 'Activo';
-    camiloAcc.startDate = '2026-04-27T00:00:00';
-    camiloAcc.endDate = '2026-10-27T23:59:59';
-    camiloAcc.notes = 'Cuenta principal personal en Real-Debrid. Vence mañana martes 27 de Octubre a medianoche. Al renovar con 180 días, darle clic a 🔄 para extender.';
-    needsSave = true;
-  }
-
-  // 2. Corregir cuenta de John Bedoya a su plan real de 1 Mes (30 días) pagado hoy
-  const johnAcc = crmClients.find(c => c.id === 'cli-003');
-  if (johnAcc && (johnAcc.status === 'Pendiente' || johnAcc.plan.includes('Semestral') || new Date(johnAcc.endDate).getFullYear() > 2026)) {
-    johnAcc.name = 'John Bedoya (Vecino Conjunto)';
-    johnAcc.phone = '160399999680633@lid';
-    johnAcc.plan = 'Pase Mensual Flex';
-    johnAcc.price = '$50.000 COP';
-    johnAcc.status = 'Activo';
-    johnAcc.user = 'vip.9299@videm.tv';
-    johnAcc.pass = 'Videm4K.9299!';
-    johnAcc.rdEmail = 'ing.camilobohorquez.e@gmail.com';
-    johnAcc.startDate = '2026-10-26T19:00:00';
-    johnAcc.endDate = '2026-11-26T23:59:59';
-    johnAcc.notes = 'Samsung Q60 Series 55 pulgadas QLED. Pago verificado de $50.000 COP (Pase Mensual Flex 30 días). Enlace 4K Remux activo.';
-    needsSave = true;
-  }
-
-  if (needsSave) {
-    saveClientsToStorage();
-  }
+  // Las fechas y modificaciones guardadas por el usuario se respetan permanentemente
 }
 
 function resetToRealDates() {
@@ -1123,6 +1085,11 @@ function saveCustomClientDate() {
 
   const newDate = new Date(`${dateInput.value}T23:59:59`);
   client.endDate = newDate.toISOString();
+  if (newDate.getTime() > Date.now()) {
+    client.status = client.plan?.includes('Demo') ? 'Demo' : 'Activo';
+  } else {
+    client.status = 'Vencido';
+  }
   saveClientsToStorage();
   renderCrmTable();
   openClientDetailModal(selectedClientId);

@@ -562,6 +562,72 @@ async function executeAutonomousLink() {
       throw new Error(loginData.error?.message || 'Error al iniciar sesión en Stremio con ' + targetUser);
     }
 
+    // PASO A.1: Si es la cuenta Demo, asegurar AUTOMÁTICAMENTE que Torrentio RD esté activo en Stremio Cloud
+    if (targetVal === 'demo') {
+      try {
+        const demoAcc = crmClients.find(c => c.id === 'cli-002') || {};
+        const rdToken = demoAcc.rdToken || '76N4SFYLKTKDADDLDIAGR6MDKCG7VQT2FMEGTQDQM3X5U2PFU6QQ';
+        const manifestUrl = `https://torrentio.strem.fun/language=latino%7Cqualityfilter=cam,scr%7Cdebridoptions=nodownloadlinks%7Crealdebrid=${rdToken}/manifest.json`;
+        
+        const getRes = await fetch('https://api.strem.io/api/addonCollectionGet', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ authKey, type: 'AddonCollectionGet' })
+        });
+        const getData = await getRes.json();
+        const existingAddons = getData.result?.addons || [];
+        const hasTorrentio = existingAddons.some(a => a.manifest?.id === 'com.stremio.torrentio.addon');
+
+        if (!hasTorrentio) {
+          console.log('🔄 Torrentio no estaba presente. Auto-restaurando antes de vincular...');
+          let manifest = null;
+          try {
+            const mRes = await fetch(manifestUrl);
+            manifest = await mRes.json();
+          } catch(e) {
+            manifest = {
+              id: "com.stremio.torrentio.addon",
+              version: "0.0.15",
+              name: "Torrentio RD",
+              description: "Provides torrent streams from scraped torrent providers.",
+              catalogs: [{ id: "torrentio-realdebrid", name: "RealDebrid", type: "other", extra: [{ name: "skip" }] }],
+              resources: [
+                { name: "stream", types: ["movie", "series", "anime"], idPrefixes: ["tt", "kitsu"] },
+                { name: "meta", types: ["other"], idPrefixes: ["realdebrid"] }
+              ],
+              types: ["movie", "series", "anime", "other"],
+              background: "https://torrentio.strem.fun/images/background_v1.jpg",
+              logo: "https://torrentio.strem.fun/images/logo_v1.png",
+              behaviorHints: { configurable: true, configurationRequired: false }
+            };
+          }
+          const cleanAddons = existingAddons.filter(a => a.manifest?.id !== 'com.stremio.torrentio.addon');
+          cleanAddons.push({
+            transportUrl: manifestUrl,
+            transportName: 'http',
+            manifest
+          });
+          await fetch('https://api.strem.io/api/addonCollectionSet', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ authKey, type: 'AddonCollectionSet', addons: cleanAddons })
+          });
+          console.log('✅ Torrentio RD auto-restaurado en Stremio Cloud con éxito.');
+
+          const badge = document.getElementById('demoStatusBadge');
+          if (badge) {
+            badge.innerHTML = '<span class="pulsing-dot green"></span><span>Demo 30D Online</span>';
+            badge.style.color = '#10B981';
+            badge.style.borderColor = 'rgba(16,185,129,0.3)';
+          }
+          const label = document.getElementById('demoStreamLabel');
+          if (label) label.textContent = 'Señal activa a 80 Mbps Remux';
+        }
+      } catch(addonErr) {
+        console.warn('Advertencia en auto-restauración de addons:', addonErr);
+      }
+    }
+
     // PASO B: Vincular directamente mediante la API interna de Stremio Link
     let linkSuccess = false;
     let errorDetail = '';
@@ -743,8 +809,27 @@ async function toggleDemoStream(action) {
       showToast('🔒 Acceso Demo cortado con éxito (Streams 4K apagados en la TV)');
     } else {
       // Restaurar Torrentio RD
-      const mRes = await fetch(torrentioManifestUrl);
-      const manifest = await mRes.json();
+      let manifest = null;
+      try {
+        const mRes = await fetch(torrentioManifestUrl);
+        manifest = await mRes.json();
+      } catch(e) {
+        manifest = {
+          id: "com.stremio.torrentio.addon",
+          version: "0.0.15",
+          name: "Torrentio RD",
+          description: "Provides torrent streams from scraped torrent providers.",
+          catalogs: [{ id: "torrentio-realdebrid", name: "RealDebrid", type: "other", extra: [{ name: "skip" }] }],
+          resources: [
+            { name: "stream", types: ["movie", "series", "anime"], idPrefixes: ["tt", "kitsu"] },
+            { name: "meta", types: ["other"], idPrefixes: ["realdebrid"] }
+          ],
+          types: ["movie", "series", "anime", "other"],
+          background: "https://torrentio.strem.fun/images/background_v1.jpg",
+          logo: "https://torrentio.strem.fun/images/logo_v1.png",
+          behaviorHints: { configurable: true, configurationRequired: false }
+        };
+      }
       const torrentioAddon = {
         transportUrl: torrentioManifestUrl,
         transportName: 'http',

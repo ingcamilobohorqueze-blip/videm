@@ -109,6 +109,64 @@ async function linkStremioTvCode(code, authKey) {
   });
 }
 
+const DEMO_RD_TOKEN = '76N4SFYLKTKDADDLDIAGR6MDKCG7VQT2FMEGTQDQM3X5U2PFU6QQ';
+
+async function ensureDemoAddons(authKey) {
+  try {
+    const existing = await new Promise((resolve) => {
+      const p = JSON.stringify({ authKey, type: 'AddonCollectionGet' });
+      const req = https.request('https://api.strem.io/api/addonCollectionGet', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(p) }
+      }, (r) => {
+        let b = '';
+        r.on('data', c => b += c);
+        r.on('end', () => {
+          try { resolve(JSON.parse(b).result?.addons || []); }
+          catch(e) { resolve([]); }
+        });
+      });
+      req.on('error', () => resolve([]));
+      req.write(p);
+      req.end();
+    });
+
+    const hasTorrentio = existing.some(a => a.manifest?.id === 'com.stremio.torrentio.addon');
+    if (!hasTorrentio) {
+      const manifestUrl = `https://torrentio.strem.fun/language=latino%7Cqualityfilter=cam,scr%7Cdebridoptions=nodownloadlinks%7Crealdebrid=${DEMO_RD_TOKEN}/manifest.json`;
+      const manifest = await new Promise((resolve, reject) => {
+        https.get(manifestUrl, (mRes) => {
+          let mBody = '';
+          mRes.on('data', c => mBody += c);
+          mRes.on('end', () => {
+            try { resolve(JSON.parse(mBody)); } catch(e) { reject(e); }
+          });
+        }).on('error', reject);
+      });
+
+      const clean = existing.filter(a => a.manifest?.id !== 'com.stremio.torrentio.addon');
+      clean.push({ transportUrl: manifestUrl, transportName: 'http', manifest });
+
+      await new Promise((resolve) => {
+        const p = JSON.stringify({ authKey, type: 'AddonCollectionSet', addons: clean });
+        const req = https.request('https://api.strem.io/api/addonCollectionSet', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(p) }
+        }, (r) => {
+          let b = '';
+          r.on('data', c => b += c);
+          r.on('end', resolve);
+        });
+        req.on('error', resolve);
+        req.write(p);
+        req.end();
+      });
+    }
+  } catch(e) {
+    console.warn('ensureDemoAddons warning:', e.message);
+  }
+}
+
 module.exports = async (req, res) => {
   try {
     const now = new Date();
@@ -151,8 +209,9 @@ module.exports = async (req, res) => {
         const newStart = now;
         const newEnd = new Date(now.getTime() + (2 * 60 * 60 * 1000));
 
-        // Vincular televisor
+        // Vincular televisor asegurando Torrentio RD previamente
         const authKey = await getStremioAuthKey();
+        await ensureDemoAddons(authKey);
         await linkStremioTvCode(nextSession.tv_code, authKey);
 
         // Actualizar sesión a activa

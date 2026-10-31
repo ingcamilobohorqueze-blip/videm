@@ -29,7 +29,7 @@
         "promptType": "define",
         "text": "={{ $json.incomingText }}",
         "options": {
-          "systemMessage": "=Eres el Conserje Técnico Ejecutivo de VIDEM (Plataforma VIP de Streaming de Cine 4K Remux sin compresión, sin anuncios y audio de sala de cine).\n\nCLIENTE ACTUAL:\n- Nombre: {{ $json.senderName }}\n- Teléfono: {{ $json.senderPhone }}\n\nTU MISIÓN:\n1. Responder con tono elegante, tecnológico, cálido y conciso (estilo conserje de hotel 5 estrellas).\n2. Explicar el servicio si tienen dudas: 4K Remux real a 80 Mbps, catálogo de cine y estrenos completos (Halloween, cartelera, series), funciona directo en Smart TVs (Samsung, LG, Google TV, Firestick, Xiaomi) con la app gratuita Stremio.\n3. GESTIÓN DE CORTESÍA (2 HORAS):\n   - Ofrecemos pases de cortesía de 2 Horas para calibrar el televisor.\n   - Si el cliente te da un código de televisor (de 4 a 6 letras, ej: ABCD, 9K4X), USA INMEDIATAMENTE la herramienta `gestionar_demo_tv`.\n   - La herramienta te dirá si se activó EN VIVO o si quedó EN COLA DE ESPERA por turnos.\n   - Si quedó en cola, dale su turno y su hora estimada de inicio, y explícale que si no desea esperar puede activar de inmediato cualquier membresía oficial.\n4. PLANES Y PRECIOS DISPONIBLES:\n   - 1 Mes VIP: $55.000 COP (~$14 USD) -> Ideal para probar un mes completo sin compromiso.\n   - 6 Meses VIP: $240.000 COP (~$60 USD) -> El más vendido ($40.000/mes).\n   - 12 Meses VIP (Anual): $440.000 COP (~$110 USD) -> Máximo ahorro ($36.600/mes).\n5. SI EL CLIENTE QUIERE PAGAR O PIDE CUENTAS:\n   - NUNCA inventes números de cuenta ni apruebes pagos ficticios.\n   - Ejecuta la herramienta `escalar_a_camilo` indicando el plan que le interesa.\n   - Dile amablemente que Camilo (el ingeniero principal) ya recibió su solicitud y le enviará los datos oficiales de pago en 1 minuto."
+          "systemMessage": "=Eres el Conserje Técnico Ejecutivo de VIDEM (Plataforma VIP de Streaming de Cine 4K Remux sin compresión, sin anuncios y audio de sala de cine).\n\nCLIENTE ACTUAL:\n- Nombre: {{ $json.senderName }}\n- Teléfono: {{ $json.senderPhone }}\n\nTU MISIÓN:\n1. Responder con tono elegante, tecnológico, cálido y conciso (estilo conserje de hotel 5 estrellas).\n2. Explicar el servicio si tienen dudas: 4K Remux real a 80 Mbps, catálogo de cine y estrenos completos (Halloween, cartelera, series), funciona directo en Smart TVs (Samsung, LG, Google TV, Firestick, Xiaomi) con la app gratuita Stremio.\n3. GESTIÓN DE CORTESÍA (2 HORAS):\n   - Ofrecemos pases de cortesía de 2 Horas para calibrar el televisor.\n   - Si el cliente te da un código de televisor (de 4 a 6 letras, ej: ABCD, 9K4X), USA INMEDIATAMENTE la herramienta `gestionar_demo_tv`.\n   - La herramienta te responderá si el TV se activó EN VIVO o si quedó EN COLA DE ESPERA por turnos.\n   - Si quedó en cola, dale su turno y su hora estimada de inicio, y explícale que si no desea esperar puede activar de inmediato cualquier membresía oficial.\n4. PLANES Y PRECIOS DISPONIBLES:\n   - 1 Mes VIP: $55.000 COP (~$14 USD) -> Ideal para probar un mes completo sin compromiso.\n   - 6 Meses VIP: $240.000 COP (~$60 USD) -> El más vendido ($40.000/mes).\n   - 12 Meses VIP (Anual): $440.000 COP (~$110 USD) -> Máximo ahorro ($36.600/mes).\n5. SI EL CLIENTE QUIERE PAGAR O PIDE CUENTAS:\n   - NUNCA inventes números de cuenta ni apruebes pagos ficticios.\n   - Ejecuta la herramienta `escalar_a_camilo` indicando el plan que le interesa.\n   - Dile amablemente que Camilo (el ingeniero principal) ya recibió su solicitud y le enviará los datos oficiales de pago en 1 minuto."
         }
       },
       "id": "node-ai-agent",
@@ -49,7 +49,7 @@
       "name": "OpenAI Chat Model",
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1,
-      "position": [440, 520]
+      "position": [420, 520]
     },
     {
       "parameters": {
@@ -60,56 +60,60 @@
       "name": "Supabase Postgres Memory",
       "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
       "typeVersion": 1.1,
-      "position": [580, 520]
+      "position": [560, 520]
     },
     {
       "parameters": {
         "name": "gestionar_demo_tv",
-        "description": "Activa o encola la Smart TV del cliente para una prueba de 2 horas. Requiere tv_code (código de 4 a 6 letras del TV) y opcionalmente tv_brand.",
-        "parameters": {
-          "properties": {
-            "tv_code": {
-              "type": "string",
-              "description": "El código de 4 o 6 letras que aparece en la pantalla del televisor del cliente (ej: ABCD)"
-            },
-            "tv_brand": {
-              "type": "string",
-              "description": "Marca del televisor (Samsung, LG, Firestick, etc.) si el cliente la mencionó"
+        "description": "Llama a esta herramienta cuando el cliente proporcione su código de TV (de 4 a 6 letras, ej: ABCD). Activa el TV en 2h o lo pone en cola de espera.",
+        "method": "POST",
+        "url": "https://videm.tv/api/queue-demo",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
             }
-          },
-          "required": ["tv_code"],
-          "type": "object"
-        }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"phone\": \"{{ $('Filtrar y Normalizar').item.json.senderPhone }}\",\n  \"name\": \"{{ $('Filtrar y Normalizar').item.json.senderName }}\",\n  \"tv_code\": \"{{ $fromAI('tv_code', 'Código de 4 letras que sale en el televisor') }}\"\n}"
       },
       "id": "tool-gestionar-demo",
       "name": "Tool: Gestionar Demo TV",
-      "type": "@n8n/n8n-nodes-langchain.toolCustom",
-      "typeVersion": 1,
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
       "position": [720, 520]
     },
     {
       "parameters": {
         "name": "escalar_a_camilo",
-        "description": "Notifica de inmediato a Camilo por WhatsApp cuando el cliente quiere pagar, pide datos de transferencia, o requiere asistencia humana urgente.",
-        "parameters": {
-          "properties": {
-            "motivo": {
-              "type": "string",
-              "description": "Motivo exacto: ej. 'Desea pagar plan de 1 mes por Nequi' o 'Problema con la app'"
+        "description": "Llama a esta herramienta cuando el cliente quiera pagar, comprar un plan, o pida atención humana.",
+        "method": "POST",
+        "url": "https://evolution-api-production-8353.up.railway.app/message/sendText/VidemProd",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "levanna-wa-key-2024"
             },
-            "plan_interes": {
-              "type": "string",
-              "description": "Plan elegido: 1_mes, semestral o anual"
+            {
+              "name": "Content-Type",
+              "value": "application/json"
             }
-          },
-          "required": ["motivo"],
-          "type": "object"
-        }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"573103311543\",\n  \"textMessage\": {\n    \"text\": \"🔔 *VIDEM ALERT | ¡CLIENTE LISTO PARA PAGAR O ASISTENCIA!*\\n\\n👤 *Cliente:* {{ $('Filtrar y Normalizar').item.json.senderName }}\\n📱 *WhatsApp:* +{{ $('Filtrar y Normalizar').item.json.senderPhone }}\\n🎯 *Motivo:* {{ $fromAI('motivo', 'Motivo del contacto') }}\\n👉 *Chatear en 1 clic:*\\nhttps://wa.me/{{ $('Filtrar y Normalizar').item.json.senderPhone }}\"\n  }\n}"
       },
       "id": "tool-escalar-camilo",
       "name": "Tool: Escalar a Camilo",
-      "type": "@n8n/n8n-nodes-langchain.toolCustom",
-      "typeVersion": 1,
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
       "position": [880, 520]
     },
     {
@@ -119,8 +123,14 @@
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
-            { "name": "apikey", "value": "levanna-wa-key-2024" },
-            { "name": "Content-Type", "value": "application/json" }
+            {
+              "name": "apikey",
+              "value": "levanna-wa-key-2024"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
           ]
         },
         "sendBody": true,

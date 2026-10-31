@@ -94,6 +94,69 @@ const server = http.createServer((req, res) => {
           });
         }
 
+        // Asegurar que la cuenta tenga Torrentio RD activo
+        if (payload.isDemo !== false) {
+          try {
+            const DEMO_RD_TOKEN = '76N4SFYLKTKDADDLDIAGR6MDKCG7VQT2FMEGTQDQM3X5U2PFU6QQ';
+            const manifestUrl = `https://torrentio.strem.fun/language=latino%7Cqualityfilter=cam,scr%7Cdebridoptions=nodownloadlinks%7Crealdebrid=${DEMO_RD_TOKEN}/manifest.json`;
+            const existing = await new Promise((resAddons) => {
+              const p = JSON.stringify({ authKey, type: 'AddonCollectionGet' });
+              const reqAdd = https.request('https://api.strem.io/api/addonCollectionGet', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(p) }
+              }, (rAdd) => {
+                let bAdd = '';
+                rAdd.on('data', c => bAdd += c);
+                rAdd.on('end', () => {
+                  try { resAddons(JSON.parse(bAdd).result?.addons || []); } catch(e) { resAddons([]); }
+                });
+              });
+              reqAdd.on('error', () => resAddons([]));
+              reqAdd.write(p);
+              reqAdd.end();
+            });
+
+            const hasTorrentio = existing.some(a => a.manifest?.id === 'com.stremio.torrentio.addon');
+            if (!hasTorrentio) {
+              const manifest = {
+                id: "com.stremio.torrentio.addon",
+                version: "0.0.15",
+                name: "Torrentio RD",
+                description: "Provides torrent streams from scraped torrent providers.",
+                catalogs: [{ id: "torrentio-realdebrid", name: "RealDebrid", type: "other", extra: [{ name: "skip" }] }],
+                resources: [
+                  { name: "stream", types: ["movie", "series", "anime"], idPrefixes: ["tt", "kitsu"] },
+                  { name: "meta", types: ["other"], idPrefixes: ["realdebrid"] }
+                ],
+                types: ["movie", "series", "anime", "other"],
+                background: "https://torrentio.strem.fun/images/background_v1.jpg",
+                logo: "https://torrentio.strem.fun/images/logo_v1.png",
+                behaviorHints: { configurable: true, configurationRequired: false }
+              };
+              const clean = existing.filter(a => a.manifest?.id !== 'com.stremio.torrentio.addon');
+              clean.push({ transportUrl: manifestUrl, transportName: 'http', manifest });
+
+              await new Promise((resSet) => {
+                const p = JSON.stringify({ authKey, type: 'AddonCollectionSet', addons: clean });
+                const reqSet = https.request('https://api.strem.io/api/addonCollectionSet', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(p) }
+                }, (rSet) => {
+                  let bSet = '';
+                  rSet.on('data', c => bSet += c);
+                  rSet.on('end', resSet);
+                });
+                reqSet.on('error', resSet);
+                reqSet.write(p);
+                reqSet.end();
+              });
+              console.log('✅ Torrentio RD auto-restaurado en serve.js para Smart TV');
+            }
+          } catch(errAdd) {
+            console.warn('Advertencia en serve.js asegurando addons:', errAdd.message);
+          }
+        }
+
         // Enlazar el dispositivo directamente mediante la API interna de Stremio Link
         const linkResult = await new Promise((resolve, reject) => {
           const postData = JSON.stringify({ authKey });

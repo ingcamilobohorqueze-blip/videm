@@ -8,7 +8,7 @@ const MASTER_PASSWORDS = ['VidemAdmin2026!', 'videm2026', 'camilo2026', 'admin']
 
 // Storage Keys
 const STORAGE_AUTH_KEY = 'videm_admin_authenticated_v1';
-const STORAGE_CLIENTS_KEY = 'videm_admin_crm_clients_v5';
+const STORAGE_CLIENTS_KEY = 'videm_admin_crm_clients_v6';
 
 // State
 let crmClients = [];
@@ -150,7 +150,7 @@ function seedDefaultClients() {
       user: 'vip.9299@videm.tv',
       pass: 'Videm4K.9299!',
       rdEmail: 'ing.camilobohorquez.e@gmail.com',
-      rdToken: '',
+      rdToken: '5MDPKLAAN2KYABXWZ55Z5TIVQZWJRLZVWAOGLS62YBPPNVVHNMQA',
       status: 'Activo',
       startDate: '2026-10-26T19:00:00',
       endDate: '2026-11-26T23:59:59',
@@ -162,7 +162,7 @@ function seedDefaultClients() {
 
 function loadClientsFromStorage() {
   // Limpiar versiones obsoletas de almacenamiento local
-  ['videm_admin_crm_clients_v1', 'videm_admin_crm_clients_v2', 'videm_admin_crm_clients_v3', 'videm_admin_crm_clients_v4'].forEach(k => localStorage.removeItem(k));
+  ['videm_admin_crm_clients_v1', 'videm_admin_crm_clients_v2', 'videm_admin_crm_clients_v3', 'videm_admin_crm_clients_v4', 'videm_admin_crm_clients_v5'].forEach(k => localStorage.removeItem(k));
 
   let loaded = false;
   const saved = localStorage.getItem(STORAGE_CLIENTS_KEY);

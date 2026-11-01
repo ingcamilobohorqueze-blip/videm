@@ -566,7 +566,7 @@ async function executeAutonomousLink() {
     if (targetVal === 'demo') {
       try {
         // 1. Encender la señal del Proxy Maestro en tiempo real
-        fetch('/api/toggle-demo-signal', {
+        await fetch('/api/toggle-demo-signal', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ action: 'restore' })

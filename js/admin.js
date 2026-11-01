@@ -1152,9 +1152,26 @@ function installAddonDirectProtocol() {
     return;
   }
 
+  const manifestUrl = `https://videm.tv/api/addon/${encodeURIComponent(token)}/manifest.json`;
+  const stremioWebUrl = `https://web.stremio.com/#/addons?addon=${encodeURIComponent(manifestUrl)}`;
   const stremioProtocol = `stremio://videm.tv/api/addon/${encodeURIComponent(token)}/manifest.json`;
-  showToast('🚀 Abriendo Stremio para instalar VIDEM 4K Cinema...');
-  window.location.href = stremioProtocol;
+
+  // 1. Copiar enlace al portapapeles por comodidad
+  copyText(manifestUrl, 'Enlace de VIDEM 4K copiado');
+
+  // 2. Abrir en Stremio Web (pestaña nueva)
+  window.open(stremioWebUrl, '_blank');
+
+  // 3. Invocar protocolo nativo por si tiene la app de escritorio
+  try {
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.src = stremioProtocol;
+    document.body.appendChild(iframe);
+    setTimeout(() => iframe.remove(), 2000);
+  } catch(e) {}
+
+  showToast('🚀 Abriendo Stremio Web para instalar VIDEM 4K Cinema...');
 }
 
 async function provisionClientFromModal() {

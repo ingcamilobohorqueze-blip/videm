@@ -3,7 +3,7 @@
  * Cache Version: videm-admin-v1.0.0
  */
 
-const CACHE_NAME = 'videm-admin-shell-v1';
+const CACHE_NAME = 'videm-admin-shell-v3.0';
 
 const STATIC_ASSETS = [
   '/admin',
@@ -51,10 +51,11 @@ self.addEventListener('fetch', (event) => {
   const req = event.request;
   const url = new URL(req.url);
 
-  // 1. Bypass Service Worker for API calls and non-GET requests (Always Network First / Only)
+  // 1. Bypass Service Worker for API calls, JS scripts, and non-GET requests (Always Network First / Only)
   if (
     req.method !== 'GET' ||
     url.pathname.startsWith('/api/') ||
+    url.pathname.includes('/js/') ||
     url.hostname.includes('strem.io') ||
     url.hostname.includes('real-debrid.com') ||
     url.hostname.includes('railway.app') ||

@@ -566,7 +566,8 @@ async function executeAutonomousLink() {
     if (targetVal === 'demo') {
       try {
         // 1. Encender la señal del Proxy Maestro en tiempo real
-        await fetch('/api/toggle-demo-signal', {
+        const apiBase = (window.location.origin && window.location.origin.startsWith('http')) ? window.location.origin : 'https://videm.tv';
+        await fetch(`${apiBase}/api/toggle-demo-signal`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ action: 'restore' })
@@ -769,7 +770,8 @@ async function toggleDemoStream(action) {
     const savedAuthKey = localStorage.getItem('videm_active_demo_tv_authKey') || '';
 
     // 1. Invocar el Conmutador de Control Total VIDEM
-    const res = await fetch('/api/toggle-demo-signal', {
+    const apiBase = (window.location.origin && window.location.origin.startsWith('http')) ? window.location.origin : 'https://videm.tv';
+    const res = await fetch(`${apiBase}/api/toggle-demo-signal`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action, authKey: savedAuthKey })

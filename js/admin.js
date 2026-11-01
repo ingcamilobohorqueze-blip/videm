@@ -8,7 +8,7 @@ const MASTER_PASSWORDS = ['VidemAdmin2026!', 'videm2026', 'camilo2026', 'admin']
 
 // Storage Keys
 const STORAGE_AUTH_KEY = 'videm_admin_authenticated_v1';
-const STORAGE_CLIENTS_KEY = 'videm_admin_crm_clients_v4';
+const STORAGE_CLIENTS_KEY = 'videm_admin_crm_clients_v5';
 
 // State
 let crmClients = [];
@@ -117,13 +117,14 @@ function seedDefaultClients() {
       phone: '+57 310 331 1543',
       plan: 'Membresía Personal (Trimestral 90D)',
       price: '16 € (~$72.000 COP)',
-      user: 'cbohorquez1983',
-      pass: '••••••••',
-      rdEmail: 'ing.camilo.bohorqueze@gmail.com',
+      user: 'ing.camilobohorqueze@gmail.com',
+      pass: '',
+      rdEmail: 'ing.camilobohorqueze@gmail.com',
+      rdToken: '5UUJR2B4K3EMRUUHAG3YCF2WCBYMTFUGFYUF7V4ZDCRV2CIYA3DQ',
       status: 'Activo',
       startDate: '2026-10-26T00:00:00',
       endDate: '2027-01-26T23:59:59',
-      notes: 'Cuenta principal personal en Real-Debrid activa hasta el 26 de enero de 2027. Al renovar con 180 días, darle clic a 🔄 para extender.'
+      notes: ''
     },
     {
       id: 'cli-002',
@@ -133,11 +134,12 @@ function seedDefaultClients() {
       price: 'Cortesía',
       user: 'vip.8294@videm.tv',
       pass: 'Videm4K.8294!',
-      rdEmail: 'ing.camilo.bohorqueze@gmail.com',
+      rdEmail: 'ing.camilobohorqueze@gmail.com',
+      rdToken: '76N4SFYLKTKDADDLDIAGR6MDKCG7VQT2FMEGTQDQM3X5U2PFU6QQ',
       status: 'Demo',
       startDate: '2026-10-25T00:00:00',
       endDate: '2026-11-24T23:59:59',
-      notes: 'Cuenta compartida para demostraciones en vivo a vecinos y prospectos de Laneros. Token RD activo por 30 días.'
+      notes: ''
     },
     {
       id: 'cli-003',
@@ -148,18 +150,19 @@ function seedDefaultClients() {
       user: 'vip.9299@videm.tv',
       pass: 'Videm4K.9299!',
       rdEmail: 'ing.camilobohorquez.e@gmail.com',
+      rdToken: '',
       status: 'Activo',
       startDate: '2026-10-26T19:00:00',
       endDate: '2026-11-26T23:59:59',
-      notes: 'Samsung Q60 Series 55 pulgadas QLED. Pago verificado de $50.000 COP (Pase Mensual Flex 30 días). Enlace 4K Remux activo.'
+      notes: ''
     }
   ];
   saveClientsToStorage();
 }
 
 function loadClientsFromStorage() {
-  // Limpiar versiones obsoletas de almacenamiento local si existen
-  ['videm_admin_crm_clients_v1', 'videm_admin_crm_clients_v2', 'videm_admin_crm_clients_v3'].forEach(k => localStorage.removeItem(k));
+  // Limpiar versiones obsoletas de almacenamiento local
+  ['videm_admin_crm_clients_v1', 'videm_admin_crm_clients_v2', 'videm_admin_crm_clients_v3', 'videm_admin_crm_clients_v4'].forEach(k => localStorage.removeItem(k));
 
   let loaded = false;
   const saved = localStorage.getItem(STORAGE_CLIENTS_KEY);
@@ -1138,6 +1141,22 @@ function saveModalRdToken() {
   showToast('💾 Token de Real-Debrid guardado en ficha del cliente');
 }
 
+function installAddonDirectProtocol() {
+  if (!selectedClientId) return;
+  const client = crmClients.find(c => c.id === selectedClientId);
+  if (!client) return;
+
+  const token = (document.getElementById('modalClientRdToken')?.value || '').trim() || client.rdToken;
+  if (!token) {
+    showToast('⚠️ Ingresa primero el Token API de Real-Debrid');
+    return;
+  }
+
+  const stremioProtocol = `stremio://videm.tv/api/addon/${encodeURIComponent(token)}/manifest.json`;
+  showToast('🚀 Abriendo Stremio para instalar VIDEM 4K Cinema...');
+  window.location.href = stremioProtocol;
+}
+
 async function provisionClientFromModal() {
   if (!selectedClientId) return;
   const client = crmClients.find(c => c.id === selectedClientId);
@@ -1149,14 +1168,43 @@ async function provisionClientFromModal() {
     return;
   }
 
-  showToast('⏳ Aprovisionando Torrentio RD 4K en Stremio Cloud...');
+  // 1. Validar que el usuario sea un correo electrónico válido de Stremio
+  let userEmail = client.user;
+  if (!userEmail || !userEmail.includes('@')) {
+    userEmail = prompt(
+      `📧 Ingresa el correo electrónico de Stremio de ${client.name}\n(Stremio requiere un email, no usuario de texto):`,
+      client.rdEmail || 'ing.camilobohorqueze@gmail.com'
+    );
+    if (!userEmail) {
+      showToast('⚠️ Se requiere un correo de Stremio');
+      return;
+    }
+    client.user = userEmail.trim();
+    saveClientsToStorage();
+    const userEl = document.getElementById('modalClientUser');
+    if (userEl) userEl.textContent = client.user;
+  }
+
+  // 2. Validar contraseña de Stremio
+  let password = client.pass;
+  if (!password || password.includes('•') || password.length < 4) {
+    password = prompt(`🔑 Ingresa la contraseña de Stremio para ${client.user}:`, '');
+    if (!password) {
+      showToast('⚠️ Se requiere la contraseña de Stremio');
+      return;
+    }
+    client.pass = password.trim();
+    saveClientsToStorage();
+    const passEl = document.getElementById('modalClientPass');
+    if (passEl) passEl.textContent = '••••••••';
+  }
+
+  showToast('⏳ Aprovisionando VIDEM 4K Cinema en Stremio Cloud...');
   const ok = await provisionStremioAccountCloud(client.user, client.pass, token);
   if (ok) {
     client.rdToken = token;
-    client.notes = (client.notes || '') + `\n[${new Date().toLocaleDateString('es-CO')}]: Torrentio RD 4K Remux aprovisionado en Stremio Cloud.`;
     saveClientsToStorage();
-    document.getElementById('modalClientNotes').value = client.notes;
-    showToast(`⚡ ¡${client.name} aprovisionado exitosamente en Stremio Cloud!`);
+    showToast(`⚡ ¡VIDEM 4K Cinema aprovisionado con éxito en la cuenta de ${client.name}!`);
   }
 }
 

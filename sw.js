@@ -3,13 +3,12 @@
  * Cache Version: videm-admin-v1.0.0
  */
 
-const CACHE_NAME = 'videm-admin-shell-v3.0';
+const CACHE_NAME = 'videm-admin-shell-v3.5';
 
 const STATIC_ASSETS = [
   '/admin',
   '/admin.html',
   '/css/admin.css',
-  '/js/admin.js',
   '/admin.webmanifest',
   '/manifest.json',
   '/assets/icons/icon-192.png',

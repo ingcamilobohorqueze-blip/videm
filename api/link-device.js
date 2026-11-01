@@ -1,4 +1,22 @@
-const DEMO_RD_TOKEN = '76N4SFYLKTKDADDLDIAGR6MDKCG7VQT2FMEGTQDQM3X5U2PFU6QQ';
+const https = require('https');
+
+const SUPABASE_URL = 'https://crkkakwpiggnbuwqopsc.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNya2tha3dwaWdnbmJ1d3FvcHNjIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc5MzQzNTg3MSwiZXhwIjoyMTA5MDExODcxfQ.n4yTSUUIC4QL-_UKPJSs2qvPwCNJVoFcf-kbZqEpRo4';
+const DEMO_PHONE = '573015568904';
+
+const VIDEM_MANIFEST = {
+  id: 'tv.videm.cinema',
+  version: '1.0.0',
+  name: 'VIDEM 4K Cinema',
+  description: 'Infraestructura privada VIDEM en ultra alta definición 4K Remux Dolby Atmos',
+  resources: ['stream'],
+  types: ['movie', 'series', 'anime'],
+  idPrefixes: ['tt', 'kitsu'],
+  catalogs: [],
+  background: 'https://videm.tv/assets/images/plan_lluvia_bogota_cine.jpg',
+  logo: 'https://videm.tv/assets/icons/icon-192.png',
+  behaviorHints: { configurable: false, configurationRequired: false }
+};
 
 async function ensureDemoAddons(authKey) {
   try {
@@ -20,27 +38,14 @@ async function ensureDemoAddons(authKey) {
       req.end();
     });
 
-    const hasTorrentio = existing.some(a => a.manifest?.id === 'com.stremio.torrentio.addon');
-    if (!hasTorrentio) {
-      const manifestUrl = `https://torrentio.strem.fun/language=latino%7Cqualityfilter=cam,scr%7Cdebridoptions=nodownloadlinks%7Crealdebrid=${DEMO_RD_TOKEN}/manifest.json`;
-      const manifest = {
-        id: "com.stremio.torrentio.addon",
-        version: "0.0.15",
-        name: "Torrentio RD",
-        description: "Provides torrent streams from scraped torrent providers.",
-        catalogs: [{ id: "torrentio-realdebrid", name: "RealDebrid", type: "other", extra: [{ name: "skip" }] }],
-        resources: [
-          { name: "stream", types: ["movie", "series", "anime"], idPrefixes: ["tt", "kitsu"] },
-          { name: "meta", types: ["other"], idPrefixes: ["realdebrid"] }
-        ],
-        types: ["movie", "series", "anime", "other"],
-        background: "https://torrentio.strem.fun/images/background_v1.jpg",
-        logo: "https://torrentio.strem.fun/images/logo_v1.png",
-        behaviorHints: { configurable: true, configurationRequired: false }
-      };
-
-      const clean = existing.filter(a => a.manifest?.id !== 'com.stremio.torrentio.addon');
-      clean.push({ transportUrl: manifestUrl, transportName: 'http', manifest });
+    const hasVidem = existing.some(a => a.manifest?.id === 'tv.videm.cinema');
+    if (!hasVidem) {
+      const clean = existing.filter(a => a.manifest?.id !== 'tv.videm.cinema');
+      clean.push({
+        transportUrl: 'https://videm.tv/api/addon/manifest.json',
+        transportName: 'http',
+        manifest: VIDEM_MANIFEST
+      });
 
       await new Promise((resolve) => {
         const p = JSON.stringify({ authKey, type: 'AddonCollectionSet', addons: clean });
@@ -57,6 +62,23 @@ async function ensureDemoAddons(authKey) {
         req.end();
       });
     }
+
+    // Asegurar que la señal de transmisión en Supabase esté abierta (demo_active)
+    await new Promise((resolve) => {
+      const body = JSON.stringify({ status: 'demo_active' });
+      const req = https.request(`${SUPABASE_URL}/rest/v1/users?phone=eq.${DEMO_PHONE}`, {
+        method: 'PATCH',
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': 'Bearer ' + SUPABASE_KEY,
+          'Content-Type': 'application/json',
+          'Content-Length': Buffer.byteLength(body)
+        }
+      }, resolve);
+      req.on('error', resolve);
+      req.write(body);
+      req.end();
+    });
   } catch(e) {
     console.warn('ensureDemoAddons warning:', e.message);
   }

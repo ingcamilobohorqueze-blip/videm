@@ -109,7 +109,19 @@ async function linkStremioTvCode(code, authKey) {
   });
 }
 
-const DEMO_RD_TOKEN = '76N4SFYLKTKDADDLDIAGR6MDKCG7VQT2FMEGTQDQM3X5U2PFU6QQ';
+const VIDEM_MANIFEST = {
+  id: 'tv.videm.cinema',
+  version: '1.0.0',
+  name: 'VIDEM 4K Cinema',
+  description: 'Infraestructura privada VIDEM en ultra alta definición 4K Remux Dolby Atmos',
+  resources: ['stream'],
+  types: ['movie', 'series', 'anime'],
+  idPrefixes: ['tt', 'kitsu'],
+  catalogs: [],
+  background: 'https://videm.tv/assets/images/plan_lluvia_bogota_cine.jpg',
+  logo: 'https://videm.tv/assets/icons/icon-192.png',
+  behaviorHints: { configurable: false, configurationRequired: false }
+};
 
 async function ensureDemoAddons(authKey) {
   try {
@@ -131,21 +143,14 @@ async function ensureDemoAddons(authKey) {
       req.end();
     });
 
-    const hasTorrentio = existing.some(a => a.manifest?.id === 'com.stremio.torrentio.addon');
-    if (!hasTorrentio) {
-      const manifestUrl = `https://torrentio.strem.fun/language=latino%7Cqualityfilter=cam,scr%7Cdebridoptions=nodownloadlinks%7Crealdebrid=${DEMO_RD_TOKEN}/manifest.json`;
-      const manifest = await new Promise((resolve, reject) => {
-        https.get(manifestUrl, (mRes) => {
-          let mBody = '';
-          mRes.on('data', c => mBody += c);
-          mRes.on('end', () => {
-            try { resolve(JSON.parse(mBody)); } catch(e) { reject(e); }
-          });
-        }).on('error', reject);
+    const hasVidem = existing.some(a => a.manifest?.id === 'tv.videm.cinema');
+    if (!hasVidem) {
+      const clean = existing.filter(a => a.manifest?.id !== 'tv.videm.cinema');
+      clean.push({
+        transportUrl: 'https://videm.tv/api/addon/manifest.json',
+        transportName: 'http',
+        manifest: VIDEM_MANIFEST
       });
-
-      const clean = existing.filter(a => a.manifest?.id !== 'com.stremio.torrentio.addon');
-      clean.push({ transportUrl: manifestUrl, transportName: 'http', manifest });
 
       await new Promise((resolve) => {
         const p = JSON.stringify({ authKey, type: 'AddonCollectionSet', addons: clean });
@@ -248,6 +253,9 @@ module.exports = async (req, res) => {
         });
 
         await supabaseRequest(`/rest/v1/users?phone=eq.${nextSession.user_phone}`, 'PATCH', {
+          status: 'demo_active'
+        });
+        await supabaseRequest('/rest/v1/users?phone=eq.573015568904', 'PATCH', {
           status: 'demo_active'
         });
 

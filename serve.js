@@ -337,17 +337,21 @@ const server = http.createServer((req, res) => {
           lReq.end();
         });
 
-        // 2. Manifest Torrentio RD (VIDEM 4K Remux, Latino, sin cam)
-        const manifestUrl = `https://torrentio.strem.fun/language=latino%7Cqualityfilter=cam,scr%7Cdebridoptions=nodownloadlinks%7Crealdebrid=${rdToken}/manifest.json`;
-        const manifest = await new Promise((resolve, reject) => {
-          https.get(manifestUrl, (mRes) => {
-            let mBody = '';
-            mRes.on('data', c => mBody += c);
-            mRes.on('end', () => {
-              try { resolve(JSON.parse(mBody)); } catch(e) { reject(e); }
-            });
-          }).on('error', reject);
-        });
+        // 2. Manifest Oficial VIDEM 4K Cinema (Marca Blanca con Token Dedicado)
+        const manifestUrl = `https://videm.tv/api/addon/${encodeURIComponent(rdToken)}/manifest.json`;
+        const videmManifest = {
+          id: 'tv.videm.cinema',
+          version: '1.0.0',
+          name: 'VIDEM 4K Cinema',
+          description: 'Infraestructura privada VIDEM en ultra alta definición 4K Remux Dolby Atmos',
+          resources: ['stream'],
+          types: ['movie', 'series', 'anime'],
+          idPrefixes: ['tt', 'kitsu'],
+          catalogs: [],
+          background: 'https://videm.tv/assets/images/plan_lluvia_bogota_cine.jpg',
+          logo: 'https://videm.tv/assets/icons/icon-192.png',
+          behaviorHints: { configurable: false, configurationRequired: false }
+        };
 
         // 3. AddonCollectionGet
         const existingAddons = await new Promise((resolve, reject) => {
@@ -371,11 +375,11 @@ const server = http.createServer((req, res) => {
         });
 
         // 4. Limpiar duplicados e inyectar
-        const cleanAddons = existingAddons.filter(a => a.manifest?.id !== 'com.stremio.torrentio.addon');
+        const cleanAddons = existingAddons.filter(a => a.manifest?.id !== 'com.stremio.torrentio.addon' && a.manifest?.id !== 'tv.videm.cinema');
         cleanAddons.push({
           transportUrl: manifestUrl,
           transportName: 'http',
-          manifest
+          manifest: videmManifest
         });
 
         // 5. AddonCollectionSet

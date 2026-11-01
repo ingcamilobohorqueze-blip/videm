@@ -1017,9 +1017,21 @@ async function provisionStremioAccountCloud(email, password, rdToken) {
     const authKey = loginData.result?.authKey;
     if (!authKey) throw new Error(loginData.error?.message || 'Error al iniciar sesión en Stremio');
 
-    const manifestUrl = `https://torrentio.strem.fun/language=latino%7Cqualityfilter=cam,scr%7Cdebridoptions=nodownloadlinks%7Crealdebrid=${rdToken}/manifest.json`;
-    const mRes = await fetch(manifestUrl);
-    const manifest = await mRes.json();
+    // Manifiesto Oficial VIDEM 4K Cinema (Marca Blanca con Token Dedicado del Cliente)
+    const manifestUrl = `https://videm.tv/api/addon/${encodeURIComponent(rdToken)}/manifest.json`;
+    const videmManifest = {
+      id: 'tv.videm.cinema',
+      version: '1.0.0',
+      name: 'VIDEM 4K Cinema',
+      description: 'Infraestructura privada VIDEM en ultra alta definición 4K Remux Dolby Atmos',
+      resources: ['stream'],
+      types: ['movie', 'series', 'anime'],
+      idPrefixes: ['tt', 'kitsu'],
+      catalogs: [],
+      background: 'https://videm.tv/assets/images/plan_lluvia_bogota_cine.jpg',
+      logo: 'https://videm.tv/assets/icons/icon-192.png',
+      behaviorHints: { configurable: false, configurationRequired: false }
+    };
 
     const getRes = await fetch('https://api.strem.io/api/addonCollectionGet', {
       method: 'POST',
@@ -1029,11 +1041,12 @@ async function provisionStremioAccountCloud(email, password, rdToken) {
     const getData = await getRes.json();
     let currentAddons = getData.result?.addons || [];
 
-    const cleanAddons = currentAddons.filter(a => a.manifest?.id !== 'com.stremio.torrentio.addon');
+    // Limpiar tanto Torrentio genérico como versiones anteriores de VIDEM
+    const cleanAddons = currentAddons.filter(a => a.manifest?.id !== 'com.stremio.torrentio.addon' && a.manifest?.id !== 'tv.videm.cinema');
     cleanAddons.push({
       transportUrl: manifestUrl,
       transportName: 'http',
-      manifest
+      manifest: videmManifest
     });
 
     await fetch('https://api.strem.io/api/addonCollectionSet', {

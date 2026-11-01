@@ -61,9 +61,10 @@ async function isDemoActive() {
   }
 }
 
-function fetchTorrentio(type, id) {
+function fetchTorrentio(type, id, rdToken) {
   return new Promise((resolve, reject) => {
-    const url = `https://torrentio.strem.fun/language=latino%7Cqualityfilter=cam,scr%7Cdebridoptions=nodownloadlinks%7Crealdebrid=${DEMO_RD_TOKEN}/stream/${type}/${id}`;
+    const token = rdToken || DEMO_RD_TOKEN;
+    const url = `https://torrentio.strem.fun/language=latino%7Cqualityfilter=cam,scr%7Cdebridoptions=nodownloadlinks%7Crealdebrid=${token}/stream/${type}/${id}`;
     https.get(url, (res) => {
       let data = '';
       res.on('data', chunk => data += chunk);
@@ -95,10 +96,26 @@ module.exports = async (req, res) => {
   };
 
   const rawUrl = req.url || '';
-  const urlPath = req.query?.path || rawUrl.replace(/^\/api\/addon\/?/, '');
+  let urlPath = req.query?.path || rawUrl.replace(/^\/api\/addon\/?/, '');
+  urlPath = urlPath.split('?')[0];
+
+  let clientToken = req.query?.token || null;
+  let isDemo = false;
+
+  // Si urlPath viene con token dedicado al inicio: ":token/manifest.json" o ":token/stream/..."
+  const tokenPrefixMatch = urlPath.match(/^([a-zA-Z0-9_-]{20,})\/(.*)/);
+  if (tokenPrefixMatch) {
+    clientToken = tokenPrefixMatch[1];
+    urlPath = tokenPrefixMatch[2];
+  }
+
+  if (!clientToken || clientToken === 'demo' || clientToken === DEMO_RD_TOKEN) {
+    clientToken = DEMO_RD_TOKEN;
+    isDemo = true;
+  }
 
   // 1. Manifiesto Stremio
-  if (urlPath === 'manifest.json' || rawUrl.endsWith('manifest.json')) {
+  if (urlPath === 'manifest.json' || urlPath.endsWith('/manifest.json')) {
     sendJson(200, MANIFEST);
     return;
   }
@@ -111,25 +128,26 @@ module.exports = async (req, res) => {
     let id = streamMatch[2];
     if (!id.endsWith('.json')) id += '.json';
 
-    const active = await isDemoActive();
-
-    // SI LA DEMO ESTÁ CORTADA: Retornar aviso de demo finalizada en 0.0 segundos
-    if (!active) {
-      sendJson(200, {
-        streams: [
-          {
-            name: "⛔ VIDEM 4K",
-            title: "🔒 PASE DEMO FINALIZADO\nTu prueba de cortesía ha terminado.\n💬 Escríbenos a WhatsApp (+57 301 556 8904) para activar tu Membresía VIP 4K.",
-            behaviorHints: { notWebReady: true }
-          }
-        ]
-      });
-      return;
+    // SI ES LA CUENTA DEMO Y ESTÁ CORTADA: Retornar aviso de corte en 0.0s
+    if (isDemo) {
+      const active = await isDemoActive();
+      if (!active) {
+        sendJson(200, {
+          streams: [
+            {
+              name: "⛔ VIDEM 4K",
+              title: "🔒 PASE DEMO FINALIZADO\nTu prueba de cortesía ha terminado.\n💬 Escríbenos a WhatsApp (+57 301 556 8904) para activar tu Membresía VIP 4K.",
+              behaviorHints: { notWebReady: true }
+            }
+          ]
+        });
+        return;
+      }
     }
 
-    // SI LA DEMO ESTÁ ACTIVA: Resolver en Torrentio y aplicar branding VIDEM
+    // SI ES CLIENTE VIP O DEMO ACTIVA: Resolver en Torrentio y aplicar branding VIDEM
     try {
-      const data = await fetchTorrentio(type, id);
+      const data = await fetchTorrentio(type, id, clientToken);
       const rawStreams = data.streams || [];
 
       const brandedStreams = rawStreams.map(s => ({

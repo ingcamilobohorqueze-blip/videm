@@ -115,15 +115,15 @@ function seedDefaultClients() {
       id: 'cli-001',
       name: 'Camilo Andrés Bohórquez (Línea Personal RD)',
       phone: '+57 310 331 1543',
-      plan: 'Membresía Personal (Por Renovar)',
+      plan: 'Membresía Personal (Trimestral 90D)',
       price: '16 € (~$72.000 COP)',
       user: 'cbohorquez1983',
       pass: '••••••••',
       rdEmail: 'ing.camilo.bohorqueze@gmail.com',
       status: 'Activo',
-      startDate: '2026-04-27T00:00:00',
-      endDate: '2026-10-27T23:59:59',
-      notes: 'Cuenta principal personal en Real-Debrid. Vence mañana martes 27 de Octubre a medianoche. Al renovar con 180 días, darle clic a 🔄 para extender.'
+      startDate: '2026-10-26T00:00:00',
+      endDate: '2027-01-26T23:59:59',
+      notes: 'Cuenta principal personal en Real-Debrid activa hasta el 26 de enero de 2027. Al renovar con 180 días, darle clic a 🔄 para extender.'
     },
     {
       id: 'cli-002',
@@ -183,7 +183,7 @@ function loadClientsFromStorage() {
 function resetToRealDates() {
   seedDefaultClients();
   renderCrmTable();
-  showToast('✅ Fechas reales sincronizadas: Camilo vence mañana (27 Oct), John Bedoya vence el 26 Nov.');
+  showToast('✅ Fechas reales sincronizadas: Camilo activo (26 Ene 2027), John Bedoya (26 Nov 2026).');
 }
 
 function saveClientsToStorage() {
@@ -317,17 +317,36 @@ function renderCrmTable() {
         </td>
         <td>
           <span class="badge ${badgeClass}">${statusText}</span>
-        </td>
         <td>
           <div class="countdown-cell" id="countdown-cell-${client.id}">
             <span class="countdown-timer" id="timer-${client.id}">Calculando...</span>
-            <div class="countdown-progress-bg">
-              <div class="countdown-progress-bar" id="bar-${client.id}" style="width: 100%;"></div>
-            </div>
+            ${client.plan.includes('Anual') ? `
+              <div class="countdown-dual-bars" style="display:flex; gap:3px; width:100%; margin-top:4px;" title="2 Tramos Real-Debrid de 180 días (Total 360d)">
+                <div class="countdown-progress-bg" style="flex:1;" title="Tramo 1 (180d RD Activo)">
+                  <div class="countdown-progress-bar" id="bar-${client.id}-t1" style="width: 100%;"></div>
+                </div>
+                <div class="countdown-progress-bg" style="flex:1;" title="Tramo 2 (180d RD Reserva)">
+                  <div class="countdown-progress-bar" id="bar-${client.id}-t2" style="width: 100%;"></div>
+                </div>
+              </div>
+              <div style="display:flex; justify-content:space-between; font-size:0.68rem; color:var(--text-muted); margin-top:2px;">
+                <span id="scale-label-${client.id}">Escala 360d (2x180d)</span>
+              </div>
+            ` : `
+              <div class="countdown-progress-bg" style="margin-top:4px;" title="Escala base 180 días Real-Debrid">
+                <div class="countdown-progress-bar" id="bar-${client.id}" style="width: 100%;"></div>
+              </div>
+              <div style="display:flex; justify-content:space-between; font-size:0.68rem; color:var(--text-muted); margin-top:2px;">
+                <span id="scale-label-${client.id}">Base 180d RD</span>
+              </div>
+            `}
           </div>
         </td>
         <td>
-          <span style="font-size:0.85rem; font-weight:600;">${endFormatted}</span>
+          <div style="display:flex; align-items:center; gap:6px;">
+            <span style="font-size:0.85rem; font-weight:600; cursor:pointer;" onclick="quickEditDatePrompt('${client.id}')" title="Clic para modificar fecha de vencimiento">${endFormatted}</span>
+            <button type="button" class="btn btn-outline btn-sm" style="padding:1px 5px; font-size:0.7rem; border-color:rgba(0,240,255,0.25);" onclick="quickEditDatePrompt('${client.id}')" title="Modificar fecha de expiración">📅</button>
+          </div>
         </td>
         <td class="text-right">
           <div class="action-buttons">
@@ -360,50 +379,95 @@ function startLiveCountdowns() {
 
 function updateAllCountdowns() {
   const now = new Date().getTime();
+  const MS_DAY = 1000 * 60 * 60 * 24;
+  const STANDARD_BASE_DAYS = 180; // Medida estándar Real-Debrid
 
   crmClients.forEach(client => {
     const timerEl = document.getElementById(`timer-${client.id}`);
-    const barEl = document.getElementById(`bar-${client.id}`);
-    if (!timerEl || !barEl) return;
+    if (!timerEl) return;
 
-    const start = new Date(client.startDate).getTime();
     const end = new Date(client.endDate).getTime();
-    const totalDuration = end - start;
     const remaining = end - now;
+    const isAnnual = (client.plan || '').toLowerCase().includes('anual');
 
     if (remaining <= 0) {
       timerEl.textContent = '⛔ VENCIDO';
       timerEl.style.color = '#EF4444';
-      barEl.style.width = '0%';
-      barEl.className = 'countdown-progress-bar danger';
+      if (isAnnual) {
+        const b1 = document.getElementById(`bar-${client.id}-t1`);
+        const b2 = document.getElementById(`bar-${client.id}-t2`);
+        if (b1) { b1.style.width = '0%'; b1.className = 'countdown-progress-bar danger'; }
+        if (b2) { b2.style.width = '0%'; b2.className = 'countdown-progress-bar danger'; }
+      } else {
+        const barEl = document.getElementById(`bar-${client.id}`);
+        if (barEl) { barEl.style.width = '0%'; barEl.className = 'countdown-progress-bar danger'; }
+      }
+      const scaleLabel = document.getElementById(`scale-label-${client.id}`);
+      if (scaleLabel) scaleLabel.textContent = 'Vencido';
       return;
     }
 
-    // Cálculos de días, horas, minutos y segundos
-    const days = Math.floor(remaining / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((remaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const remDays = remaining / MS_DAY;
+    const days = Math.floor(remDays);
+    const hours = Math.floor((remaining % MS_DAY) / (1000 * 60 * 60));
     const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
 
-    let displayStr = '';
-    if (days > 0) {
-      displayStr = `${days}d ${hours}h ${minutes}m ${seconds}s`;
-    } else {
-      displayStr = `${hours}h ${minutes}m ${seconds}s`;
-    }
-
+    let displayStr = days > 0 ? `${days}d ${hours}h ${minutes}m ${seconds}s` : `${hours}h ${minutes}m ${seconds}s`;
     timerEl.textContent = displayStr;
 
-    // Barra de porcentaje
-    const pct = Math.max(0, Math.min(100, (remaining / totalDuration) * 100));
-    barEl.style.width = pct + '%';
+    // Actualizar etiqueta descriptiva de escala
+    const scaleLabel = document.getElementById(`scale-label-${client.id}`);
+    if (scaleLabel) {
+      if (isAnnual) {
+        scaleLabel.textContent = `${days}d de 360d (2x180d RD)`;
+      } else {
+        const pctVal = Math.round((remDays / STANDARD_BASE_DAYS) * 100);
+        scaleLabel.textContent = `${days}d / 180d RD (${pctVal}%)`;
+      }
+    }
 
-    if (pct < 10) {
-      barEl.className = 'countdown-progress-bar danger';
-    } else if (pct < 25) {
-      barEl.className = 'countdown-progress-bar warning';
+    // Color por urgencia real de días:
+    // <= 5 días: peligro (rojo)
+    // <= 15 días: alerta de renovación (ámbar)
+    // > 15 días: saludable (verde/cian)
+    let colorClass = 'countdown-progress-bar';
+    if (days <= 5) {
+      colorClass = 'countdown-progress-bar danger';
+      timerEl.style.color = '#EF4444';
+    } else if (days <= 15) {
+      colorClass = 'countdown-progress-bar warning';
+      timerEl.style.color = '#F59E0B';
     } else {
-      barEl.className = 'countdown-progress-bar';
+      timerEl.style.color = '#00F0FF';
+    }
+
+    if (isAnnual) {
+      const b1 = document.getElementById(`bar-${client.id}-t1`);
+      const b2 = document.getElementById(`bar-${client.id}-t2`);
+      // Tramo 1: 0 - 180d
+      const t1Days = Math.min(remDays, 180);
+      const t1Pct = Math.max(0, Math.min(100, (t1Days / 180) * 100));
+      // Tramo 2: 181 - 360d
+      const t2Days = Math.max(0, remDays - 180);
+      const t2Pct = Math.max(0, Math.min(100, (t2Days / 180) * 100));
+
+      if (b1) {
+        b1.style.width = t1Pct + '%';
+        b1.className = colorClass;
+      }
+      if (b2) {
+        b2.style.width = t2Pct + '%';
+        b2.className = 'countdown-progress-bar';
+      }
+    } else {
+      const barEl = document.getElementById(`bar-${client.id}`);
+      if (barEl) {
+        // Escala sobre estándar Real-Debrid de 180 días
+        const pct = Math.max(0, Math.min(100, (remDays / STANDARD_BASE_DAYS) * 100));
+        barEl.style.width = pct + '%';
+        barEl.className = colorClass;
+      }
     }
   });
 }
@@ -1144,8 +1208,74 @@ function extendClientSubscription() {
 }
 
 function quickExtendPrompt(clientId) {
-  selectedClientId = clientId;
-  extendClientSubscription();
+  const client = crmClients.find(c => c.id === clientId);
+  if (!client) return;
+
+  const choice = prompt(
+    `🔄 Renovar o Sumar Tiempo a:\n${client.name}\n\n` +
+    `Elige una opción:\n` +
+    `1. Sumar +30 Días (Pase Mensual Flex)\n` +
+    `2. Sumar +90 Días (Pase Trimestral)\n` +
+    `3. Sumar +180 Días (Membresía Semestral RD)\n` +
+    `4. Sumar +360 Días (Membresía Anual Completa)\n\n` +
+    `Escribe 1, 2, 3 o 4 (o el número de días):`,
+    '3'
+  );
+
+  if (!choice) return;
+
+  let daysToAdd = 0;
+  const trimmed = choice.trim();
+  if (trimmed === '1') daysToAdd = 30;
+  else if (trimmed === '2') daysToAdd = 90;
+  else if (trimmed === '3') daysToAdd = 180;
+  else if (trimmed === '4') daysToAdd = 360;
+  else {
+    const custom = parseInt(trimmed, 10);
+    if (!isNaN(custom) && custom > 0) daysToAdd = custom;
+  }
+
+  if (daysToAdd <= 0) {
+    alert('Opción no válida');
+    return;
+  }
+
+  const currentEnd = new Date(client.endDate).getTime();
+  const baseTime = Math.max(Date.now(), isNaN(currentEnd) ? Date.now() : currentEnd);
+  const newEnd = new Date(baseTime + daysToAdd * 24 * 60 * 60 * 1000);
+
+  client.endDate = newEnd.toISOString();
+  client.status = client.plan?.includes('Demo') ? 'Demo' : 'Activo';
+
+  saveClientsToStorage();
+  renderCrmTable();
+  showToast(`🎉 ¡+${daysToAdd} días sumados a ${client.name}! Nuevo vencimiento: ${newEnd.toLocaleDateString('es-CO')}`);
+}
+
+function quickEditDatePrompt(clientId) {
+  const client = crmClients.find(c => c.id === clientId);
+  if (!client) return;
+
+  const currentIso = new Date(client.endDate).toISOString().split('T')[0];
+  const newDateStr = prompt(
+    `📅 Modificar fecha exacta de vencimiento para:\n${client.name}\n\nIngresa la fecha en formato AAAA-MM-DD (ej: 2027-01-26 o 2027-04-26):`,
+    currentIso
+  );
+
+  if (!newDateStr) return;
+
+  const parsed = new Date(`${newDateStr.trim()}T23:59:59`);
+  if (isNaN(parsed.getTime())) {
+    alert('⚠️ Fecha no válida. Formato esperado: AAAA-MM-DD (ej: 2027-01-26)');
+    return;
+  }
+
+  client.endDate = parsed.toISOString();
+  client.status = parsed.getTime() > Date.now() ? (client.plan?.includes('Demo') ? 'Demo' : 'Activo') : 'Vencido';
+
+  saveClientsToStorage();
+  renderCrmTable();
+  showToast(`📅 Vencimiento actualizado para ${client.name}: ${parsed.toLocaleDateString('es-CO')}`);
 }
 
 function deleteClientPrompt(clientId) {

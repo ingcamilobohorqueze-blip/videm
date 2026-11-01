@@ -68,6 +68,11 @@ return [{
         }
       ]
     };
+    node.parameters.jsonBody = `={{ JSON.stringify({
+  phone: $('Filtrar y Normalizar').item.json.senderPhone,
+  name: $('Filtrar y Normalizar').item.json.senderName,
+  tv_code: $fromAI('tv_code', 'Código de 4 letras que sale en el televisor')
+}) }}`;
   }
 
   if (node.name === 'Tool: Escalar a Camilo') {
@@ -85,6 +90,26 @@ return [{
         }
       ]
     };
+    node.parameters.jsonBody = `={{ JSON.stringify({
+  number: '573103311543',
+  textMessage: {
+    text: '🔔 *VIDEM ALERT | ¡CLIENTE LISTO PARA PAGAR O ASISTENCIA!*\\n\\n👤 *Cliente:* ' + $('Filtrar y Normalizar').item.json.senderName + '\\n📱 *WhatsApp:* +' + $('Filtrar y Normalizar').item.json.senderPhone + '\\n🎯 *Motivo:* ' + $fromAI('motivo', 'Motivo del contacto') + '\\n👉 *Chatear en 1 clic:*\\nhttps://wa.me/' + $('Filtrar y Normalizar').item.json.senderPhone
+  }
+}) }}`;
+  }
+
+  if (node.name === 'Enviar Respuesta por WhatsApp') {
+    node.parameters.jsonBody = `={{ JSON.stringify({
+  number: $('Filtrar y Normalizar').item.json.senderPhone,
+  options: {
+    delay: 1200,
+    presence: 'composing',
+    linkPreview: false
+  },
+  textMessage: {
+    text: $json.output
+  }
+}) }}`;
   }
 }
 

@@ -42,8 +42,9 @@ function sendWhatsApp(phone, text) {
     const cleanPhone = String(phone).replace(/[^0-9]/g, '');
     const data = JSON.stringify({
       number: cleanPhone,
-      options: { delay: 1000, presence: 'composing' },
-      textMessage: { text }
+      text: text,
+      delay: 1000,
+      presence: 'composing'
     });
     const req = https.request(`${EVOLUTION_API_URL}/message/sendText/${EVOLUTION_INSTANCE}`, {
       method: 'POST',

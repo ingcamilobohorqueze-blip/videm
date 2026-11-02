@@ -108,7 +108,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"number\": \"573103311543\",\n  \"textMessage\": {\n    \"text\": \"🔔 *VIDEM ALERT | ¡CLIENTE LISTO PARA PAGAR O ASISTENCIA!*\\n\\n👤 *Cliente:* {{ $('Filtrar y Normalizar').item.json.senderName }}\\n📱 *WhatsApp:* +{{ $('Filtrar y Normalizar').item.json.senderPhone }}\\n🎯 *Motivo:* {{ $fromAI('motivo', 'Motivo del contacto') }}\\n👉 *Chatear en 1 clic:*\\nhttps://wa.me/{{ $('Filtrar y Normalizar').item.json.senderPhone }}\"\n  }\n}"
+        "jsonBody": "={{ JSON.stringify({\n  number: '573103311543',\n  text: '🔔 *VIDEM ALERT | ¡CLIENTE LISTO PARA PAGAR O ASISTENCIA!*\\n\\n👤 *Cliente:* ' + $('Filtrar y Normalizar').item.json.senderName + '\\n📱 *WhatsApp:* +' + $('Filtrar y Normalizar').item.json.senderPhone + '\\n🎯 *Motivo:* ' + $fromAI('motivo', 'Motivo del contacto') + '\\n👉 *Chatear en 1 clic:*\\nhttps://wa.me/' + $('Filtrar y Normalizar').item.json.senderPhone,\n  delay: 1000\n}) }}"
       },
       "id": "tool-escalar-camilo",
       "name": "Tool: Escalar a Camilo",
@@ -135,7 +135,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"number\": \"{{ $('Filtrar y Normalizar').item.json.senderPhone }}\",\n  \"options\": {\n    \"delay\": 1200,\n    \"presence\": \"composing\",\n    \"linkPreview\": false\n  },\n  \"textMessage\": {\n    \"text\": \"{{ $json.output }}\"\n  }\n}"
+        "jsonBody": "={{ JSON.stringify({\n  number: $('Filtrar y Normalizar').item.json.senderPhone,\n  text: $json.output,\n  delay: 1200,\n  presence: 'composing',\n  linkPreview: false\n}) }}"
       },
       "id": "node-send-reply",
       "name": "Enviar Respuesta por WhatsApp",

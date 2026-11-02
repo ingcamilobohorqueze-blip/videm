@@ -240,44 +240,25 @@ module.exports = async (req, res) => {
           }
         } catch(e) {}
 
-        // Vincular televisor asegurando Torrentio RD previamente
-        const authKey = await getStremioAuthKey();
-        await ensureDemoAddons(authKey);
-        await linkStremioTvCode(nextSession.tv_code, authKey);
-
-        // Actualizar sesión a activa
+        // Marcar la sesión en cola como notificada
         await supabaseRequest(`/rest/v1/demo_sessions?id=eq.${nextSession.id}`, 'PATCH', {
-          status: 'active',
-          scheduled_start: newStart.toISOString(),
-          scheduled_end: newEnd.toISOString(),
-          queue_position: 0
+          status: 'ready_for_code'
         });
 
-        await supabaseRequest(`/rest/v1/users?phone=eq.${nextSession.user_phone}`, 'PATCH', {
-          status: 'demo_active'
-        });
-        await supabaseRequest('/rest/v1/users?phone=eq.573015568904', 'PATCH', {
-          status: 'demo_active'
-        });
-
-        const expHour = newEnd.toLocaleTimeString('es-CO', { timeZone: 'America/Bogota', hour: '2-digit', minute: '2-digit', hour12: true });
-
-        // Notificar por WhatsApp
-        const activateMsg = [
+        // Notificar por WhatsApp para que envíe su código fresco
+        const readyMsg = [
           "🎉 *¡LLEGÓ TU TURNO VIP EN VIDEM!* 📺🍿",
           "",
-          `Acabamos de vincular tu televisor (código: *${nextSession.tv_code}*) en vivo.`,
-          `Tienes 2 horas completas de acceso libre hasta las *${expHour}*.`,
+          "Tenemos una línea 4K Remux de alta velocidad disponible para tu pantalla.",
           "",
-          "✨ *Películas sugeridas para calibrar tu pantalla hoy:*",
-          "• *Beetlejuice 2* (4K Remux)",
-          "• *Duna: Parte 2* (Dolby Vision)",
-          "• *Robot Salvaje* o *Intensamente 2* (Familiares)",
+          "Para activar tus 2 horas completas de cortesía:",
+          "1️⃣ Enciende tu televisor y abre la app *Stremio*.",
+          "2️⃣ Escríbeme aquí el código de 4 letras que ves en tu pantalla (ej: ABCD o 9K4X).",
           "",
-          "¡Siente la potencia del cine sin compresión en tu casa! 🎬"
+          "¡En cuanto lo envíes, tu televisor quedará sincronizado en 10 segundos! 🎬"
         ].join("\n");
 
-        await sendWhatsApp(nextSession.user_phone, activateMsg);
+        await sendWhatsApp(nextSession.user_phone, readyMsg);
       }
     }
 

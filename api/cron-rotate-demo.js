@@ -124,6 +124,22 @@ const VIDEM_MANIFEST = {
   behaviorHints: { configurable: false, configurationRequired: false }
 };
 
+const TMDB_URL = 'https://94c8cb9f702d-tmdb-addon.baby-beamup.club/manifest.json';
+const STREAMCAT_URL = 'https://7a82163c306e-stremio-netflix-catalog-addon.baby-beamup.club/manifest.json';
+
+function fetchRemoteJson(url) {
+  return new Promise((resolve) => {
+    https.get(url, (res) => {
+      let b = '';
+      res.on('data', c => b += c);
+      res.on('end', () => {
+        try { resolve(JSON.parse(b)); }
+        catch(e) { resolve(null); }
+      });
+    }).on('error', () => resolve(null));
+  });
+}
+
 async function ensureDemoAddons(authKey) {
   try {
     const existing = await new Promise((resolve) => {
@@ -145,13 +161,32 @@ async function ensureDemoAddons(authKey) {
     });
 
     const hasVidem = existing.some(a => a.manifest?.id === 'tv.videm.cinema');
-    if (!hasVidem) {
-      const clean = existing.filter(a => a.manifest?.id !== 'tv.videm.cinema');
+    const hasTmdb = existing.some(a => a.manifest?.id === 'tmdb-addon');
+    const hasStreamCat = existing.some(a => a.manifest?.id === 'pw.ers.netflix-catalog');
+
+    if (!hasVidem || !hasTmdb || !hasStreamCat) {
+      let clean = existing.filter(a => 
+        a.manifest?.id !== 'com.stremio.torrentio.addon' &&
+        a.manifest?.id !== 'tv.videm.cinema' &&
+        a.manifest?.id !== 'tmdb-addon' &&
+        a.manifest?.id !== 'pw.ers.netflix-catalog'
+      );
+
       clean.push({
         transportUrl: 'https://videm.tv/api/addon/manifest.json',
         transportName: 'http',
         manifest: VIDEM_MANIFEST
       });
+
+      const tmdbM = await fetchRemoteJson(TMDB_URL);
+      if (tmdbM) {
+        clean.push({ transportUrl: TMDB_URL, transportName: 'http', manifest: tmdbM });
+      }
+
+      const streamM = await fetchRemoteJson(STREAMCAT_URL);
+      if (streamM) {
+        clean.push({ transportUrl: STREAMCAT_URL, transportName: 'http', manifest: streamM });
+      }
 
       await new Promise((resolve) => {
         const p = JSON.stringify({ authKey, type: 'AddonCollectionSet', addons: clean });

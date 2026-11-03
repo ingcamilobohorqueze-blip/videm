@@ -1044,13 +1044,32 @@ async function provisionStremioAccountCloud(email, password, rdToken) {
     const getData = await getRes.json();
     let currentAddons = getData.result?.addons || [];
 
-    // Limpiar tanto Torrentio genérico como versiones anteriores de VIDEM
-    const cleanAddons = currentAddons.filter(a => a.manifest?.id !== 'com.stremio.torrentio.addon' && a.manifest?.id !== 'tv.videm.cinema');
+    // Limpiar Torrentio genérico y versiones anteriores
+    const cleanAddons = currentAddons.filter(a => 
+      a.manifest?.id !== 'com.stremio.torrentio.addon' && 
+      a.manifest?.id !== 'tv.videm.cinema' &&
+      a.manifest?.id !== 'tmdb-addon' &&
+      a.manifest?.id !== 'pw.ers.netflix-catalog'
+    );
+
     cleanAddons.push({
       transportUrl: manifestUrl,
       transportName: 'http',
       manifest: videmManifest
     });
+
+    // Agregar Catálogos Oficiales TMDB y Streaming (Netflix, Disney+, Prime, Max)
+    try {
+      const tmdbRes = await fetch('https://94c8cb9f702d-tmdb-addon.baby-beamup.club/manifest.json');
+      const tmdbM = await tmdbRes.json();
+      if (tmdbM) cleanAddons.push({ transportUrl: 'https://94c8cb9f702d-tmdb-addon.baby-beamup.club/manifest.json', transportName: 'http', manifest: tmdbM });
+    } catch(e) {}
+
+    try {
+      const scRes = await fetch('https://7a82163c306e-stremio-netflix-catalog-addon.baby-beamup.club/manifest.json');
+      const scM = await scRes.json();
+      if (scM) cleanAddons.push({ transportUrl: 'https://7a82163c306e-stremio-netflix-catalog-addon.baby-beamup.club/manifest.json', transportName: 'http', manifest: scM });
+    } catch(e) {}
 
     await fetch('https://api.strem.io/api/addonCollectionSet', {
       method: 'POST',

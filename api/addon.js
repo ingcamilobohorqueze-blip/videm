@@ -11,12 +11,12 @@ let lastCheckTime = 0;
 
 const MANIFEST = {
   id: "tv.videm.cinema",
-  version: "1.0.0",
+  version: "1.0.1",
   name: "VIDEM 4K Cinema",
   description: "Infraestructura privada VIDEM en ultra alta definición 4K Remux Dolby Atmos",
   resources: ["stream"],
   types: ["movie", "series", "anime"],
-  idPrefixes: ["tt", "kitsu"],
+  idPrefixes: ["tt", "kitsu", "tmdb:"],
   catalogs: [],
   background: "https://videm.tv/assets/images/plan_lluvia_bogota_cine.jpg",
   logo: "https://videm.tv/assets/icons/icon-192.png",
@@ -61,10 +61,8 @@ async function isDemoActive() {
   }
 }
 
-function fetchTorrentio(type, id, rdToken) {
-  return new Promise((resolve, reject) => {
-    const token = rdToken || DEMO_RD_TOKEN;
-    const url = `https://torrentio.strem.fun/language=latino%7Cqualityfilter=cam,scr%7Cdebridoptions=nodownloadlinks%7Crealdebrid=${token}/stream/${type}/${id}`;
+function queryTorrentioUrl(url) {
+  return new Promise((resolve) => {
     https.get(url, (res) => {
       let data = '';
       res.on('data', chunk => data += chunk);
@@ -72,8 +70,27 @@ function fetchTorrentio(type, id, rdToken) {
         try { resolve(JSON.parse(data)); }
         catch (e) { resolve({ streams: [] }); }
       });
-    }).on('error', reject);
+    }).on('error', () => resolve({ streams: [] }));
   });
+}
+
+async function fetchTorrentio(type, id, rdToken) {
+  const token = rdToken || DEMO_RD_TOKEN;
+
+  // 1. Intento prioritario: Pistas etiquetadas como Latino
+  const urlLatino = `https://torrentio.strem.fun/language=latino%7Cqualityfilter=cam,scr%7Cdebridoptions=nodownloadlinks%7Crealdebrid=${token}/stream/${type}/${id}`;
+  const resLatino = await queryTorrentioUrl(urlLatino);
+
+  if (resLatino && Array.isArray(resLatino.streams) && resLatino.streams.length > 0) {
+    return resLatino;
+  }
+
+  // 2. Fallback inteligente: Si no hay 'latino' explícito en el nombre del torrent (común en series de Netflix, Disney+, novelas),
+  // consultar fuentes globales sin filtro de idioma para capturar versiones Dual Audio, Multi-Audio o Español
+  const urlGlobal = `https://torrentio.strem.fun/qualityfilter=cam,scr%7Cdebridoptions=nodownloadlinks%7Crealdebrid=${token}/stream/${type}/${id}`;
+  const resGlobal = await queryTorrentioUrl(urlGlobal);
+
+  return resGlobal || { streams: [] };
 }
 
 module.exports = async (req, res) => {

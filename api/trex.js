@@ -35,73 +35,95 @@ function fetchTrexStreams() {
 }
 
 function buildCleanM3U(streams) {
-  let m3u = '#EXTM3U name="VIDEM TREX VIP"\n\n';
+  let m3u = '#EXTM3U name="VIDEM PARRILLA TOTAL (DIRECTV/CLARO/MOVISTAR)"\n\n';
 
-  // Categorías y Filtros seleccionados
+  // Categorías relevantes en Trex:
   // 154 = LAT| COLOMBIA
   // 151 = LAT| MEXICO
   // 152 = LAT| ARGENTINA
   // 166 = LAT| CULTURA / DOCU
   // 2171 = LAT| MEXICO VIP
   // 2368 = LAT| VIX PPV
+  // 1334 = SPORTS EVENTS
 
-  const targetCats = new Set(['154', '151', '152', '166', '2171', '2368']);
+  const targetCats = new Set(['154', '151', '152', '166', '2171', '2368', '1667']);
 
   const vipStreams = streams.filter(s => {
     const name = (s.name || '').toUpperCase();
     const cat = String(s.category_id);
 
-    // 1. Canal favorito del usuario: Investigation Discovery (ID en español y US)
-    if (
-      name.includes('INVESTIGATION DISCOVERY') || 
-      name.includes('DISCOVERY ID') ||
-      name === 'LAT| INVESTIGATION DISCOVERY HD' ||
-      name === 'US| ID HD'
-    ) {
-      // Excluir idiomas extranjeros (sueco, danés, ruso, polaco, hindi, francés, etc.)
-      const isForeign = name.match(/\b(SWE|DNK|NOR|FIN|PL|RU|HINDI|FR|BE|NL|RO|ALB|RS|MO|GR|BR|BG|IS|CZ)\b/);
-      const isLocalUsRadio = name.includes('BOISE') || name.includes('TWIN FALLS') || name.includes('IDAHO');
-      if (!isForeign && !isLocalUsRadio) {
-        return true;
-      }
+    // Evitar estaciones locales de radio en USA
+    if (name.includes('BOISE') || name.includes('TWIN FALLS') || name.includes('IDAHO')) return false;
+    // Evitar idiomas no hispanos
+    if (name.match(/\b(SWE|DNK|NOR|FIN|PL|RU|HINDI|FR|BE|NL|RO|ALB|RS|MO|GR|BR|BG|IS|CZ|ARABIC|TURK)\b/)) return false;
+
+    // 1. Canal favorito: Investigation Discovery (ID)
+    if (name.includes('INVESTIGATION DISCOVERY') || name.includes('DISCOVERY ID') || name === 'LAT| INVESTIGATION DISCOVERY HD' || name === 'US| ID HD') {
+      return true;
     }
 
-    // 2. Canales de Colombia
-    if (cat === '154') return true; 
+    // 2. Todos los canales de Colombia (Caracol, RCN, Win, Dsports, Citytv, etc.)
+    if (cat === '154') return true;
 
-    // 3. Deportes VIP específicos (Solo feeds en español y top US)
+    // 3. Parrilla Deportiva Total (Directv Sports/Dsports, Win Sports, ESPN, Fox, Claro, TyC, TUDN, DAZN, etc.)
     if (
-      name.includes('WIN SPORTS') || 
-      name.includes('DSPORTS') || 
+      name.includes('DSPORTS') ||
       name.includes('DIRECTV SPORTS') ||
+      name.includes('WIN SPORTS') ||
+      name.includes('WINSPORTS') ||
       name.includes('ESPN') ||
       name.includes('FOX SPORTS') ||
+      name.includes('CLARO SPORTS') ||
       name.includes('TYC SPORTS') ||
       name.includes('TUDN') ||
-      name.includes('CLARO SPORTS')
+      name.includes('DAZN') ||
+      name.includes('GOLTV') ||
+      name.includes('NBA TV') ||
+      name.includes('F1') ||
+      name.includes('LALIGA') ||
+      name.includes('PREMIER LEAGUE')
     ) {
-      if (name.includes('LAT') || name.includes('CO|') || name.includes('AR|') || name.includes('MX|') || name.includes('US|')) {
+      if (name.includes('LAT') || name.includes('CO|') || name.includes('AR|') || name.includes('MX|') || name.includes('US|') || name.includes('ES|')) {
         return true;
       }
     }
 
-    // 4. Cine & Documentales Prémium en Español
+    // 4. Parrilla Cable / Satélite (DirecTV / Claro / Movistar: Cine, Series, Documentales, Infantiles)
     if (targetCats.has(cat)) {
       if (
-        name.includes('HBO') || 
-        name.includes('UNIVERSAL') || 
-        name.includes('DISCOVERY') || 
-        name.includes('HISTORY') ||
-        name.includes('NATIONAL GEO') ||
+        name.includes('HBO') ||
+        name.includes('UNIVERSAL') ||
         name.includes('STAR CHANNEL') ||
         name.includes('WARNER') ||
-        name.includes('SONY')
+        name.includes('SONY') ||
+        name.includes('PARAMOUNT') ||
+        name.includes('CINECANAL') ||
+        name.includes('SPACE') ||
+        name.includes('TNT') ||
+        name.includes('AXN') ||
+        name.includes('FX') ||
+        name.includes('A&E') ||
+        name.includes('DISCOVERY') ||
+        name.includes('ANIMAL PLANET') ||
+        name.includes('NATIONAL GEO') ||
+        name.includes('NAT GEO') ||
+        name.includes('HISTORY') ||
+        name.includes('TLC') ||
+        name.includes('DISNEY') ||
+        name.includes('CARTOON') ||
+        name.includes('NICKELODEON') ||
+        name.includes('NICK') ||
+        name.includes('CNN') ||
+        name.includes('TELEMUNDO') ||
+        name.includes('UNIVISION')
       ) {
         return true;
       }
     }
 
     return false;
+  });
+
   vipStreams.forEach(s => {
     let group = 'Entretenimiento VIP';
     const name = (s.name || '').toUpperCase();
@@ -109,13 +131,41 @@ function buildCleanM3U(streams) {
     if (name.includes('INVESTIGATION DISCOVERY') || name.includes('DISCOVERY ID') || name.includes('ID HD')) {
       group = '🕵️ Cultura & ID';
     } else if (String(s.category_id) === '154' || name.includes('CO|') || name.includes('COLOMBIA')) {
-      group = '🇨🇴 Colombia HD';
-    } else if (name.includes('SPORTS') || name.includes('ESPN') || name.includes('WIN') || name.includes('TYC') || name.includes('TUDN') || name.includes('DSPORTS') || name.includes('DIRECTV')) {
-      group = '⚽ Deportes VIP';
-    } else if (name.includes('HBO') || name.includes('CINEMA') || name.includes('MOVIE') || name.includes('UNIVERSAL') || name.includes('STAR')) {
-      group = '🎬 Cine & Series';
-    } else if (name.includes('DISCOVERY') || name.includes('HISTORY') || name.includes('NATIONAL') || name.includes('ANIMAL')) {
-      group = '🌍 Documentales';
+      group = '🇨🇴 Colombia (Nacionales & TDT)';
+    } else if (
+      name.includes('SPORTS') || 
+      name.includes('ESPN') || 
+      name.includes('WIN') || 
+      name.includes('TYC') || 
+      name.includes('TUDN') || 
+      name.includes('DSPORTS') || 
+      name.includes('DIRECTV') ||
+      name.includes('DAZN')
+    ) {
+      group = '⚽ Deportes VIP (Parrilla Total)';
+    } else if (
+      name.includes('HBO') || 
+      name.includes('CINEMA') || 
+      name.includes('MOVIE') || 
+      name.includes('UNIVERSAL') || 
+      name.includes('STAR') ||
+      name.includes('WARNER') ||
+      name.includes('SONY') ||
+      name.includes('TNT') ||
+      name.includes('SPACE') ||
+      name.includes('AXN')
+    ) {
+      group = '🎬 Cine & Series (DirecTV / Claro)';
+    } else if (
+      name.includes('DISCOVERY') || 
+      name.includes('HISTORY') || 
+      name.includes('NATIONAL') || 
+      name.includes('NAT GEO') ||
+      name.includes('ANIMAL')
+    ) {
+      group = '🌍 Documentales & Ciencia';
+    } else if (name.includes('DISNEY') || name.includes('CARTOON') || name.includes('NICK')) {
+      group = '🧒 Infantiles';
     }
 
     const streamUrl = `http://${TREX_HOST}:${TREX_PORT}/${TREX_USER}/${TREX_PASS}/${s.stream_id}.ts`;

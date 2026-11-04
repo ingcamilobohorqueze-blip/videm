@@ -653,12 +653,12 @@ async function executeAutonomousLink() {
           console.log('🔄 Addon VIDEM 4K Cinema no presente. Auto-instalando en Stremio Cloud...');
           const videmManifest = {
             id: 'tv.videm.cinema',
-            version: '1.0.0',
+            version: '1.1.0',
             name: 'VIDEM 4K Cinema',
-            description: 'Infraestructura privada VIDEM en ultra alta definición 4K Remux Dolby Atmos',
+            description: 'Infraestructura privada VIDEM en ultra alta definición 4K Remux Dolby Atmos (Multi-Engine Latino & Asian Cinema)',
             resources: ['stream'],
             types: ['movie', 'series', 'anime'],
-            idPrefixes: ['tt', 'kitsu'],
+            idPrefixes: ['tt', 'kitsu', 'tmdb:'],
             catalogs: [],
             background: 'https://videm.tv/assets/images/plan_lluvia_bogota_cine.jpg',
             logo: 'https://videm.tv/assets/icons/icon-192.png',
@@ -1023,12 +1023,12 @@ async function provisionStremioAccountCloud(email, password, rdToken) {
     const manifestUrl = `https://videm.tv/api/addon/${encodeURIComponent(rdToken)}/manifest.json`;
     const videmManifest = {
       id: 'tv.videm.cinema',
-      version: '1.0.0',
+      version: '1.1.0',
       name: 'VIDEM 4K Cinema',
-      description: 'Infraestructura privada VIDEM en ultra alta definición 4K Remux Dolby Atmos',
+      description: 'Infraestructura privada VIDEM en ultra alta definición 4K Remux Dolby Atmos (Multi-Engine Latino & Asian Cinema)',
       resources: ['stream'],
       types: ['movie', 'series', 'anime'],
-      idPrefixes: ['tt', 'kitsu'],
+      idPrefixes: ['tt', 'kitsu', 'tmdb:'],
       catalogs: [],
       background: 'https://videm.tv/assets/images/plan_lluvia_bogota_cine.jpg',
       logo: 'https://videm.tv/assets/icons/icon-192.png',

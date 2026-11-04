@@ -75,11 +75,20 @@
   ],
   "rewrites": [
     {
+      "source": "/es",
+      "destination": "/es.html"
+    },
+    {
       "source": "/api/addon/(.*)",
       "destination": "/api/addon?path=$1"
     }
   ],
   "redirects": [
+    {
+      "source": "/wa-es",
+      "destination": "https://wa.me/573015568904?text=Hola,%20estoy%20en%20Espa%C3%B1a%20y%20quiero%20probar%20VIDEM%20en%20mi%20Smart%20TV",
+      "permanent": false
+    },
     {
       "source": "/wa",
       "destination": "https://wa.me/573015568904?text=Hola,%20vi%20la%20publicacion%20en%20Marketplace%20y%20quiero%20calibrar%20mi%20TV",

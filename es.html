@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="es-ES" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  
+  <title>Videm España | El estándar definitivo del cine 4K en casa</title>
+  <meta name="description" content="Servicio de conserjería técnica y enlace CDN privado para Smart TV y Fire TV en España. Todo el cine y series en 4K Remux real, Dolby Vision y Dolby Atmos en Castellano y VOSE.">
+  <meta name="keywords" content="Videm España, Stremio, 4K Remux, Dolby Vision, Dolby Atmos, Smart TV, Fire TV Stick, Streaming privado España, Cine en casa">
+  <meta name="author" content="Videm Private Concierge">
+  <link rel="canonical" href="https://videm.tv/es">
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://videm.tv/es">
+  <meta property="og:title" content="Videm España | El estándar definitivo del cine 4K en casa">
+  <meta property="og:description" content="Todo el cine del mundo en una sola interfaz en tu televisor. 4K real con servidores privados CDN europeos. Cero cortes ni esperas.">
+  <meta property="og:image" content="https://videm.tv/assets/images/hero-home-theater.jpeg">
+  <meta property="og:locale" content="es_ES">
+  <meta property="og:site_name" content="Videm España">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://videm.tv/es">
+  <meta name="twitter:title" content="Videm España | Cine 4K Remux en casa">
+  <meta name="twitter:description" content="Todas las plataformas en una sola app en tu salón. 4K Blu-ray real, Dolby Atmos, Castellano y VOSE sin compresión.">
+  <meta name="twitter:image" content="https://videm.tv/assets/images/hero-home-theater.jpeg">
+
+  <!-- Schema.org JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": "Videm España Concierge",
+    "image": "https://videm.tv/assets/images/hero-home-theater.jpeg",
+    "description": "Optimización telemática y enlace CDN privado para televisores de alta gama en España.",
+    "brand": {
+      "@type": "Brand",
+      "name": "Videm"
+    },
+    "offers": {
+      "@type": "AggregateOffer",
+      "priceCurrency": "EUR",
+      "lowPrice": "9.99",
+      "highPrice": "89.99"
+    }
+  }
+  </script>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="64x64" href="assets/favicon-64.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="assets/favicon.png">
+  <link rel="shortcut icon" href="assets/favicon-64.png">
+  <link rel="apple-touch-icon" href="assets/favicon.png">
+  <meta name="theme-color" content="#06080D">
+
+  <!-- Google Fonts: Plus Jakarta Sans & Space Grotesk -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/style.css">
+
+  <style>
+    /* Estilos específicos para la landing de España y tabla de tarifas */
+    .es-badge-flag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(229, 9, 20, 0.12);
+      border: 1px solid rgba(229, 9, 20, 0.3);
+      color: #ff4d5a;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .pricing-grid-es {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      margin-top: 36px;
+    }
+    .pricing-card-es {
+      background: var(--surface-card, rgba(14, 18, 27, 0.7));
+      border: 1px solid var(--border-card, rgba(255, 255, 255, 0.08));
+      border-radius: 20px;
+      padding: 32px 24px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+      backdrop-filter: blur(16px);
+    }
+    .pricing-card-es:hover {
+      transform: translateY(-6px);
+      border-color: rgba(229, 9, 20, 0.5);
+      box-shadow: 0 20px 40px -15px rgba(229, 9, 20, 0.2);
+    }
+    .pricing-card-featured {
+      border-color: #E50914;
+      background: linear-gradient(180deg, rgba(229, 9, 20, 0.08) 0%, rgba(14, 18, 27, 0.85) 100%);
+      box-shadow: 0 10px 30px -10px rgba(229, 9, 20, 0.3);
+    }
+    .pricing-badge-popular {
+      position: absolute;
+      top: -12px;
+      right: 24px;
+      background: #E50914;
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 4px 12px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .price-value-row {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      margin: 16px 0 8px;
+    }
+    .price-currency {
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: var(--text-primary, #fff);
+    }
+    .price-amount {
+      font-size: 3rem;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      color: var(--text-primary, #fff);
+      font-family: 'Space Grotesk', sans-serif;
+    }
+    .price-period {
+      color: var(--text-muted, #8E9BAE);
+      font-size: 0.95rem;
+    }
+    .price-monthly-equiv {
+      font-size: 0.85rem;
+      color: #00E676;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+    .pricing-features-list {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      flex-grow: 1;
+    }
+    .pricing-features-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 0.9rem;
+      color: var(--text-secondary, #C8D1DE);
+      line-height: 1.4;
+    }
+    .pricing-features-list li svg {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      color: #00E676;
+      margin-top: 2px;
+    }
+    .payment-methods-strip {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-top: 24px;
+      padding: 14px 20px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .payment-method-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-secondary, #C8D1DE);
+    }
+    .comparison-table-wrap {
+      overflow-x: auto;
+      margin: 32px 0;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(14, 18, 27, 0.6);
+    }
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+    .comparison-table th, .comparison-table td {
+      padding: 16px 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .comparison-table th {
+      background: rgba(255, 255, 255, 0.03);
+      font-weight: 700;
+      color: var(--text-primary, #fff);
+    }
+    .comparison-table .highlight-col {
+      background: rgba(229, 9, 20, 0.07);
+      color: #fff;
+      font-weight: 700;
+    }
+  </style>
+
+  <script src="js/theme.js"></script>
+</head>
+<body>
+
+  <!-- Ambient Glow Background -->
+  <div class="ambient-glow" aria-hidden="true"></div>
+
+  <!-- HEADER -->
+  <header class="site-header" id="siteHeader">
+    <div class="container nav-container">
+      <a href="/es" class="brand-wrapper" id="brandHomeLink" aria-label="Videm España">
+        <img src="assets/images/logo-videm.png" alt="Isotipo Videm" class="brand-logo-img" width="38" height="38">
+        <img src="assets/images/videm-text-logo-web.png" alt="VIDEM" class="brand-text-wordmark" width="124" height="26">
+      </a>
+
+      <!-- Center Status Badge -->
+      <div class="nav-status-wrapper">
+        <div class="nav-center-badge">
+          <span class="status-dot"></span>
+          <span>Red CDN Europa: 100% Operacional</span>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="nav-actions">
+        <a href="#tarifas" class="nav-text-link">Pases y Tarifas</a>
+        <a href="#faqs" class="nav-text-link">Preguntas Frecuentes</a>
+
+        <button type="button" class="theme-toggle-btn" id="themeToggleBtn" aria-label="Cambiar tema">
+          <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+          </svg>
+          <svg class="icon-moon" style="display:none;" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 3a6 6 0 0 0 9 9 9 0 1 1-9-9Z"></path>
+          </svg>
+        </button>
+
+        <a href="https://wa.me/573015568904?text=Hola,%20estoy%20en%20Espa%C3%B1a%20y%20quiero%20probar%20VIDEM%20en%20mi%20Smart%20TV" target="_blank" rel="noopener noreferrer" class="btn-nav-cta">
+          <span>Prueba Gratis (2h)</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main>
+
+    <!-- HERO SECTION -->
+    <section class="hero-section" id="hero">
+      <div class="hero-background-wrapper" aria-hidden="true">
+        <img 
+          src="assets/images/hero-home-theater.jpeg" 
+          alt="Cine en casa de alta gama Videm" 
+          class="hero-bg-img"
+          loading="eager"
+        >
+        <div class="hero-backdrop-overlay"></div>
+      </div>
+
+      <div class="container hero-content">
+        <div class="es-badge-flag">
+          <span>🇪🇸 Edición España & Europa</span>
+        </div>
+
+        <h1 class="hero-title">
+          <span class="sr-only">Videm España: El estándar definitivo del cine 4K en casa.</span>
+          <span class="hero-title-prefix">
+            <img src="assets/images/videm-text-logo-web.png" alt="VIDEM" class="hero-wordmark-inline" width="280" height="59">
+          </span>
+          <span class="hero-title-main">
+            El <span class="text-gradient">estándar definitivo</span> del cine en tu salón.
+          </span>
+        </h1>
+
+        <p class="hero-subtitle">
+          Todas las plataformas en una sola interfaz en tu televisor. Películas y series en <strong>4K Remux real sin compresión</strong>, con audio en <strong>Castellano</strong> y <strong>VOSE</strong>. Servidores de fibra óptica dedicados. Cero cortes, cero cuotas sorpresa.
+        </p>
+
+        <div class="cta-group">
+          <a 
+            href="https://wa.me/573015568904?text=Hola,%20estoy%20en%20Espa%C3%B1a%20y%20quiero%20probar%20VIDEM%20en%20mi%20Smart%20TV" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            class="btn-primary-wa" 
+            id="heroCtaBtn"
+          >
+            <svg class="wa-icon-svg" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.05 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+            </svg>
+            <span>Pedir Prueba Gratuita (2 Horas) por WhatsApp</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION COMPARATIVA VS PLATAFORMAS EN ESPAÑA -->
+    <section class="section-features" style="padding: 60px 0;">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">La Realidad del Streaming</span>
+          <h2 class="section-title">¿Por qué pagar 5 suscripciones fragmentadas?</h2>
+          <p class="section-desc">
+            En España, mantener las plataformas tradicionales te cuesta más de 600 € al año para recibir video comprimido. Compara tú mismo:
+          </p>
+        </div>
+
+        <div class="comparison-table-wrap">
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>Característica</th>
+                <th>Suscripciones Tradicionales (Netflix, Disney, Max, etc.)</th>
+                <th class="highlight-col">✦ VIDEM Cinema 4K</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Coste Mensual</strong></td>
+                <td>Entre 50 € y 75 € / mes</td>
+                <td class="highlight-col"><strong>Desde 7,50 € / mes</strong></td>
+              </tr>
+              <tr>
+                <td><strong>Calidad de Imagen</strong></td>
+                <td>Comprimida a 12 - 16 Mbps (pérdida de detalle en negros)</td>
+                <td class="highlight-col"><strong>4K Remux Blu-ray puro (hasta 80 Mbps)</strong></td>
+              </tr>
+              <tr>
+                <td><strong>Sonido</strong></td>
+                <td>Dolby Digital Plus comprimido</td>
+                <td class="highlight-col"><strong>Dolby Atmos / TrueHD sin pérdidas</strong></td>
+              </tr>
+              <tr>
+                <td><strong>Catálogo</strong></td>
+                <td>Fragmentado (tienes que saltar de app en app)</td>
+                <td class="highlight-col"><strong>Todo en una sola interfaz limpia</strong></td>
+              </tr>
+              <tr>
+                <td><strong>Permanencia</strong></td>
+                <td>Cobros automáticos recurrentes</td>
+                <td class="highlight-col"><strong>Cero permanencia: renuevas solo cuando quieras</strong></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION TARIFAS Y PASES VIP EN ESPAÑA -->
+    <section class="section-pricing" id="tarifas" style="padding: 70px 0; background: rgba(6, 8, 13, 0.6);">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Transparencia Total</span>
+          <h2 class="section-title">Pases y Membresías VIP para España</h2>
+          <p class="section-desc">
+            Sin suscripciones trampa ni cobros sorpresa en tu tarjeta. Eliges tu pase, disfrutas en tu salón y renuevas solo si te encanta.
+          </p>
+        </div>
+
+        <div class="pricing-grid-es">
+          
+          <!-- Plan 1 Mes -->
+          <div class="pricing-card-es">
+            <h3 style="font-size: 1.3rem; margin: 0; color: #fff;">Pase 1 Mes Flex</h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin: 4px 0 16px;">Ideal para probar un mes completo sin compromiso.</p>
+            
+            <div class="price-value-row">
+              <span class="price-currency">€</span>
+              <span class="price-amount">9</span><span style="font-size: 1.5rem; font-weight: 800;">,99</span>
+              <span class="price-period">/ mes</span>
+            </div>
+            <div class="price-monthly-equiv">Sin permanencia • Pago único</div>
+
+            <ul class="pricing-features-list">
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Acceso completo a estrenos de cine y series</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Calidad 4K Remux, Dolby Vision y Dolby Atmos</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Audio en Castellano y VOSE oficial sincronizada</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Compatible con Smart TV y Fire TV Stick</span>
+              </li>
+            </ul>
+
+            <a href="https://wa.me/573015568904?text=Hola,%20quiero%20activar%20el%20Pase%201%20Mes%20Flex%20(9.99%E2%82%AC)%20para%20Espa%C3%B1a" target="_blank" rel="noopener noreferrer" class="btn-primary-wa" style="justify-content: center; width: 100%; padding: 14px 20px;">
+              <span>Activar 1 Mes Flex</span>
+            </a>
+          </div>
+
+          <!-- Plan 6 Meses -->
+          <div class="pricing-card-es">
+            <h3 style="font-size: 1.3rem; margin: 0; color: #fff;">Pase 6 Meses VIP</h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin: 4px 0 16px;">El equilibrio perfecto para disfrutar la temporada.</p>
+            
+            <div class="price-value-row">
+              <span class="price-currency">€</span>
+              <span class="price-amount">49</span><span style="font-size: 1.5rem; font-weight: 800;">,99</span>
+              <span class="price-period">/ 6 meses</span>
+            </div>
+            <div class="price-monthly-equiv">Te sale a sólo ~8,33 € / mes</div>
+
+            <ul class="pricing-features-list">
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Todo lo del Pase Flex incluido</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Ancho de banda CDN prioritario en horas punta</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Uso simultáneo en todos los televisores de tu hogar</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Soporte técnico directo vía WhatsApp</span>
+              </li>
+            </ul>
+
+            <a href="https://wa.me/573015568904?text=Hola,%20quiero%20activar%20el%20Pase%20Semestral%20VIP%20(49.99%E2%82%AC)%20para%20Espa%C3%B1a" target="_blank" rel="noopener noreferrer" class="btn-primary-wa" style="justify-content: center; width: 100%; padding: 14px 20px;">
+              <span>Activar 6 Meses VIP</span>
+            </a>
+          </div>
+
+          <!-- Plan 12 Meses (EL MÁS ELEGIDO) -->
+          <div class="pricing-card-es pricing-card-featured">
+            <span class="pricing-badge-popular">El Más Elegido</span>
+
+            <h3 style="font-size: 1.3rem; margin: 0; color: #fff;">Pase Anual VIP (12 Meses)</h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin: 4px 0 16px;">Máximo ahorro. Cine ilimitado durante todo el año.</p>
+            
+            <div class="price-value-row">
+              <span class="price-currency">€</span>
+              <span class="price-amount">89</span><span style="font-size: 1.5rem; font-weight: 800;">,99</span>
+              <span class="price-period">/ año</span>
+            </div>
+            <div class="price-monthly-equiv">🔥 Sólo ~7,50 € / mes (Ahorras más de 150 €)</div>
+
+            <ul class="pricing-features-list">
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Acceso VIP anual ininterrumpido sin cortes</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Máxima velocidad CDN garantizada (80 Mbps+)</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Calibración remota asistida para tu Smart TV</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Válido para salón, habitaciones y móvil del hogar</span>
+              </li>
+            </ul>
+
+            <a href="https://wa.me/573015568904?text=Hola,%20quiero%20activar%20el%20Pase%20Anual%20VIP%20(89.99%E2%82%AC)%20para%20Espa%C3%B1a" target="_blank" rel="noopener noreferrer" class="btn-primary-wa" style="justify-content: center; width: 100%; padding: 14px 20px; background: #E50914;">
+              <span>Activar Pase Anual VIP</span>
+            </a>
+          </div>
+
+        </div>
+
+        <!-- MÉTODOS DE PAGO EN ESPAÑA -->
+        <div class="payment-methods-strip">
+          <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">Métodos de pago aceptados en España:</span>
+          <div class="payment-method-item">
+            <span>📱 <strong>Bizum</strong></span>
+          </div>
+          <div class="payment-method-item">
+            <span>💳 <strong>Tarjeta (Visa / Mastercard)</strong></span>
+          </div>
+          <div class="payment-method-item">
+            <span>🌐 <strong>PayPal</strong></span>
+          </div>
+          <div class="payment-method-item">
+            <span>🏦 <strong>Revolut / Transferencia SEPA</strong></span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- FAQS ESPECÍFICAS DE ESPAÑA -->
+    <section class="section-faqs" id="faqs" style="padding: 70px 0;">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Dudas Resueltas</span>
+          <h2 class="section-title">Preguntas Frecuentes en España</h2>
+          <p class="section-desc">
+            Claridad absoluta para que disfrutes de tu Smart TV con total tranquilidad.
+          </p>
+        </div>
+
+        <div class="faqs-accordion" id="faqsAccordion">
+          
+          <div class="faq-item">
+            <button type="button" class="faq-question" aria-expanded="false">
+              <span class="faq-q-text">¿Qué diferencia tiene VIDEM frente a addons gratuitos de Stremio (como Torrentio)?</span>
+              <span class="faq-icon-arrow" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </span>
+            </button>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">
+                Stremio es solo un reproductor vacío (como un televisor sin señal). Los addons gratuitos dependen de redes torrent (P2P), que se quedan sin semillas, sufren parones constantes y en España están monitorizadas por las operadoras de internet. <strong>VIDEM te conecta a servidores privados de fibra óptica (CDN) sin torrents</strong>, con más de 80 Mbps continuos, con curaduría de audio en <strong>Castellano oficial y VOSE perfecta</strong>, y entrega lista para usar en 30 segundos sin configurar llaves técnicas.
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button type="button" class="faq-question" aria-expanded="false">
+              <span class="faq-q-text">¿Qué televisores o dispositivos son compatibles?</span>
+              <span class="faq-icon-arrow" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </span>
+            </button>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">
+                Es compatible con prácticamente cualquier televisor del mercado: Smart TVs <strong>Samsung</strong> (Tizen), <strong>LG</strong> (webOS), <strong>Sony, Philips, Xiaomi o TCL</strong> (Android TV / Google TV), <strong>Amazon Fire TV Stick 4K</strong>, Chromecast y Apple TV.
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button type="button" class="faq-question" aria-expanded="false">
+              <span class="faq-q-text">¿Puedo usarlo en varios televisores de mi casa?</span>
+              <span class="faq-icon-arrow" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </span>
+            </button>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">
+                Sí. Puedes configurar VIDEM en todos los televisores y dispositivos de tu hogar (salón, dormitorios, tablet o portátil). Dentro de tu misma red WiFi doméstica podéis ver películas de forma simultánea sin ningún problema.
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button type="button" class="faq-question" aria-expanded="false">
+              <span class="faq-q-text">¿Cómo funciona la prueba gratuita de 2 horas?</span>
+              <span class="faq-icon-arrow" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </span>
+            </button>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">
+                Sin tarjeta de crédito ni datos bancarios. Nos escribes a WhatsApp, instalas la app Stremio en tu Smart TV o Fire Stick, nos pasas el código digital de 4 letras que te aparece en pantalla y te activamos el acceso en 30 segundos para que veas una película entera y compruebes la calidad de imagen antes de decidirte.
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer" id="contacto">
+    <div class="container footer-content">
+      <div class="footer-brand">
+        <div class="footer-logo-row">
+          <img src="assets/images/logo-videm.png" alt="Isotipo Videm" class="footer-logo-img" width="44" height="44">
+          <img src="assets/images/videm-text-logo-web.png" alt="VIDEM" class="footer-wordmark-img" width="155" height="32">
+        </div>
+      </div>
+
+      <p class="legal-disclaimer">
+        <strong>Aviso Legal y Operativo:</strong> Videm opera estrictamente como un servicio de consultoría técnica, asistencia en configuración telemática y optimización de dispositivos multimedia de reproducción para el hogar. Videm no aloja, comercializa, transcodifica ni almacena contenido audiovisual protegido por derechos de autor. Las marcas comerciales citadas (Stremio, Samsung, LG, Fire TV, Apple) pertenecen a sus respectivos titulares y se mencionan exclusivamente con fines de compatibilidad técnica.
+      </p>
+
+      <div class="copyright-text">
+        © 2026 Videm Private Concierge • España & Europa. Todos los derechos reservados.
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

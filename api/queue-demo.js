@@ -218,7 +218,35 @@ module.exports = async (req, res) => {
 
     const now = new Date();
 
-    // 2. Verificar sesiones activas o en cola
+    // 2. Verificar si este usuario ya disfrutó de una demo previa
+    const userPrevRes = await supabaseRequest('/rest/v1/demo_sessions?user_phone=eq.' + cleanPhone + '&order=created_at.desc');
+    const prevSessions = userPrevRes.data || [];
+    const activePrev = prevSessions.find(s => s.status === 'active' && new Date(s.scheduled_end) > now);
+    const pastCompleted = prevSessions.find(s => s.status === 'completed' || s.status === 'expired' || s.status === 'cut' || (s.status === 'active' && new Date(s.scheduled_end) <= now));
+
+    if (activePrev) {
+      const expHour = new Date(activePrev.scheduled_end).toLocaleTimeString('es-CO', { timeZone: 'America/Bogota', hour: '2-digit', minute: '2-digit', hour12: true });
+      res.status(200).json({
+        type: 'already_active',
+        status: 'active',
+        message: `Actualmente ya tienes una prueba activa vinculada a tu televisor hasta las ${expHour}. ¡Disfruta de tu contenido en 4K Remux!`,
+        expiresAt: expHour,
+        code: activePrev.tv_code
+      });
+      return;
+    }
+
+    if (pastCompleted) {
+      res.status(200).json({
+        type: 'already_used',
+        status: 'already_used',
+        message: 'Este número ya disfrutó previamente de su pase de cortesía de 2 horas. Los pases de prueba son únicos por cliente. Para continuar disfrutando de la experiencia 4K Remux sin cortes, te invitamos a activar tu membresía oficial desde $55.000 COP.',
+        canUpgrade: true
+      });
+      return;
+    }
+
+    // 3. Verificar sesiones activas o en cola en el servidor
     const activeRes = await supabaseRequest('/rest/v1/demo_sessions?status=eq.active&scheduled_end=gt.' + now.toISOString() + '&order=scheduled_end.desc');
     const queuedRes = await supabaseRequest('/rest/v1/demo_sessions?status=eq.queued&order=scheduled_end.desc');
 

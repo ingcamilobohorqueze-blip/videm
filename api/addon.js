@@ -167,10 +167,51 @@ module.exports = async (req, res) => {
       const data = await fetchTorrentio(type, id, clientToken);
       const rawStreams = data.streams || [];
 
-      const brandedStreams = rawStreams.map(s => ({
-        ...s,
-        name: (s.name || '').replace(/\[RD\+\]\s*Torrentio/gi, '✦ VIDEM 4K Remux')
-      }));
+      function detectLanguageAndBadge(stream) {
+        const text = `${stream.name || ''} ${stream.title || ''} ${stream.behaviorHints?.filename || ''}`;
+        const lower = text.toLowerCase();
+
+        const isLatino = /latino|audio[\s.-]*latino|es-la|latin[\s.-]*america|\blat\b/i.test(lower);
+        const isCastellano = /castellano|cast|spanish|español|es-es|mejortorrent|estrenosdtl/i.test(lower);
+        const isMulti = /multi|dual[\s.-]*audio|\bdual\b/i.test(lower);
+        const hasSpanishFlag = (stream.title || '').includes('🇪🇸') || (stream.title || '').includes('🇲🇽') || (stream.title || '').includes('🇨🇴');
+
+        let langTag = '';
+        let priority = 0;
+
+        if (isLatino || (stream.title || '').includes('🇲🇽') || (stream.title || '').includes('🇨🇴')) {
+          langTag = '🇲🇽 LATINO';
+          priority = 100;
+        } else if (isCastellano || hasSpanishFlag) {
+          langTag = '🇪🇸 ESPAÑOL';
+          priority = 85;
+        } else if (isMulti) {
+          langTag = '🌐 DUAL AUDIO';
+          priority = 70;
+        } else {
+          langTag = '🇺🇸 ORIGINAL';
+          priority = 30;
+        }
+
+        // Detección de resolución
+        let resBadge = '1080p';
+        if (/4k|2160p|uhd|remux/i.test(lower)) resBadge = '4K';
+        else if (/720p/i.test(lower)) resBadge = '720p';
+
+        // Bono de calidad dentro de la misma categoría de idioma
+        if (resBadge === '4K') priority += 5;
+
+        return {
+          ...stream,
+          name: `✦ VIDEM ${resBadge} • ${langTag}`,
+          _priority: priority
+        };
+      }
+
+      const brandedStreams = rawStreams
+        .map(detectLanguageAndBadge)
+        .sort((a, b) => b._priority - a._priority)
+        .map(({ _priority, ...s }) => s);
 
       sendJson(200, { streams: brandedStreams });
     } catch (err) {

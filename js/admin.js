@@ -8,7 +8,7 @@ const MASTER_PASSWORDS = ['VidemAdmin2026!', 'videm2026', 'camilo2026', 'admin']
 
 // Storage Keys
 const STORAGE_AUTH_KEY = 'videm_admin_authenticated_v1';
-const STORAGE_CLIENTS_KEY = 'videm_admin_crm_clients_v6';
+const STORAGE_CLIENTS_KEY = 'videm_admin_crm_clients_v7';
 
 // State
 let crmClients = [];
@@ -584,11 +584,10 @@ async function executeAutonomousLink() {
   let targetClientObj = null;
 
   if (targetVal === 'demo') {
-    const demoAcc = crmClients.find(c => c.id === 'cli-002') || {};
-    targetUser = demoAcc.user || 'vip.8294@videm.tv';
-    targetPass = demoAcc.pass || 'Videm4K.8294**';
+    targetUser = 'vip.8294@videm.tv';
+    targetPass = 'Videm4K.8294**';
     targetName = 'Pase Demo Cortesía VIDEM';
-    targetPhone = demoAcc.phone || '';
+    targetPhone = '573015568904';
   } else if (targetVal === 'manual') {
     targetUser = (document.getElementById('manualStremioUser')?.value || '').trim();
     targetPass = (document.getElementById('manualStremioPass')?.value || '').trim();

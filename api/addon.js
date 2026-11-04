@@ -172,9 +172,14 @@ module.exports = async (req, res) => {
         const lower = text.toLowerCase();
 
         const isLatino = /latino|audio[\s.-]*latino|es-la|latin[\s.-]*america|\blat\b/i.test(lower);
-        const isCastellano = /castellano|cast|spanish|español|es-es|mejortorrent|estrenosdtl/i.test(lower);
-        const isMulti = /multi|dual[\s.-]*audio|\bdual\b/i.test(lower);
+        const isCastellano = /castellano|cast\b|spanish|español|es-es|mejortorrent|estrenosdtl/i.test(lower);
         const hasSpanishFlag = (stream.title || '').includes('🇪🇸') || (stream.title || '').includes('🇲🇽') || (stream.title || '').includes('🇨🇴');
+
+        const hasFrench = /french|français|\bfr\b|torrent9|vostfr/i.test(lower) || (stream.title || '').includes('🇫🇷');
+        const hasPolish = /polish|lektor|polski|\bpl\b|besttorrents/i.test(lower) || (stream.title || '').includes('🇵🇱');
+        const hasItalian = /italian|ita\b|mircrew|corsarone/i.test(lower) || (stream.title || '').includes('🇮🇹');
+        const hasRussian = /селезень|rutracker|rutor|\brus\b/i.test(lower) || (stream.title || '').includes('🇷🇺');
+        const hasHindi = /hindi/i.test(lower) || (stream.title || '').includes('🇮🇳');
 
         let langTag = '';
         let priority = 0;
@@ -183,14 +188,34 @@ module.exports = async (req, res) => {
           langTag = '🇲🇽 LATINO';
           priority = 100;
         } else if (isCastellano || hasSpanishFlag) {
-          langTag = '🇪🇸 ESPAÑOL';
+          langTag = '🇪🇸 CASTELLANO';
           priority = 85;
-        } else if (isMulti) {
-          langTag = '🌐 DUAL AUDIO';
-          priority = 70;
+          // Si es un archivo secundario o spin-off como 'The Grandmaster', dar menor prioridad que la película principal
+          if (/the grandmaster/i.test(lower)) {
+            langTag = '🇪🇸 THE GRANDMASTER (2013)';
+            priority = 75;
+          }
+        } else if (/multi|dual/i.test(lower) && (isLatino || isCastellano || hasSpanishFlag)) {
+          langTag = '🌐 DUAL ESPAÑOL';
+          priority = 80;
+        } else if (hasFrench) {
+          langTag = '🇫🇷 FRANCÉS';
+          priority = 25;
+        } else if (hasPolish) {
+          langTag = '🇵🇱 POLACO';
+          priority = 25;
+        } else if (hasItalian) {
+          langTag = '🇮🇹 ITALIANO';
+          priority = 25;
+        } else if (hasRussian) {
+          langTag = '🇷🇺 RUSO';
+          priority = 25;
+        } else if (hasHindi) {
+          langTag = '🇮🇳 HINDI';
+          priority = 25;
         } else {
-          langTag = '🇺🇸 ORIGINAL';
-          priority = 30;
+          langTag = '🇺🇸 ORIGINAL / VOSE';
+          priority = 35;
         }
 
         // Detección de resolución

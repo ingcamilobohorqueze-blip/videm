@@ -118,7 +118,7 @@ function seedDefaultClients() {
       plan: 'Membresía Personal (Trimestral 90D)',
       price: '16 € (~$72.000 COP)',
       user: 'ing.camilobohorqueze@gmail.com',
-      pass: '',
+      pass: 'Cb0915271043',
       rdEmail: 'ing.camilobohorqueze@gmail.com',
       rdToken: '5UUJR2B4K3EMRUUHAG3YCF2WCBYMTFUGFYUF7V4ZDCRV2CIYA3DQ',
       status: 'Activo',

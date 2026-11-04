@@ -4,7 +4,7 @@ const SUPABASE_URL = 'https://crkkakwpiggnbuwqopsc.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNya2tha3dwaWdnbmJ1d3FvcHNjIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc5MzQzNTg3MSwiZXhwIjoyMTA5MDExODcxfQ.n4yTSUUIC4QL-_UKPJSs2qvPwCNJVoFcf-kbZqEpRo4';
 
 const DEMO_EMAIL = 'vip.8294@videm.tv';
-const DEMO_PASS = 'Videm4K.8294!';
+const DEMO_PASS = 'Videm4K.8294**';
 
 function supabaseRequest(path, method = 'GET', body = null) {
   return new Promise((resolve, reject) => {

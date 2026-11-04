@@ -1,7 +1,7 @@
 const https = require('https');
 
 const DEMO_EMAIL = 'vip.8294@videm.tv';
-const DEMO_PASS = 'Videm4K.8294!';
+const DEMO_PASS = 'Videm4K.8294**';
 const DEMO_RD_TOKEN = '76N4SFYLKTKDADDLDIAGR6MDKCG7VQT2FMEGTQDQM3X5U2PFU6QQ';
 
 function request(url, options = {}, postData = null) {

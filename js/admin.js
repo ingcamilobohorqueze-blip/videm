@@ -133,7 +133,7 @@ function seedDefaultClients() {
       plan: 'Demo VIP',
       price: 'Cortesía',
       user: 'vip.8294@videm.tv',
-      pass: 'Videm4K.8294!',
+      pass: 'Videm4K.8294**',
       rdEmail: 'ing.camilobohorqueze@gmail.com',
       rdToken: '76N4SFYLKTKDADDLDIAGR6MDKCG7VQT2FMEGTQDQM3X5U2PFU6QQ',
       status: 'Demo',
@@ -586,7 +586,7 @@ async function executeAutonomousLink() {
   if (targetVal === 'demo') {
     const demoAcc = crmClients.find(c => c.id === 'cli-002') || {};
     targetUser = demoAcc.user || 'vip.8294@videm.tv';
-    targetPass = demoAcc.pass || 'Videm4K.8294!';
+    targetPass = demoAcc.pass || 'Videm4K.8294**';
     targetName = 'Pase Demo Cortesía VIDEM';
     targetPhone = demoAcc.phone || '';
   } else if (targetVal === 'manual') {

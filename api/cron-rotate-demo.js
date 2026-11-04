@@ -8,7 +8,7 @@ const EVOLUTION_API_KEY = 'levanna-wa-key-2024';
 const EVOLUTION_INSTANCE = 'VidemProd';
 
 const DEMO_EMAIL = 'vip.8294@videm.tv';
-const DEMO_PASS = 'Videm4K.8294!';
+const DEMO_PASS = 'Videm4K.8294**';
 
 function supabaseRequest(path, method = 'GET', body = null) {
   return new Promise((resolve, reject) => {

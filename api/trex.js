@@ -102,31 +102,6 @@ function buildCleanM3U(streams) {
     }
 
     return false;
-  });
-
-function getOfficialLogo(name) {
-  const n = (name || '').toUpperCase();
-  if (n.includes('WIN SPORTS PLUS') || n.includes('WIN SPORTS+')) return 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Win_Sports%2B_logo.png/512px-Win_Sports%2B_logo.png';
-  if (n.includes('WIN SPORTS') || n.includes('WINSPORTS')) return 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Win_Sports_logo_2019.png/512px-Win_Sports_logo_2019.png';
-  if (n.includes('CARACOL')) return 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Caracol_Televisi%C3%B3n_logo.png/512px-Caracol_Televisi%C3%B3n_logo.png';
-  if (n.includes('RCN')) return 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Canal_RCN_logo_2019.png/512px-Canal_RCN_logo_2019.png';
-  if (n.includes('SEÑAL COLOMBIA') || n.includes('SENAL COLOMBIA')) return 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Logo_Se%C3%B1al_Colombia.png/512px-Logo_Se%C3%B1al_Colombia.png';
-  if (n.includes('CANAL 1') || n.includes('CANAL UNO')) return 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/Canal_1_Colombia_2017.png/512px-Canal_1_Colombia_2017.png';
-  if (n.includes('CITY TV') || n.includes('CITYTV')) return 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Logo_Citytv_2019.png/512px-Logo_Citytv_2019.png';
-  if (n.includes('DIRECTV SPORTS') || n.includes('DSPORTS')) return 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/DSports_logo_2022.png/512px-DSports_logo_2022.png';
-  if (n.includes('INVESTIGATION DISCOVERY') || n.includes('DISCOVERY ID') || n.includes('ID HD')) return 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Investigation_Discovery_2020.svg/512px-Investigation_Discovery_2020.svg.png';
-  if (n.includes('ESPN 2')) return 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/ESPN2_logo.svg/512px-ESPN2_logo.svg.png';
-  if (n.includes('ESPN 3')) return 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/ESPN3_logo.svg/512px-ESPN3_logo.svg.png';
-  if (n.includes('ESPN')) return 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/ESPN_wordmark.svg/512px-ESPN_wordmark.svg.png';
-  if (n.includes('FOX SPORTS')) return 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Fox_Sports_logo_2012.svg/512px-Fox_Sports_logo_2012.svg.png';
-  if (n.includes('TYC SPORTS') || n.includes('TYC')) return 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/TyC_Sports_Logo_2018.png/512px-TyC_Sports_Logo_2018.png';
-  if (n.includes('HBO')) return 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/HBO_logo.svg/512px-HBO_logo.svg.png';
-  if (n.includes('DISCOVERY CHANNEL') || n.includes('DISCOVERY')) return 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/27/Discovery_Channel_2019.svg/512px-Discovery_Channel_2019.svg.png';
-  if (n.includes('HISTORY')) return 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/History_logo_2021.svg/512px-History_logo_2021.svg.png';
-  if (n.includes('CLARO SPORTS')) return 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/Claro_Sports_logo_2017.png/512px-Claro_Sports_logo_2017.png';
-  return '';
-}
-
   vipStreams.forEach(s => {
     let group = 'Entretenimiento VIP';
     const name = (s.name || '').toUpperCase();
@@ -144,8 +119,7 @@ function getOfficialLogo(name) {
     }
 
     const streamUrl = `http://${TREX_HOST}:${TREX_PORT}/${TREX_USER}/${TREX_PASS}/${s.stream_id}.ts`;
-    const officialLogo = getOfficialLogo(s.name);
-    const logo = officialLogo || s.stream_icon || '';
+    const logo = s.stream_icon || '';
     const epgId = s.epg_channel_id || '';
 
     m3u += `#EXTINF:-1 tvg-id="${epgId}" tvg-name="${s.name}" tvg-logo="${logo}" group-title="${group}",${s.name}\n`;

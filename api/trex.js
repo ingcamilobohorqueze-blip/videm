@@ -51,15 +51,17 @@ function buildCleanM3U(streams) {
     const name = (s.name || '').toUpperCase();
     const cat = String(s.category_id);
 
-    // 1. Canal favorito del usuario: Investigation Discovery (ID)
+    // 1. Canal favorito del usuario: Investigation Discovery (ID en español y US)
     if (
       name.includes('INVESTIGATION DISCOVERY') || 
       name.includes('DISCOVERY ID') ||
       name === 'LAT| INVESTIGATION DISCOVERY HD' ||
       name === 'US| ID HD'
     ) {
-      // Evitar estaciones de radio/locales de Idaho
-      if (!name.includes('BOISE') && !name.includes('TWIN FALLS') && !name.includes('IDAHO')) {
+      // Excluir idiomas extranjeros (sueco, danés, ruso, polaco, hindi, francés, etc.)
+      const isForeign = name.match(/\b(SWE|DNK|NOR|FIN|PL|RU|HINDI|FR|BE|NL|RO|ALB|RS|MO|GR|BR|BG|IS|CZ)\b/);
+      const isLocalUsRadio = name.includes('BOISE') || name.includes('TWIN FALLS') || name.includes('IDAHO');
+      if (!isForeign && !isLocalUsRadio) {
         return true;
       }
     }
@@ -67,7 +69,7 @@ function buildCleanM3U(streams) {
     // 2. Canales de Colombia
     if (cat === '154') return true; 
 
-    // 3. Deportes VIP específicos
+    // 3. Deportes VIP específicos (Solo feeds en español y top US)
     if (
       name.includes('WIN SPORTS') || 
       name.includes('DSPORTS') || 
@@ -106,14 +108,16 @@ function buildCleanM3U(streams) {
     let group = 'Entretenimiento VIP';
     const name = (s.name || '').toUpperCase();
 
-    if (String(s.category_id) === '154' || name.includes('CO|') || name.includes('COLOMBIA')) {
-      group = '🇨🇴 Colombia HD';
-    } else if (name.includes('SPORTS') || name.includes('ESPN') || name.includes('WIN') || name.includes('TYC') || name.includes('TUDN')) {
-      group = '⚽ Deportes VIP';
-    } else if (name.includes('INVESTIGATION DISCOVERY') || name.includes('DISCOVERY') || name.includes('HISTORY') || name.includes('NATIONAL')) {
+    if (name.includes('INVESTIGATION DISCOVERY') || name.includes('DISCOVERY ID') || name.includes('ID HD')) {
       group = '🕵️ Cultura & ID';
+    } else if (String(s.category_id) === '154' || name.includes('CO|') || name.includes('COLOMBIA')) {
+      group = '🇨🇴 Colombia HD';
+    } else if (name.includes('SPORTS') || name.includes('ESPN') || name.includes('WIN') || name.includes('TYC') || name.includes('TUDN') || name.includes('DSPORTS') || name.includes('DIRECTV')) {
+      group = '⚽ Deportes VIP';
     } else if (name.includes('HBO') || name.includes('CINEMA') || name.includes('MOVIE') || name.includes('UNIVERSAL') || name.includes('STAR')) {
       group = '🎬 Cine & Series';
+    } else if (name.includes('DISCOVERY') || name.includes('HISTORY') || name.includes('NATIONAL') || name.includes('ANIMAL')) {
+      group = '🌍 Documentales';
     }
 
     const streamUrl = `http://${TREX_HOST}:${TREX_PORT}/${TREX_USER}/${TREX_PASS}/${s.stream_id}.ts`;

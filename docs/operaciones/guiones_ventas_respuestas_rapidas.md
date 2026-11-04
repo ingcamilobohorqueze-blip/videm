@@ -59,7 +59,11 @@ Este documento contiene los guiones oficiales y respuestas prediseñadas para at
 >    • **Cero Torrents / Cero P2P:** Todo el contenido vuela directo desde servidores de caché dedicados de fibra óptica a más de 80 Mbps continuos. Películas de 60 GB cargan en 2 segundos como si estuvieran en un disco duro local.
 >    • **Curaduría de Audio y Subtítulos en Castellano y VOSE:** Todas las fuentes están seleccionadas y ordenadas con el doblaje en Castellano y subtítulos sincronizados al milisegundo.
 >    • **Servicio Llave en Mano (Concierge VIP):** No tienes que lidiar con tokens franceses de Real-Debrid, ni pagar en páginas en inglés, ni configurar llaves API complejas. Nos das el código de 4 letras de tu televisor y en 30 segundos te lo dejamos calibrado con la marca blanca VIDEM Cinema.
->    • **Garantía y Catálogo Siempre al Día:** Cuando una película estrena en cines o en formato físico, aparece automáticamente en tu pantalla sin que tengas que buscar ni configurar nada."
+> 
+> 3. **El Club de Cine y Curaduría de Cada Fin de Semana (El verdadero valor humano):**
+>    • ¿Cuánto tiempo pierdes en Netflix haciendo scroll sin saber qué ver? Con VIDEM tienes un **Conserje Editorial**: cada fin de semana te preparamos la cartelera con los mejores estrenos y especiales de temporada (Halloween, Navidad, Vacaciones, Maratones de Suspense, Joyas del Cine Mundial).
+>    • Te recomendamos qué ver con la familia, qué ver en pareja o qué estreno acaba de salir en calidad IMAX.
+>    • Tienes asistencia directa en WhatsApp si buscas un título específico o si necesitas calibrar una nueva pantalla en tu casa."
 
 ---
 

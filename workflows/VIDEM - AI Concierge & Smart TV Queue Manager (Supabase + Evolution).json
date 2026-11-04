@@ -94,8 +94,8 @@
         "method": "POST",
         "url": "https://videm.tv/api/queue-demo",
         "sendHeaders": true,
-        "parametersHeaders": {
-          "values": [
+        "headerParameters": {
+          "parameters": [
             {
               "name": "Content-Type",
               "value": "application/json"
@@ -122,8 +122,8 @@
         "method": "POST",
         "url": "https://evolution-api-production-8353.up.railway.app/message/sendText/VidemProd",
         "sendHeaders": true,
-        "parametersHeaders": {
-          "values": [
+        "headerParameters": {
+          "parameters": [
             {
               "name": "apikey",
               "value": "levanna-wa-key-2024"
@@ -136,7 +136,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({\n  number: '573103311543',\n  text: '🔔 *VIDEM ALERT | ¡CLIENTE LISTO PARA PAGAR O ASISTENCIA!*\\n\\n👤 *Cliente:* ' + $('Filtrar y Normalizar').item.json.senderName + '\\n📱 *WhatsApp:* +' + $('Filtrar y Normalizar').item.json.senderPhone + '\\n🎯 *Motivo:* ' + $fromAI('motivo', 'Motivo del contacto') + '\\n👉 *Chatear en 1 clic:*\\nhttps://wa.me/' + $('Filtrar y Normalizar').item.json.senderPhone,\n  delay: 1000\n}) }}",
+        "jsonBody": "={{ JSON.stringify({\n  number: '573103311543',\n  text: '🔔 *VIDEM ALERT | ¡ASISTENCIA O VENTA REQUERIDA!*\\n\\n👤 *Cliente:* ' + $('Filtrar y Normalizar').item.json.senderName + '\\n📱 *WhatsApp:* +' + $('Filtrar y Normalizar').item.json.senderPhone + '\\n💬 *Último mensaje recibido:* \\\"' + $('Filtrar y Normalizar').item.json.incomingText + '\\\"\\n🎯 *Motivo / Contexto:* ' + $fromAI('motivo', 'Explicación detallada del motivo por el cual se escala y qué necesita el cliente') + '\\n\\n👉 *Chatear en 1 clic con el cliente:*\\nhttps://wa.me/' + $('Filtrar y Normalizar').item.json.senderPhone,\n  delay: 1000\n}) }}",
         "name": "escalar_a_camilo",
         "description": "Llama a esta herramienta cuando el cliente quiera pagar, comprar un plan, o pida atención humana."
       },

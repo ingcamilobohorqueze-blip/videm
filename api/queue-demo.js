@@ -98,14 +98,16 @@ const STREAMCAT_URL = 'https://7a82163c306e-stremio-netflix-catalog-addon.baby-b
 
 function fetchRemoteJson(url) {
   return new Promise((resolve) => {
-    https.get(url, (res) => {
+    const req = https.get(url, { timeout: 3500 }, (res) => {
       let b = '';
       res.on('data', c => b += c);
       res.on('end', () => {
         try { resolve(JSON.parse(b)); }
         catch(e) { resolve(null); }
       });
-    }).on('error', () => resolve(null));
+    });
+    req.on('timeout', () => { req.destroy(); resolve(null); });
+    req.on('error', () => resolve(null));
   });
 }
 
@@ -193,7 +195,11 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const { phone, name, tv_code, tv_brand } = req.body || {};
+    let body = req.body;
+    if (typeof body === 'string') {
+      try { body = JSON.parse(body); } catch(e) {}
+    }
+    const { phone, name, tv_code, tv_brand } = body || {};
     if (!phone || !tv_code) {
       res.status(400).json({ error: 'Faltan parámetros: phone y tv_code son requeridos' });
       return;

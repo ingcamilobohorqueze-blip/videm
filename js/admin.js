@@ -146,7 +146,7 @@ function seedDefaultClients() {
       name: 'John Bedoya (Vecino Conjunto)',
       phone: '160399999680633@lid',
       plan: 'Pase Mensual Flex',
-      price: '$50.000 COP',
+      price: '$55.000 COP',
       user: 'vip.9299@videm.tv',
       pass: 'Videm4K.9299!',
       rdEmail: 'ing.camilobohorquez.e@gmail.com',
@@ -918,7 +918,7 @@ async function saveNewClient(andProvision = false) {
   let days = 180;
   let price = '$240.000 COP';
   if (plan.includes('Anual')) { days = 365; price = '$440.000 COP'; }
-  else if (plan.includes('Mensual')) { days = 30; price = '$50.000 COP'; }
+  else if (plan.includes('Mensual')) { days = 30; price = '$55.000 COP'; }
   else if (plan.includes('Demo')) { days = 1; price = 'Cortesía'; }
 
   const endDate = new Date(now.getTime() + days * 24 * 60 * 60 * 1000).toISOString();

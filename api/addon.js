@@ -11,7 +11,7 @@ let lastCheckTime = 0;
 
 const MANIFEST = {
   id: "tv.videm.cinema",
-  version: "1.2.0",
+  version: "1.3.0",
   name: "VIDEM 4K Cinema",
   description: "Infraestructura privada VIDEM en ultra alta definición 4K Remux Dolby Atmos (Multi-Engine Latino, Turcas, K-Dramas & Global)",
   resources: ["stream"],
@@ -88,7 +88,11 @@ function queryJsonUrl(url, timeoutMs = 5500) {
   });
 }
 
-function buildCometConfigBase64(token) {
+function buildCometConfigBase64(token, region = 'latam') {
+  const preferredLangs = region === 'es'
+    ? ["es", "multi", "es-419", "en"]
+    : ["es-419", "la", "multi", "en", "ko", "ja"];
+
   const cometConfigObj = {
     maxResultsPerResolution: 0,
     maxSize: 0,
@@ -101,7 +105,7 @@ function buildCometConfigBase64(token) {
     languages: {
       required: [],
       exclude: [],
-      preferred: ["es", "es-419", "la", "multi"]
+      preferred: preferredLangs
     },
     resolutions: {
       r2160p: true,
@@ -120,32 +124,41 @@ function buildCometConfigBase64(token) {
   return Buffer.from(JSON.stringify(cometConfigObj)).toString('base64');
 }
 
-async function fetchMultiEngineStreams(type, id, rdToken) {
+async function fetchMultiEngineStreams(type, id, rdToken, region = 'latam') {
   const token = rdToken || DEMO_RD_TOKEN;
-  const cometB64 = buildCometConfigBase64(token);
+  const cometB64 = buildCometConfigBase64(token, region);
 
-  // 1. Torrentio Prioritario Latino
-  const urlTorrentioLatino = `https://torrentio.strem.fun/language=latino%7Cqualityfilter=cam,scr%7Cdebridoptions=nodownloadlinks%7Crealdebrid=${token}/stream/${type}/${id}`;
-  // 2. Torrentio Español + Latino + Global (incluye Castellano, Dual, Multi y Remux 4K)
-  const urlTorrentioEsGlobal = `https://torrentio.strem.fun/language=latino,spanish%7Cqualityfilter=cam,scr%7Cdebridoptions=nodownloadlinks%7Crealdebrid=${token}/stream/${type}/${id}`;
-  // 3. Peerflix RD (Trackers hispanos/latinos dedicados: Sinsitio, Zonapelis, GranTorrent, Peerflix)
-  const urlPeerflixEs = `https://addon.peerflix.mov/language=es-419,es-ES%7Crealdebrid=${token}/stream/${type}/${id}`;
+  // 1. Torrentio Prioritario según región
+  const urlTorrentioPrimary = region === 'es'
+    ? `https://torrentio.strem.fun/language=spanish,latino%7Cqualityfilter=cam,scr%7Cdebridoptions=nodownloadlinks%7Crealdebrid=${token}/stream/${type}/${id}`
+    : `https://torrentio.strem.fun/language=latino%7Cqualityfilter=cam,scr%7Cdebridoptions=nodownloadlinks%7Crealdebrid=${token}/stream/${type}/${id}`;
+
+  // 2. Torrentio Global / Multi-Audio / Remux 4K + respaldo hispano
+  const urlTorrentioSecondary = region === 'es'
+    ? `https://torrentio.strem.fun/qualityfilter=cam,scr%7Cdebridoptions=nodownloadlinks%7Crealdebrid=${token}/stream/${type}/${id}`
+    : `https://torrentio.strem.fun/language=latino,spanish%7Cqualityfilter=cam,scr%7Cdebridoptions=nodownloadlinks%7Crealdebrid=${token}/stream/${type}/${id}`;
+
+  // 3. Peerflix RD: En LATAM solo consultamos es-419 (evita inundar con trackers españoles Sinsitio/Zonapelis); en España consultamos es-ES,es-419
+  const urlPeerflix = region === 'es'
+    ? `https://addon.peerflix.mov/language=es-ES,es-419%7Crealdebrid=${token}/stream/${type}/${id}`
+    : `https://addon.peerflix.mov/language=es-419%7Crealdebrid=${token}/stream/${type}/${id}`;
+
   // 4. Comet RD / DMM (Debrid Media Manager & StremThru: ideal para K-Dramas Netflix Multi-Audio y Remux Asiático)
   const urlCometDmm = `https://comet.elfhosted.com/${cometB64}/stream/${type}/${id}`;
   // 5. TorrentsDB RD (Trackers asiáticos 1lou, Knaben, ilCorSaRoNeRo, EZTV)
   const urlTorrentsDb = `https://torrentsdb.com/realdebrid=${token}/stream/${type}/${id}`;
 
-  const [resTLat, resTEs, resPeerflix, resComet, resTdb] = await Promise.all([
-    queryJsonUrl(urlTorrentioLatino, 5000),
-    queryJsonUrl(urlTorrentioEsGlobal, 5500),
-    queryJsonUrl(urlPeerflixEs, 5000),
+  const [resTPrimary, resTSecondary, resPeerflix, resComet, resTdb] = await Promise.all([
+    queryJsonUrl(urlTorrentioPrimary, 5000),
+    queryJsonUrl(urlTorrentioSecondary, 5500),
+    queryJsonUrl(urlPeerflix, 5000),
     queryJsonUrl(urlCometDmm, 5500),
     queryJsonUrl(urlTorrentsDb, 5000)
   ]);
 
   let combined = [
-    ...(resTLat.streams || []),
-    ...(resTEs.streams || []),
+    ...(resTPrimary.streams || []),
+    ...(resTSecondary.streams || []),
     ...(resPeerflix.streams || []),
     ...(resComet.streams || []),
     ...(resTdb.streams || [])
@@ -158,22 +171,30 @@ async function fetchMultiEngineStreams(type, id, rdToken) {
     combined = resGlobal.streams || [];
   }
 
-  // Deduplicar enlaces equivalentes preservando el primero (prioridad Torrentio/RD+/DMM)
+  // Deduplicar enlaces equivalentes y filtrar contaminación de packs de series cuando se consulta una película
   const seenKeys = new Set();
   const uniqueStreams = [];
 
   for (const s of combined) {
     if (!s || (!s.url && !s.infoHash)) continue;
 
+    const fullText = `${s.name || ''} ${s.title || ''} ${s.description || ''} ${s.behaviorHints?.filename || ''}`;
+    // Si estamos consultando una película, descartar packs de series infiltrados por palabra clave (ej. "DRAGON BALL Z: Complete 1989-2019 Series" en "Red Dragon")
+    if (type === 'movie' && /complete\s+\d{4}-\d{4}\s+series|dragon\s*ball\s*z|\bs\d{2}e\d{2}\b/i.test(fullText)) {
+      continue;
+    }
+
     // Extraer hash de la URL de Real-Debrid/Torrentio/Peerflix/Comet si existe (40 hex chars)
     const hashMatch = (s.url || '').match(/\/([a-fA-F0-9]{40})\//);
-    const fileHint = (s.behaviorHints?.filename || '').toLowerCase().trim();
+    const firstLineTitle = ((s.title || s.description || '').split('\n')[0] || '').replace(/^📄\s*/, '').toLowerCase().trim();
+    const fileHint = (s.behaviorHints?.filename || firstLineTitle || '').toLowerCase().trim();
     const dedupKey = hashMatch
-      ? `${hashMatch[1].toLowerCase()}_${fileHint}`
-      : (s.url || s.infoHash);
+      ? `${hashMatch[1].toLowerCase()}`
+      : (fileHint || s.url || s.infoHash);
 
-    if (seenKeys.has(dedupKey)) continue;
+    if (seenKeys.has(dedupKey) || (firstLineTitle.length > 12 && seenKeys.has(firstLineTitle))) continue;
     seenKeys.add(dedupKey);
+    if (firstLineTitle.length > 12) seenKeys.add(firstLineTitle);
     uniqueStreams.push(s);
   }
 
@@ -204,12 +225,27 @@ module.exports = async (req, res) => {
   urlPath = urlPath.split('?')[0];
 
   let clientToken = req.query?.token || null;
+  let region = (req.query?.region || '').toLowerCase() === 'es' ? 'es' : 'latam';
   let isDemo = false;
 
-  // Si urlPath viene con token dedicado al inicio: ":token/manifest.json" o ":token/stream/..."
+  // Soporte de prefijo regional explícito: "/api/addon/es/..." o "/api/addon/es_:token/..."
+  if (urlPath.startsWith('es/')) {
+    region = 'es';
+    urlPath = urlPath.slice(3);
+  }
+
+  // Si urlPath viene con token dedicado al inicio: ":token/manifest.json" o "es_:token/stream/..."
   const tokenPrefixMatch = urlPath.match(/^([a-zA-Z0-9_-]{20,})\/(.*)/);
   if (tokenPrefixMatch) {
-    clientToken = tokenPrefixMatch[1];
+    let rawToken = tokenPrefixMatch[1];
+    if (rawToken.startsWith('es_')) {
+      region = 'es';
+      rawToken = rawToken.slice(3);
+    } else if (rawToken.startsWith('latam_')) {
+      region = 'latam';
+      rawToken = rawToken.slice(6);
+    }
+    clientToken = rawToken;
     urlPath = tokenPrefixMatch[2];
   }
 
@@ -218,9 +254,17 @@ module.exports = async (req, res) => {
     isDemo = true;
   }
 
-  // 1. Manifiesto Stremio
+  // 1. Manifiesto Stremio (adaptado según región)
   if (urlPath === 'manifest.json' || urlPath.endsWith('/manifest.json')) {
-    sendJson(200, MANIFEST);
+    if (region === 'es') {
+      sendJson(200, {
+        ...MANIFEST,
+        name: "VIDEM 4K Cinema (España)",
+        description: "Infraestructura privada VIDEM en ultra alta definición 4K Remux Dolby Atmos (Castellano, VOSE, Multi-Audio & Global)"
+      });
+    } else {
+      sendJson(200, MANIFEST);
+    }
     return;
   }
 
@@ -236,11 +280,12 @@ module.exports = async (req, res) => {
     if (isDemo) {
       const active = await isDemoActive();
       if (!active) {
+        const waContact = region === 'es' ? '+34 746 05 77 76' : '+57 301 556 8904';
         sendJson(200, {
           streams: [
             {
               name: "⛔ VIDEM 4K",
-              title: "🔒 PASE DEMO FINALIZADO\nTu prueba de cortesía ha terminado.\n💬 Escríbenos a WhatsApp (+57 301 556 8904) para activar tu Membresía VIP 4K.",
+              title: `🔒 PASE DEMO FINALIZADO\nTu prueba de cortesía ha terminado.\n💬 Escríbenos a WhatsApp (${waContact}) para activar tu Membresía VIP 4K.`,
               behaviorHints: { notWebReady: true }
             }
           ]
@@ -249,82 +294,92 @@ module.exports = async (req, res) => {
       }
     }
 
-    // SI ES CLIENTE VIP O DEMO ACTIVA: Resolver en Multi-Engine (Torrentio + Peerflix + Comet DMM + TorrentsDB)
+    // SI ES CLIENTE VIP O DEMO ACTIVA: Resolver en Multi-Engine con perfil regional (LATAM vs ESPAÑA)
     try {
-      const rawStreams = await fetchMultiEngineStreams(type, id, clientToken);
+      const rawStreams = await fetchMultiEngineStreams(type, id, clientToken, region);
 
       function detectLanguageAndBadge(stream) {
         const displayTitle = stream.title || stream.description || '';
         const text = `${stream.name || ''} ${displayTitle} ${stream.behaviorHints?.filename || ''}`;
         const lower = text.toLowerCase();
 
-        // 0. Aislar estrictamente releases rusos (cirílico o estudios rusos) para que nunca contaminen Español/Latino
+        // 0. Aislar estrictamente releases rusos (cirílico o estudios rusos) y hardsubs chinos
         const hasRussian = /[а-яА-ЯёЁ]|rutracker|rutor|\brus\b|softbox|dublik|gears\s*media|ideafilm|newstudio|baibako|lostfilm|hdrezka|coldfilm/i.test(text) || displayTitle.includes('🇷🇺');
         const hasChineseHardsub = /中字|dygangs|1lou|qqhdtv|国英韩/i.test(text);
 
-        // 1. Detección de Audio Latino (incluye banderas LATAM, emoji 💃 de Comet y trackers latinos)
+        // 1. Detección de Audio Español Latino (incluye banderas LATAM, emoji 💃 de Comet y trackers latinos)
         const hasLatinoFlag = displayTitle.includes('🇲🇽') || displayTitle.includes('🇨🇴') || displayTitle.includes('🇦🇷') || displayTitle.includes('🇨🇱') || displayTitle.includes('🇵🇪') || displayTitle.includes('💃');
-        const isLatino = !hasRussian && (hasLatinoFlag || /latino|audio[\s.-]*lat|dual[\s.-]*lat|es-419|es-la|latin[\s.-]*america|\blat\b|cinecalidad|pelisenhd|hackstore/i.test(lower));
+        const isLatino = !hasRussian && (hasLatinoFlag || /latino|audio[\s.-]*lat|dual[\s.-]*lat|es-419|es-la|latin[\s.-]*america|\blat\b|cinecalidad|pelisenhd|hackstore|latinoamerica|mega1080p/i.test(lower));
 
-        // 2. Detección de Español / Castellano / Dual Hispano (incluye trackers de novelas turcas y series españolas)
+        // 2. Detección de Español de España / Castellano (trackers ibéricos y bandera 🇪🇸 sin bandera 🇲🇽)
         const hasSpainFlag = displayTitle.includes('🇪🇸');
-        const isCastellano = !hasRussian && (hasSpainFlag || /castellano|\bcast\b|spanish|español|es-es|\bspa\b|\besp\b|\[es\]|mejortorrent|estrenosdtl|wolfmax|newpct|dontorrent|grantorrent|elitetorrent|sinsitio|zonapelis|maxitorrent|atomohd|atomixhq|pctmix|descargas2020/i.test(lower));
+        const hasSpainTrackerOrTag = /castellano|\bcast\b|es-es|\bspa\b|\besp\b|\[es\]|mejortorrent|estrenosdtl|wolfmax|newpct|dontorrent|grantorrent|elitetorrent|sinsitio|zonapelis|maxitorrent|atomohd|atomixhq|pctmix|descargas2020|\bbddr\b/i.test(lower);
+        const isCastellano = !hasRussian && !isLatino && (hasSpainFlag || hasSpainTrackerOrTag || /spanish|español/i.test(lower));
 
-        // 3. Detección de otros idiomas regionales y extranjeros
-        const hasFrench = /french|français|\bfr\b|\bvfi\b|\bvfq\b|\bvff\b|torrent9|vostfr/i.test(lower) || displayTitle.includes('🇫🇷');
-        const hasPolish = /polish|lektor|polski|\bpl\b|besttorrents|\bcz\b|sktorrent/i.test(lower) || displayTitle.includes('🇵🇱');
-        const hasItalian = /italian|\bita\b|mircrew|corsarone|avvocata|\bdlmux\b/i.test(lower) || displayTitle.includes('🇮🇹');
-        const hasPortuguese = /portugu|dublado|dual[\s.-]*pt|\bpt-br\b|\bpor\b/i.test(lower) || displayTitle.includes('🇧🇷') || displayTitle.includes('🇵🇹');
+        // 3. Detección de otros idiomas regionales europeos y extranjeros (para evitar falsos Multi-Audio)
+        const hasFrench = /french|français|\bfr\b|\bvfi\b|\bvfq\b|\bvff\b|torrent9|vostfr|truefrench/i.test(lower) || displayTitle.includes('🇫🇷');
+        const hasPolish = /polish|lektor|polski|\bpl\b|besttorrents|\bcz\b|sktorrent|-colo\b/i.test(lower) || displayTitle.includes('🇵🇱');
+        const hasItalian = /italian|\bita\b|mircrew|corsarone|avvocata|\bdlmux\b|licdom/i.test(lower) || displayTitle.includes('🇮🇹');
+        const hasPortuguese = /portugu|dublado|dual[\s.-]*pt|\bpt-br\b|\bpor\b|o\.grande\.mestre|bludv|comandotorrents|guyzo|ricksz/i.test(lower) || displayTitle.includes('🇧🇷') || displayTitle.includes('🇵🇹');
         const hasTurkish = /\bturkish\b|\btur\b/i.test(lower) || displayTitle.includes('🇹🇷');
         const hasHindi = /hindi|tamil|telugu/i.test(lower) || displayTitle.includes('🇮🇳');
+        const hasGerman = /german|deutsch|\bger\b/i.test(lower) || displayTitle.includes('🇩🇪');
 
-        // 4. Detección de Multi-Audio / Dual-Audio / Multi-Subs (común en Netflix WEB-DL de Colombia/LATAM, K-Dramas y Remuxes DMM)
-        const isMultiOrDual = /multi[\s.-]*audio|dual[\s.-]*audio|\bmulti\b|\bdual\b|multi[\s.-]*sub|\bmsub\b/i.test(lower) || displayTitle.includes('🌎');
-        const isAsianOriginal = displayTitle.includes('🇰🇷') || displayTitle.includes('🇯🇵') || displayTitle.includes('🇨🇳') || /\bkorean\b|\bkor\b|\bjapanese\b|\bchinese\b/i.test(lower);
+        // 4. Detección de Multi-Audio / Dual-Audio legítimo de Región A / Global (Blu-ray Norteamérica -DDR, Netflix WEB-DL Multi, etc.)
+        const hasMultiKeyword = /multi[\s.-]*audio|dual[\s.-]*audio|\bmulti\b|\bdual\b|multi[\s.-]*sub|\bmsub\b/i.test(lower) || displayTitle.includes('🌎');
+        const isCleanMultiOrDual = hasMultiKeyword && !isLatino && !isCastellano && !hasRussian && !hasPolish && !hasItalian && !hasFrench && !hasGerman && !hasPortuguese && !hasHindi && !hasChineseHardsub;
+
+        const isAsianOriginal = displayTitle.includes('🇰🇷') || displayTitle.includes('🇯🇵') || displayTitle.includes('🇨🇳') || /\bkorean\b|\bkor\b|\bjapanese\b|\bchinese\b|k-drama|boys[\s.-]*over[\s.-]*flowers/i.test(lower);
 
         let langTag = '';
         let priority = 0;
 
+        // =========================================================================
+        // PERFIL REGIONAL A: LATINOAMÉRICA (Predomina Español Latino -> Multi-Audio Américas -> Original+Subs -> Castellano España al final)
+        // PERFIL REGIONAL B: ESPAÑA / EUROPA (Predomina Castellano España -> Multi-Audio -> VOSE -> Latino)
+        // Escalones separados por >= 45 puntos para que el bono de calidad (+1 a +34) NUNCA invierta la preferencia de idioma
+        // =========================================================================
         if (isLatino) {
           langTag = '🇲🇽 LATINO';
-          priority = 100;
+          priority = region === 'es' ? 95 : 250;
           if (/la\.casa\.de\.la\.pradera/i.test(lower)) {
             langTag = '🇲🇽 OTRO TÍTULO';
             priority = 30;
           }
         } else if (isCastellano) {
-          langTag = '🇪🇸 ESPAÑOL';
-          priority = 88;
+          langTag = region === 'es' ? '🇪🇸 CASTELLANO' : '🇪🇸 ESPAÑOL (ESPAÑA)';
+          priority = region === 'es' ? 250 : 75;
           // Penalizar spin-offs o títulos homónimos erróneos dentro de packs
           if (/the grandmaster/i.test(lower)) {
             langTag = '🇪🇸 THE GRANDMASTER (2013)';
-            priority = 72;
+            priority = 40;
           } else if (/el juego del asesino|squid game[\s.-]*the challenge|el desafio/i.test(lower)) {
             langTag = '🇪🇸 SPIN-OFF / ALT';
-            priority = 65;
+            priority = 35;
           }
-        } else if (isMultiOrDual && !hasRussian && !hasPolish && !hasChineseHardsub && !(hasHindi && !isAsianOriginal) && !(hasFrench && !displayTitle.includes('🇬🇧') && !isAsianOriginal)) {
-          langTag = '🌐 MULTI-AUDIO / SUBS';
-          priority = 80;
-        } else if (!hasRussian && !hasFrench && !hasPolish && !hasItalian && !hasHindi && !hasChineseHardsub) {
-          if (displayTitle.includes('🇰🇷') || /\bkorean\b|\bkor\b/i.test(lower)) {
-            langTag = '🇰🇷 ORIGINAL + SUBS';
-            priority = 56;
+        } else if (isCleanMultiOrDual) {
+          langTag = region === 'es' ? '🌐 MULTI-AUDIO / SUBS' : '🌎 MULTI-AUDIO (ORIGINAL/LAT)';
+          priority = 195;
+        } else if (!hasRussian && !hasFrench && !hasPolish && !hasItalian && !hasGerman && !hasPortuguese && !hasHindi && !hasChineseHardsub) {
+          // Idioma Original Puro (Inglés / Coreano / Japonés / Chino) para ver con Subtítulos Latinos en 4K/1080p sin doblaje ibérico
+          if (displayTitle.includes('🇰🇷') || /\bkorean\b|\bkor\b|k-drama|boys[\s.-]*over[\s.-]*flowers/i.test(lower)) {
+            langTag = '🇰🇷 COREANO + SUBS';
+            priority = 145;
           } else if (displayTitle.includes('🇯🇵') || /\bjapanese\b|\bjpn\b/i.test(lower)) {
-            langTag = '🇯🇵 ORIGINAL + SUBS';
-            priority = 56;
+            langTag = '🇯🇵 JAPONÉS + SUBS';
+            priority = 145;
           } else if (displayTitle.includes('🇨🇳') || /\bchinese\b|\bchi\b/i.test(lower)) {
             langTag = '🇨🇳 ORIGINAL + SUBS';
-            priority = 56;
+            priority = 145;
           } else if (hasTurkish) {
             langTag = '🇹🇷 TURCO + SUBS';
-            priority = 54;
+            priority = 142;
           } else if (hasPortuguese) {
             langTag = '🇧🇷 PORTUGUÉS + SUBS';
-            priority = 54;
+            priority = 135;
           } else {
-            langTag = '🇺🇸 ORIGINAL / VOSE';
-            priority = 50;
+            langTag = region === 'es' ? '🇺🇸 VOSE (ORIGINAL)' : '🇺🇸 INGLÉS + SUBS';
+            priority = 140;
           }
         } else if (hasPortuguese && !hasRussian) {
           langTag = '🇧🇷 PORTUGUÉS';
@@ -333,11 +388,14 @@ module.exports = async (req, res) => {
           langTag = '🇨🇳 SUB ASIÁTICO';
           priority = 26;
         } else if (hasItalian) {
-          langTag = '🇮🇹 ITALIANO';
+          langTag = '🇮🇹 ITALIANO / ENG';
           priority = 25;
         } else if (hasFrench) {
           langTag = '🇫🇷 FRANCÉS';
           priority = 25;
+        } else if (hasGerman) {
+          langTag = '🇩🇪 ALEMÁN';
+          priority = 24;
         } else if (hasHindi) {
           langTag = '🇮🇳 HINDI / MULTI';
           priority = 24;
@@ -348,8 +406,8 @@ module.exports = async (req, res) => {
           langTag = '🇷🇺 RUSO';
           priority = 20;
         } else {
-          langTag = '🇺🇸 ORIGINAL / VOSE';
-          priority = 40;
+          langTag = region === 'es' ? '🇺🇸 VOSE (ORIGINAL)' : '🇺🇸 INGLÉS + SUBS';
+          priority = 120;
         }
 
         // 5. Detección precisa de Resolución y Fidelidad de Video/Audio (evitando falso 4K por el tracker 'Wolfmax4k')
@@ -359,7 +417,7 @@ module.exports = async (req, res) => {
         else if (/720p/i.test(lowerClean)) resBadge = '720p';
         else if (/480p|\bxvid\b|\bavi\b|\bsd\b/i.test(lowerClean) && !/1080p|2160p/i.test(lowerClean)) resBadge = 'SD/720p';
 
-        // Scoring de Fidelidad de Video (dentro del mismo idioma gana siempre la mayor calidad de imagen)
+        // Scoring de Fidelidad de Video (dentro del mismo escalón de idioma gana siempre la mayor calidad de imagen)
         if (resBadge === '4K') priority += 12;
         else if (resBadge === '1080p') priority += 5;
         else if (resBadge === '720p') priority += 1;

@@ -6,9 +6,9 @@ const DEMO_PHONE = '573015568904';
 
 const VIDEM_MANIFEST = {
   id: 'tv.videm.cinema',
-  version: '1.1.0',
+  version: '1.3.0',
   name: 'VIDEM 4K Cinema',
-  description: 'Infraestructura privada VIDEM en ultra alta definición 4K Remux Dolby Atmos (Multi-Engine Latino & Asian Cinema)',
+  description: 'Infraestructura privada VIDEM en ultra alta definición 4K Remux Dolby Atmos (Multi-Engine Latino, Turcas, K-Dramas & Global)',
   resources: ['stream'],
   types: ['movie', 'series', 'anime'],
   idPrefixes: ['tt', 'kitsu', 'tmdb:'],
@@ -18,7 +18,7 @@ const VIDEM_MANIFEST = {
   behaviorHints: { configurable: false, configurationRequired: false }
 };
 
-async function ensureDemoAddons(authKey) {
+async function ensureDemoAddons(authKey, region = 'latam') {
   try {
     const existing = await new Promise((resolve) => {
       const p = JSON.stringify({ authKey, type: 'AddonCollectionGet' });
@@ -38,13 +38,20 @@ async function ensureDemoAddons(authKey) {
       req.end();
     });
 
-    const hasVidem = existing.some(a => a.manifest?.id === 'tv.videm.cinema');
+    const isSpain = region === 'es';
+    const targetUrl = isSpain
+      ? 'https://videm.tv/api/addon/es/manifest.json'
+      : 'https://videm.tv/api/addon/manifest.json';
+
+    const hasVidem = existing.some(a => a.manifest?.id === 'tv.videm.cinema' && a.transportUrl === targetUrl);
     if (!hasVidem) {
       const clean = existing.filter(a => a.manifest?.id !== 'tv.videm.cinema');
       clean.push({
-        transportUrl: 'https://videm.tv/api/addon/manifest.json',
+        transportUrl: targetUrl,
         transportName: 'http',
-        manifest: VIDEM_MANIFEST
+        manifest: isSpain
+          ? { ...VIDEM_MANIFEST, name: 'VIDEM 4K Cinema (España)' }
+          : VIDEM_MANIFEST
       });
 
       await new Promise((resolve) => {
@@ -105,14 +112,15 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const { code, authKey, isDemo } = req.body || {};
+    const { code, authKey, isDemo, region, phone } = req.body || {};
     if (!code || !authKey) {
       res.status(400).json({ success: false, error: 'Faltan parámetros: code y authKey son requeridos' });
       return;
     }
 
+    const effectiveRegion = (region === 'es' || (phone && /^(\+?34)/.test(String(phone).trim()))) ? 'es' : 'latam';
     if (isDemo !== false) {
-      await ensureDemoAddons(authKey);
+      await ensureDemoAddons(authKey, effectiveRegion);
     }
 
     const postData = JSON.stringify({ authKey });

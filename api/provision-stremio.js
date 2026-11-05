@@ -21,11 +21,14 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const { email, password, rdToken } = req.body || {};
+    const { email, password, rdToken, region, phone } = req.body || {};
     if (!email || !password || !rdToken) {
       res.status(400).json({ success: false, error: 'Se requieren email, password y rdToken' });
       return;
     }
+
+    const isSpain = region === 'es' || (phone && /^(\+?34)/.test(String(phone).trim()));
+    const tokenPath = isSpain ? `es_${rdToken}` : rdToken;
 
     // 1. Iniciar sesión en Stremio
     const authKey = await new Promise((resolve, reject) => {
@@ -49,13 +52,15 @@ module.exports = async (req, res) => {
       lReq.end();
     });
 
-    // 2. Manifiesto Oficial VIDEM 4K Cinema (Marca Blanca con Token Dedicado)
-    const manifestUrl = `https://videm.tv/api/addon/${encodeURIComponent(rdToken)}/manifest.json`;
+    // 2. Manifiesto Oficial VIDEM 4K Cinema (Marca Blanca con Token Dedicado y Región)
+    const manifestUrl = `https://videm.tv/api/addon/${encodeURIComponent(tokenPath)}/manifest.json`;
     const videmManifest = {
       id: 'tv.videm.cinema',
-      version: '1.1.0',
-      name: 'VIDEM 4K Cinema',
-      description: 'Infraestructura privada VIDEM en ultra alta definición 4K Remux Dolby Atmos (Multi-Engine Latino & Asian Cinema)',
+      version: '1.3.0',
+      name: isSpain ? 'VIDEM 4K Cinema (España)' : 'VIDEM 4K Cinema',
+      description: isSpain
+        ? 'Infraestructura privada VIDEM en ultra alta definición 4K Remux Dolby Atmos (Castellano, VOSE, Multi-Audio & Global)'
+        : 'Infraestructura privada VIDEM en ultra alta definición 4K Remux Dolby Atmos (Multi-Engine Latino, Turcas, K-Dramas & Global)',
       resources: ['stream'],
       types: ['movie', 'series', 'anime'],
       idPrefixes: ['tt', 'kitsu', 'tmdb:'],

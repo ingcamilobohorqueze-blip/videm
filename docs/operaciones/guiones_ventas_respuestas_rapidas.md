@@ -2,6 +2,10 @@
 
 Este documento contiene los guiones oficiales y respuestas prediseñadas para atender prospectos en Facebook Marketplace, WhatsApp y redes sociales sin perder tiempo.
 
+* 🇨🇴 **Línea Oficial Colombia:** `+57 301 556 8904` — Enlace corto: `https://videm.tv/wa` (Instancia Evolution: `VidemProd`)
+* 🇪🇸 **Línea Oficial España & Europa:** `+34 746 05 77 76` — Enlace corto: `https://videm.tv/wa-es` (Instancia Evolution: `VidemEsp`)
+* 🌐 **Landing España:** `https://videm.tv/es` | **Vinculador QR Evolution:** `https://videm.tv/qr`
+
 ---
 
 ## ⚡ 1. RESPUESTA INMEDIATA EN FACEBOOK MARKETPLACE

@@ -11,9 +11,9 @@ let lastCheckTime = 0;
 
 const MANIFEST = {
   id: "tv.videm.cinema",
-  version: "1.1.0",
+  version: "1.2.0",
   name: "VIDEM 4K Cinema",
-  description: "Infraestructura privada VIDEM en ultra alta definición 4K Remux Dolby Atmos (Multi-Engine Latino & Asian Cinema)",
+  description: "Infraestructura privada VIDEM en ultra alta definición 4K Remux Dolby Atmos (Multi-Engine Latino, Turcas, K-Dramas & Global)",
   resources: ["stream"],
   types: ["movie", "series", "anime"],
   idPrefixes: ["tt", "kitsu", "tmdb:"],
@@ -258,26 +258,29 @@ module.exports = async (req, res) => {
         const text = `${stream.name || ''} ${displayTitle} ${stream.behaviorHints?.filename || ''}`;
         const lower = text.toLowerCase();
 
+        // 0. Aislar estrictamente releases rusos (cirílico o estudios rusos) para que nunca contaminen Español/Latino
+        const hasRussian = /[а-яА-ЯёЁ]|rutracker|rutor|\brus\b|softbox|dublik|gears\s*media|ideafilm|newstudio|baibako|lostfilm|hdrezka|coldfilm/i.test(text) || displayTitle.includes('🇷🇺');
+        const hasChineseHardsub = /中字|dygangs|1lou|qqhdtv|国英韩/i.test(text);
+
         // 1. Detección de Audio Latino (incluye banderas LATAM, emoji 💃 de Comet y trackers latinos)
         const hasLatinoFlag = displayTitle.includes('🇲🇽') || displayTitle.includes('🇨🇴') || displayTitle.includes('🇦🇷') || displayTitle.includes('🇨🇱') || displayTitle.includes('🇵🇪') || displayTitle.includes('💃');
-        const isLatino = hasLatinoFlag || /latino|audio[\s.-]*lat|dual[\s.-]*lat|es-419|es-la|latin[\s.-]*america|\blat\b|cinecalidad|pelisenhd|hackstore/i.test(lower);
+        const isLatino = !hasRussian && (hasLatinoFlag || /latino|audio[\s.-]*lat|dual[\s.-]*lat|es-419|es-la|latin[\s.-]*america|\blat\b|cinecalidad|pelisenhd|hackstore/i.test(lower));
 
-        // 2. Detección de Español / Castellano / Dual Hispano
+        // 2. Detección de Español / Castellano / Dual Hispano (incluye trackers de novelas turcas y series españolas)
         const hasSpainFlag = displayTitle.includes('🇪🇸');
-        const isCastellano = hasSpainFlag || /castellano|\bcast\b|spanish|español|es-es|\bspa\b|\[es\]|mejortorrent|estrenosdtl|wolfmax|newpct|dontorrent|grantorrent|elitetorrent|sinsitio|zonapelis|maxitorrent/i.test(lower);
+        const isCastellano = !hasRussian && (hasSpainFlag || /castellano|\bcast\b|spanish|español|es-es|\bspa\b|\besp\b|\[es\]|mejortorrent|estrenosdtl|wolfmax|newpct|dontorrent|grantorrent|elitetorrent|sinsitio|zonapelis|maxitorrent|atomohd|atomixhq|pctmix|descargas2020/i.test(lower));
 
-        // 3. Detección de idiomas extranjeros de doblaje o hardsubs (para relegarlos al final si no incluyen español)
-        const hasRussian = /[а-яА-ЯёЁ]|rutracker|rutor|\brus\b|softbox|dublik/i.test(text) || displayTitle.includes('🇷🇺');
+        // 3. Detección de otros idiomas regionales y extranjeros
         const hasFrench = /french|français|\bfr\b|\bvfi\b|\bvfq\b|\bvff\b|torrent9|vostfr/i.test(lower) || displayTitle.includes('🇫🇷');
         const hasPolish = /polish|lektor|polski|\bpl\b|besttorrents|\bcz\b|sktorrent/i.test(lower) || displayTitle.includes('🇵🇱');
         const hasItalian = /italian|\bita\b|mircrew|corsarone|avvocata|\bdlmux\b/i.test(lower) || displayTitle.includes('🇮🇹');
+        const hasPortuguese = /portugu|dublado|dual[\s.-]*pt|\bpt-br\b|\bpor\b/i.test(lower) || displayTitle.includes('🇧🇷') || displayTitle.includes('🇵🇹');
+        const hasTurkish = /\bturkish\b|\btur\b/i.test(lower) || displayTitle.includes('🇹🇷');
         const hasHindi = /hindi|tamil|telugu/i.test(lower) || displayTitle.includes('🇮🇳');
-        const hasChineseHardsub = /中字|dygangs|1lou|qqhdtv|国英韩/i.test(text);
 
-        // 4. Detección de Multi-Audio / Dual-Audio / Multi-Subs (muy común en K-Dramas de Netflix y Remuxes de DMM)
+        // 4. Detección de Multi-Audio / Dual-Audio / Multi-Subs (común en Netflix WEB-DL de Colombia/LATAM, K-Dramas y Remuxes DMM)
         const isMultiOrDual = /multi[\s.-]*audio|dual[\s.-]*audio|\bmulti\b|\bdual\b|multi[\s.-]*sub|\bmsub\b/i.test(lower) || displayTitle.includes('🌎');
         const isAsianOriginal = displayTitle.includes('🇰🇷') || displayTitle.includes('🇯🇵') || displayTitle.includes('🇨🇳') || /\bkorean\b|\bkor\b|\bjapanese\b|\bchinese\b/i.test(lower);
-        const isOfficialNfOrRemux = /\bnf\b|netflix|web-dl|remux/i.test(lower);
 
         let langTag = '';
         let priority = 0;
@@ -285,6 +288,10 @@ module.exports = async (req, res) => {
         if (isLatino) {
           langTag = '🇲🇽 LATINO';
           priority = 100;
+          if (/la\.casa\.de\.la\.pradera/i.test(lower)) {
+            langTag = '🇲🇽 OTRO TÍTULO';
+            priority = 30;
+          }
         } else if (isCastellano) {
           langTag = '🇪🇸 ESPAÑOL';
           priority = 88;
@@ -296,24 +303,32 @@ module.exports = async (req, res) => {
             langTag = '🇪🇸 SPIN-OFF / ALT';
             priority = 65;
           }
-        } else if (isMultiOrDual && !hasRussian && !hasPolish && !hasChineseHardsub && !(hasFrench && !displayTitle.includes('🇬🇧') && !isAsianOriginal)) {
+        } else if (isMultiOrDual && !hasRussian && !hasPolish && !hasChineseHardsub && !(hasHindi && !isAsianOriginal) && !(hasFrench && !displayTitle.includes('🇬🇧') && !isAsianOriginal)) {
           langTag = '🌐 MULTI-AUDIO / SUBS';
-          priority = 78;
+          priority = 80;
         } else if (!hasRussian && !hasFrench && !hasPolish && !hasItalian && !hasHindi && !hasChineseHardsub) {
           if (displayTitle.includes('🇰🇷') || /\bkorean\b|\bkor\b/i.test(lower)) {
             langTag = '🇰🇷 ORIGINAL + SUBS';
-            priority = 54;
+            priority = 56;
           } else if (displayTitle.includes('🇯🇵') || /\bjapanese\b|\bjpn\b/i.test(lower)) {
             langTag = '🇯🇵 ORIGINAL + SUBS';
-            priority = 54;
+            priority = 56;
           } else if (displayTitle.includes('🇨🇳') || /\bchinese\b|\bchi\b/i.test(lower)) {
             langTag = '🇨🇳 ORIGINAL + SUBS';
+            priority = 56;
+          } else if (hasTurkish) {
+            langTag = '🇹🇷 TURCO + SUBS';
+            priority = 54;
+          } else if (hasPortuguese) {
+            langTag = '🇧🇷 PORTUGUÉS + SUBS';
             priority = 54;
           } else {
             langTag = '🇺🇸 ORIGINAL / VOSE';
             priority = 50;
           }
-          if (isOfficialNfOrRemux) priority += 3;
+        } else if (hasPortuguese && !hasRussian) {
+          langTag = '🇧🇷 PORTUGUÉS';
+          priority = 45;
         } else if (hasChineseHardsub) {
           langTag = '🇨🇳 SUB ASIÁTICO';
           priority = 26;
@@ -337,24 +352,47 @@ module.exports = async (req, res) => {
           priority = 40;
         }
 
-        // Detección precisa de resolución (evitando falso 4K por el nombre del tracker 'Wolfmax4k')
-        const lowerWithoutTracker = lower.replace(/wolfmax4k/g, '');
+        // 5. Detección precisa de Resolución y Fidelidad de Video/Audio (evitando falso 4K por el tracker 'Wolfmax4k')
+        const lowerClean = lower.replace(/wolfmax4k/g, '');
         let resBadge = '1080p';
-        if (/\b4k\b|2160p|\buhd\b|uhdremux/i.test(lowerWithoutTracker)) resBadge = '4K';
-        else if (/720p/i.test(lowerWithoutTracker)) resBadge = '720p';
-        else if (/480p/i.test(lowerWithoutTracker)) resBadge = '480p';
+        if (/\b4k\b|2160p|\buhd\b|uhdremux/i.test(lowerClean)) resBadge = '4K';
+        else if (/720p/i.test(lowerClean)) resBadge = '720p';
+        else if (/480p|\bxvid\b|\bavi\b|\bsd\b/i.test(lowerClean) && !/1080p|2160p/i.test(lowerClean)) resBadge = 'SD/720p';
 
-        // Bono de calidad y caché instantáneo dentro de la misma categoría de idioma
-        if (resBadge === '4K') priority += 5;
-        else if (resBadge === '1080p') priority += 2;
-        else if (resBadge === '480p') priority -= 4;
+        // Scoring de Fidelidad de Video (dentro del mismo idioma gana siempre la mayor calidad de imagen)
+        if (resBadge === '4K') priority += 12;
+        else if (resBadge === '1080p') priority += 5;
+        else if (resBadge === '720p') priority += 1;
+        else priority -= 5;
 
+        const isRemux = /remux/i.test(lowerClean);
+        const hasDolbyVisionOrHdr = /\bdv\b|dolby\s*vision|hdr10\+|hdr/i.test(lowerClean);
+        const isWebDlOrBluray = /web-dl|webdl|bluray|blu-ray|bdremux|nf\.web|amzn\.web/i.test(lowerClean);
+
+        if (isRemux) priority += 6;
+        if (hasDolbyVisionOrHdr) priority += 4;
+        if (isWebDlOrBluray) priority += 3;
+
+        // Scoring de Fidelidad de Audio (Atmos / TrueHD / DTS-HD > DDP 5.1 / AC3 5.1 > AAC 2.0)
+        const hasAtmosOrLossless = /atmos|truehd|dts-hd|dts:x|flac/i.test(lowerClean);
+        const hasSurround51 = /ddp\s*5\.1|dd\+\s*5\.1|eac3\s*5\.1|ac3\s*5\.1|\b5\.1\b|\b7\.1\b/i.test(lowerClean);
+        let audioBadge = '';
+
+        if (hasAtmosOrLossless) {
+          priority += 5;
+          audioBadge = ' • ATMOS';
+        } else if (hasSurround51) {
+          priority += 3;
+          audioBadge = ' • 5.1';
+        }
+
+        // Bono por caché instantáneo en el CDN de Real-Debrid ([RD+] o [RD⚡])
         const isInstantCached = /\[rd\+\]|\[rd⚡\]/i.test(stream.name || '');
-        if (isInstantCached) priority += 3;
+        if (isInstantCached) priority += 4;
 
         return {
           ...stream,
-          name: `✦ VIDEM ${resBadge} • ${langTag}`,
+          name: `✦ VIDEM ${resBadge} • ${langTag}${audioBadge}`,
           title: displayTitle,
           _priority: priority
         };

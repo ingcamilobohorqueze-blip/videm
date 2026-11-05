@@ -64,13 +64,16 @@
 
       <form onsubmit="handleClientLogin(event)">
         <div class="app-form-group">
-          <label class="app-form-label" for="clientUser">Usuario o Teléfono</label>
-          <input type="text" id="clientUser" class="app-input" placeholder="ej. vip.9299@videm.tv o 310..." required autocomplete="username">
+          <label class="app-form-label" for="clientUser">Usuario o Teléfono VIP</label>
+          <input type="text" id="clientUser" class="app-input" placeholder="ej. vip.9299 o 310..." required autocomplete="username">
         </div>
 
         <div class="app-form-group">
-          <label class="app-form-label" for="clientPass">Contraseña de Sala</label>
-          <input type="password" id="clientPass" class="app-input" placeholder="••••••••" required autocomplete="current-password">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <label class="app-form-label" for="clientPass" style="margin-bottom: 0;">PIN de Acceso (4 dígitos)</label>
+            <a href="javascript:void(0)" onclick="handleForgotPin()" style="font-size: 0.72rem; color: var(--accent-cyan); text-decoration: none; font-weight: 600;">¿Olvidaste tu PIN?</a>
+          </div>
+          <input type="password" id="clientPass" class="app-input" placeholder="••••" required autocomplete="current-password" inputmode="numeric" maxlength="16" style="letter-spacing: 4px; font-size: 1.15rem; text-align: center;">
         </div>
 
         <div id="loginErrorMsg" style="color: var(--danger); font-size: 0.8rem; margin: 8px 0; display: none;"></div>
@@ -80,10 +83,53 @@
         </button>
       </form>
 
-      <div style="margin-top: 20px; font-size: 0.8rem; color: var(--text-dim);">
+      <div style="margin-top: 18px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.06); text-align: center;">
+        <span style="font-size: 0.78rem; color: var(--text-muted);">¿Primera vez aquí o sin número vinculado?</span><br>
+        <a href="javascript:void(0)" onclick="openActivationModal()" style="color: #F5A623; text-decoration: none; font-weight: 700; font-size: 0.82rem; display: inline-block; margin-top: 5px;">
+          ✦ Activar cuenta o crear mi PIN personal
+        </a>
+      </div>
+
+      <div style="margin-top: 16px; font-size: 0.78rem; color: var(--text-dim); text-align: center;">
         ¿Aún no tienes membresía? <a href="/#planes" style="color: var(--accent-cyan); text-decoration: none; font-weight: 700;">Ver pases VIP</a>
       </div>
     </section>
+
+    <!-- Modal de Activación / Configurar PIN -->
+    <div id="activationModal" class="vip-modal-backdrop" style="display: none;">
+      <div class="vip-modal-card">
+        <button type="button" class="vip-modal-close" onclick="closeActivationModal()">&times;</button>
+        <div style="font-size: 1.3rem; margin-bottom: 6px;">🔑</div>
+        <h3 style="font-size: 1.15rem; color: #fff; font-weight: 700; margin-bottom: 6px;">Activa tu PIN de 4 dígitos</h3>
+        <p style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 18px;">
+          Vincula tu WhatsApp y elige una clave de 4 números fáciles de recordar para entrar a tu sala en 1 segundo.
+        </p>
+
+        <form onsubmit="handleActivationSubmit(event)">
+          <div class="app-form-group">
+            <label class="app-form-label" for="actUser">Usuario o Código VIP asignado</label>
+            <input type="text" id="actUser" class="app-input" placeholder="ej. vip.9299 o vip.9299@videm.tv" required>
+          </div>
+
+          <div class="app-form-group">
+            <label class="app-form-label" for="actPhone">Tu número de WhatsApp</label>
+            <input type="tel" id="actPhone" class="app-input" placeholder="ej. 3123456789" required inputmode="numeric">
+          </div>
+
+          <div class="app-form-group">
+            <label class="app-form-label" for="actPin">Elige tu nuevo PIN (4 dígitos)</label>
+            <input type="password" id="actPin" class="app-input" placeholder="••••" required maxlength="4" pattern="[0-9]{4}" inputmode="numeric" style="letter-spacing: 6px; font-size: 1.25rem; text-align: center;">
+          </div>
+
+          <div id="actErrorMsg" style="color: var(--danger); font-size: 0.8rem; margin: 8px 0; display: none;"></div>
+          <div id="actSuccessMsg" style="color: var(--success); font-size: 0.8rem; margin: 8px 0; display: none;"></div>
+
+          <button type="submit" id="btnActSubmit" class="btn-primary-glow" style="margin-top: 10px;">
+            <span>Guardar PIN y Entrar a la Sala</span>
+          </button>
+        </form>
+      </div>
+    </div>
 
     <!-- 2. CLIENT DASHBOARD SECTION (AUTHENTICATED) -->
     <section id="clientDashboardSection" style="display: none;">
@@ -203,3 +249,4 @@
   <script src="/js/app-client.js"></script>
 </body>
 </html>
+

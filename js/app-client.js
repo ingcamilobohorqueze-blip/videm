@@ -28,6 +28,22 @@ function triggerPwaInstall() {
 
 // Session Initialization
 document.addEventListener('DOMContentLoaded', () => {
+  // Parse query parameters (ej. ?vip=9299 o ?activar=1)
+  const urlParams = new URLSearchParams(window.location.search);
+  const vipParam = urlParams.get('vip') || urlParams.get('user');
+  const activarParam = urlParams.get('activar');
+
+  if (vipParam) {
+    const userField = document.getElementById('clientUser');
+    if (userField) userField.value = vipParam;
+    const actUserField = document.getElementById('actUser');
+    if (actUserField) actUserField.value = vipParam;
+  }
+
+  if (activarParam) {
+    openActivationModal();
+  }
+
   const saved = localStorage.getItem('videm_client_session_v1');
   if (saved) {
     try {
@@ -89,7 +105,7 @@ async function handleClientLogin(e) {
     const res = await fetch('/api/client-auth', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ user: userInput, pass: passInput })
+      body: JSON.stringify({ action: 'login', user: userInput, pin: passInput })
     });
     const data = await res.json();
 
@@ -98,7 +114,7 @@ async function handleClientLogin(e) {
       localStorage.setItem('videm_client_session_v1', JSON.stringify(activeClient));
       showClientDashboard();
     } else {
-      errEl.textContent = data.error || 'Credenciales incorrectas.';
+      errEl.textContent = data.error || 'PIN o credenciales incorrectas.';
       errEl.style.display = 'block';
     }
   } catch (err) {
@@ -107,6 +123,89 @@ async function handleClientLogin(e) {
   } finally {
     btn.disabled = false;
     btn.innerHTML = '<span>Entrar a mi Sala Privada</span>';
+  }
+}
+
+// WhatsApp Forgot PIN handler
+function handleForgotPin() {
+  const user = (document.getElementById('clientUser')?.value || '').trim();
+  const msg = user
+    ? `Hola VIDEM VIP, olvidé el PIN de mi sala privada de cine 4K (Mi usuario: ${user}). ¿Me ayudas a recuperarlo por favor?`
+    : `Hola VIDEM VIP, olvidé el PIN de mi sala privada de cine 4K. ¿Me ayudas a restablecerlo por favor?`;
+  window.open(`https://wa.me/573015568904?text=${encodeURIComponent(msg)}`, '_blank');
+}
+
+// Activation Modal Controls
+function openActivationModal() {
+  const modal = document.getElementById('activationModal');
+  if (modal) {
+    modal.style.display = 'flex';
+    const currentVal = document.getElementById('clientUser')?.value.trim();
+    if (currentVal && !document.getElementById('actUser').value) {
+      document.getElementById('actUser').value = currentVal;
+    }
+  }
+}
+
+function closeActivationModal() {
+  const modal = document.getElementById('activationModal');
+  if (modal) modal.style.display = 'none';
+}
+
+async function handleActivationSubmit(e) {
+  if (e) e.preventDefault();
+  const actUser = document.getElementById('actUser').value.trim();
+  const actPhone = document.getElementById('actPhone').value.trim();
+  const actPin = document.getElementById('actPin').value.trim();
+  const errEl = document.getElementById('actErrorMsg');
+  const succEl = document.getElementById('actSuccessMsg');
+  const btn = document.getElementById('btnActSubmit');
+
+  errEl.style.display = 'none';
+  succEl.style.display = 'none';
+
+  if (!/^\d{4}$/.test(actPin)) {
+    errEl.textContent = 'El PIN debe ser de 4 dígitos numéricos (ej. 1234).';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Guardando y vinculando...';
+
+  try {
+    const res = await fetch('/api/client-auth', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'activate',
+        user: actUser,
+        phone: actPhone,
+        pin: actPin
+      })
+    });
+    const data = await res.json();
+
+    if (data.success && data.client) {
+      succEl.textContent = '¡PIN guardado! Entrando a tu sala...';
+      succEl.style.display = 'block';
+      activeClient = data.client;
+      localStorage.setItem('videm_client_session_v1', JSON.stringify(activeClient));
+
+      setTimeout(() => {
+        closeActivationModal();
+        showClientDashboard();
+      }, 1000);
+    } else {
+      errEl.textContent = data.error || 'No se pudo vincular la cuenta.';
+      errEl.style.display = 'block';
+    }
+  } catch (err) {
+    errEl.textContent = 'Error de conexión con el servidor VIDEM.';
+    errEl.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<span>Guardar PIN y Entrar a la Sala</span>';
   }
 }
 
@@ -288,3 +387,4 @@ function showAppToast(msg) {
   toast.style.display = 'block';
   setTimeout(() => { toast.style.display = 'none'; }, 4500);
 }
+

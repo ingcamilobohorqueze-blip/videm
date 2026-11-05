@@ -161,10 +161,10 @@ async function fetchMultiEngineStreams(type, rawId, rdToken, region = 'latam') {
   const id = await resolveImdbIdIfNeeded(type, rawId);
   const cometB64 = buildCometConfigBase64(token, region);
 
-  // 1. Torrentio Prioritario según región (En LATAM permitimos también enlaces [RD download] de Cinecalidad con semillas para clásicos)
+  // 1. Torrentio Prioritario según región (Solo enlaces 100% en caché instantáneo RD+ para evitar enlaces que no cargan)
   const urlTorrentioPrimary = region === 'es'
-    ? `https://torrentio.strem.fun/language=spanish,latino%7Cqualityfilter=cam,scr%7Crealdebrid=${token}/stream/${type}/${id}`
-    : `https://torrentio.strem.fun/language=latino%7Cqualityfilter=cam,scr%7Crealdebrid=${token}/stream/${type}/${id}`;
+    ? `https://torrentio.strem.fun/language=spanish,latino%7Cqualityfilter=cam,scr%7Cdebridoptions=nodownloadlinks%7Crealdebrid=${token}/stream/${type}/${id}`
+    : `https://torrentio.strem.fun/language=latino%7Cqualityfilter=cam,scr%7Cdebridoptions=nodownloadlinks%7Crealdebrid=${token}/stream/${type}/${id}`;
 
   // 2. Torrentio Global / Multi-Audio / Remux 4K + respaldo hispano
   const urlTorrentioSecondary = region === 'es'
@@ -209,7 +209,8 @@ async function fetchMultiEngineStreams(type, rawId, rdToken, region = 'latam') {
   const uniqueStreams = [];
 
   for (const s of combined) {
-    if (!s || (!s.url && !s.infoHash)) continue;
+    // Exigir URL HTTP directa en caché CDN (descartar torrents P2P crudos o [RD download] sin semillas que no cargan)
+    if (!s || !s.url || /\[rd\s*download\]/i.test(s.name || '')) continue;
 
     const fullText = `${s.name || ''} ${s.title || ''} ${s.description || ''} ${s.behaviorHints?.filename || ''}`;
     // Si estamos consultando una película, descartar packs de series infiltrados por palabra clave (ej. "DRAGON BALL Z: Complete 1989-2019 Series" en "Red Dragon")

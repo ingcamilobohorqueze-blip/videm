@@ -59,11 +59,30 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
 
   <!-- Stylesheets -->
-  <link rel="stylesheet" href="css/tokens.css">
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/tokens.css?v=20261105-2">
+  <link rel="stylesheet" href="css/style.css?v=20261105-2">
+
+  <style>
+    /* Critical Mobile Menu & Theme Icon Fallback against stale cache */
+    .mobile-menu-toggle { display: none; background: var(--pill-bg); border: 1px solid var(--pill-border); color: var(--text-primary); width: 42px; height: 42px; border-radius: 12px; cursor: pointer; align-items: center; justify-content: center; padding: 0; flex-shrink: 0; }
+    .mobile-menu-toggle svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2.2; fill: none; }
+    .mobile-menu-toggle .icon-close-menu { display: none; }
+    .mobile-menu-toggle[aria-expanded="true"] .icon-open-menu { display: none; }
+    .mobile-menu-toggle[aria-expanded="true"] .icon-close-menu { display: block; }
+    .nav-controls-right { display: flex; align-items: center; gap: 0.6rem; }
+    .nav-menu-links { display: flex; align-items: center; gap: 0.75rem; }
+    @media (max-width: 768px) {
+      .nav-container { position: static; justify-content: space-between; }
+      .mobile-menu-toggle { display: inline-flex; }
+      .nav-menu-links { display: none; position: absolute; top: 68px; left: 0; right: 0; background: var(--bg-surface); border-bottom: 1px solid var(--nav-border); box-shadow: var(--shadow-lg); padding: 1.15rem 1.25rem 1.4rem; flex-direction: column; align-items: stretch; gap: 0.65rem; z-index: 250; }
+      .nav-menu-links.is-open { display: flex; }
+      .nav-menu-links .nav-text-link { padding: 0.8rem 1rem; border-radius: 10px; background: var(--pill-bg); border: 1px solid var(--pill-border); color: var(--text-primary); }
+      .nav-menu-links .btn-nav-cta { justify-content: center; padding: 0.9rem 1.2rem; background: var(--accent-gradient); color: #FFFFFF; border: none; }
+    }
+  </style>
 
   <!-- Early Theme Controller to avoid FOUC -->
-  <script src="js/theme.js"></script>
+  <script src="js/theme.js?v=20261105-2"></script>
 </head>
 <body>
 
@@ -917,6 +936,6 @@
   </div>
 
   <!-- Scripts -->
-  <script src="js/app.js"></script>
+  <script src="js/app.js?v=20261105-2"></script>
 </body>
 </html>

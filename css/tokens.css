@@ -82,16 +82,16 @@
   --bg-canvas: #F8FAFC;
   --bg-canvas-rgb: 248, 250, 252;
   --bg-surface: #FFFFFF;
-  --bg-surface-glass: rgba(255, 255, 255, 0.82);
-  --bg-surface-glass-hover: rgba(255, 255, 255, 0.95);
-  --bg-card: rgba(255, 255, 255, 0.9);
-  --bg-card-border: rgba(226, 232, 240, 0.9);
-  --bg-card-border-hover: rgba(14, 165, 233, 0.4);
+  --bg-surface-glass: rgba(255, 255, 255, 0.9);
+  --bg-surface-glass-hover: #FFFFFF;
+  --bg-card: #FFFFFF;
+  --bg-card-border: #CBD5E1;
+  --bg-card-border-hover: rgba(2, 132, 199, 0.55);
 
   /* Text & Elements */
   --text-primary: #0F172A;
-  --text-secondary: #475569;
-  --text-muted: #64748B;
+  --text-secondary: #334155;
+  --text-muted: #475569;
   --text-inverse: #FFFFFF;
 
   /* Accents & Glows */
@@ -103,16 +103,16 @@
   --hero-glow: radial-gradient(circle at 50% 30%, rgba(79, 70, 229, 0.1) 0%, rgba(2, 132, 199, 0.06) 40%, transparent 75%);
 
   /* UI Components */
-  --nav-bg: rgba(255, 255, 255, 0.85);
-  --nav-border: rgba(226, 232, 240, 0.8);
-  --pill-bg: rgba(241, 245, 249, 0.8);
-  --pill-border: rgba(203, 213, 225, 0.7);
-  --input-bg: #F1F5F9;
-  --input-border: rgba(203, 213, 225, 0.9);
+  --nav-bg: rgba(255, 255, 255, 0.94);
+  --nav-border: #CBD5E1;
+  --pill-bg: #F1F5F9;
+  --pill-border: #CBD5E1;
+  --input-bg: #F8FAFC;
+  --input-border: #94A3B8;
 
   /* Shadows */
-  --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06);
-  --shadow-md: 0 10px 25px -5px rgba(15, 23, 42, 0.08);
-  --shadow-lg: 0 20px 45px -10px rgba(15, 23, 42, 0.12);
-  --shadow-prism: 0 10px 30px -5px rgba(14, 165, 233, 0.2);
+  --shadow-sm: 0 2px 6px rgba(15, 23, 42, 0.07);
+  --shadow-md: 0 10px 25px -5px rgba(15, 23, 42, 0.1);
+  --shadow-lg: 0 20px 45px -10px rgba(15, 23, 42, 0.14);
+  --shadow-prism: 0 10px 30px -5px rgba(14, 165, 233, 0.25);
 }

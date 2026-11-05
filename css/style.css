@@ -574,7 +574,8 @@ body {
 }
 
 [data-theme="light"] .hero-bg-img {
-  filter: brightness(0.98) contrast(1.05) saturate(1.05);
+  filter: brightness(1.06) contrast(0.95) saturate(0.85);
+  opacity: 0.35;
 }
 
 /* Hero Gradient Overlay - Cinematic depth while keeping living room & OLED vividly visible */
@@ -591,6 +592,18 @@ body {
       var(--bg-canvas) 100%
     );
   pointer-events: none;
+}
+
+[data-theme="light"] .hero-backdrop-overlay {
+  background: 
+    radial-gradient(ellipse 80% 65% at 50% 48%, rgba(248, 250, 252, 0.78) 0%, rgba(248, 250, 252, 0.92) 100%),
+    linear-gradient(
+      180deg,
+      rgba(248, 250, 252, 0.65) 0%,
+      rgba(248, 250, 252, 0.82) 35%,
+      rgba(248, 250, 252, 0.95) 75%,
+      var(--bg-canvas) 100%
+    );
 }
 
 .hero-content {
@@ -2035,6 +2048,7 @@ body {
   .nav-container {
     height: 68px;
     justify-content: space-between;
+    position: static;
   }
 
   .nav-status-wrapper,
@@ -2051,35 +2065,29 @@ body {
   }
 
   .nav-menu-links {
-    position: fixed;
+    display: none;
+    position: absolute;
     top: 68px;
     left: 0;
     right: 0;
     background: var(--bg-surface);
     border-bottom: 1px solid var(--nav-border);
     box-shadow: var(--shadow-lg);
-    padding: 1.25rem 1.5rem 1.5rem;
+    padding: 1.15rem 1.25rem 1.4rem;
     flex-direction: column;
     align-items: stretch;
-    gap: 0.75rem;
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(-10px);
-    pointer-events: none;
-    transition: all var(--transition-normal);
-    z-index: 150;
+    gap: 0.65rem;
+    z-index: 250;
   }
 
   .nav-menu-links.is-open {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-    pointer-events: auto;
+    display: flex;
+    animation: fadeInDown 0.2s ease-out;
   }
 
   .nav-menu-links .nav-text-link {
-    padding: 0.75rem 1rem;
-    font-size: 1rem;
+    padding: 0.8rem 1rem;
+    font-size: 0.98rem;
     border-radius: 10px;
     background: var(--pill-bg);
     border: 1px solid var(--pill-border);
@@ -2092,27 +2100,75 @@ body {
 
   .nav-menu-links .btn-nav-cta {
     justify-content: center;
-    padding: 0.85rem 1.2rem;
+    padding: 0.9rem 1.2rem;
     font-size: 0.98rem;
     background: var(--accent-gradient);
     color: #FFFFFF;
     border: none;
     box-shadow: var(--shadow-prism);
-    margin-top: 0.25rem;
+    margin-top: 0.2rem;
   }
 
   .hero-section {
-    padding-top: 110px;
-    padding-bottom: 60px;
+    padding-top: 105px;
+    padding-bottom: 56px;
+  }
+
+  .section-premium,
+  .section-filter,
+  .section-faqs {
+    padding: 64px 0;
+  }
+
+  .section-header {
+    margin-bottom: 2.5rem;
+  }
+
+  .benefit-card {
+    padding: 1.75rem 1.4rem;
+  }
+
+  .comparison-banner {
+    padding: 1.4rem 1.25rem;
   }
 
   .filter-card-container {
-    padding: 2.2rem 1.5rem;
+    padding: 2rem 1.25rem;
+    border-radius: 22px;
+  }
+
+  .req-box {
+    padding: 1.25rem;
+    gap: 1rem;
+  }
+
+  .interactive-validator {
+    padding: 1.25rem;
   }
 
   .val-inputs {
     grid-template-columns: 1fr;
     gap: 0.85rem;
+  }
+
+  .speedtest-quick-entry {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+
+  .quick-entry-input-group {
+    justify-content: center;
+  }
+
+  .faq-question {
+    padding: 1.2rem 1.25rem;
+    font-size: 1rem;
+  }
+
+  .faq-answer-inner {
+    padding: 0 1.25rem 1.25rem;
+    font-size: 0.92rem;
   }
 
   .hero-trust-bar {
@@ -2123,8 +2179,8 @@ body {
 
   .btn-primary-wa, .btn-secondary-wa {
     width: 100%;
-    padding: 1.05rem 1.5rem;
-    font-size: 1rem;
+    padding: 1.05rem 1.25rem;
+    font-size: 0.98rem;
   }
 }
 

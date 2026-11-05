@@ -61,10 +61,26 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
 
   <!-- Stylesheets -->
-  <link rel="stylesheet" href="css/tokens.css">
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/tokens.css?v=20261105-2">
+  <link rel="stylesheet" href="css/style.css?v=20261105-2">
 
   <style>
+    /* Critical Mobile Menu & Theme Icon Fallback against stale cache */
+    .mobile-menu-toggle { display: none; background: var(--pill-bg); border: 1px solid var(--pill-border); color: var(--text-primary); width: 42px; height: 42px; border-radius: 12px; cursor: pointer; align-items: center; justify-content: center; padding: 0; flex-shrink: 0; }
+    .mobile-menu-toggle svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2.2; fill: none; }
+    .mobile-menu-toggle .icon-close-menu { display: none; }
+    .mobile-menu-toggle[aria-expanded="true"] .icon-open-menu { display: none; }
+    .mobile-menu-toggle[aria-expanded="true"] .icon-close-menu { display: block; }
+    .nav-controls-right { display: flex; align-items: center; gap: 0.6rem; }
+    .nav-menu-links { display: flex; align-items: center; gap: 0.75rem; }
+    @media (max-width: 768px) {
+      .nav-container { position: static; justify-content: space-between; }
+      .mobile-menu-toggle { display: inline-flex; }
+      .nav-menu-links { display: none; position: absolute; top: 68px; left: 0; right: 0; background: var(--bg-surface); border-bottom: 1px solid var(--nav-border); box-shadow: var(--shadow-lg); padding: 1.15rem 1.25rem 1.4rem; flex-direction: column; align-items: stretch; gap: 0.65rem; z-index: 250; }
+      .nav-menu-links.is-open { display: flex; }
+      .nav-menu-links .nav-text-link { padding: 0.8rem 1rem; border-radius: 10px; background: var(--pill-bg); border: 1px solid var(--pill-border); color: var(--text-primary); }
+      .nav-menu-links .btn-nav-cta { justify-content: center; padding: 0.9rem 1.2rem; background: var(--accent-gradient); color: #FFFFFF; border: none; }
+    }
     /* Estilos específicos para la landing de España y tabla de tarifas */
     .es-badge-flag {
       display: inline-flex;
@@ -382,7 +398,7 @@
     }
   </style>
 
-  <script src="js/theme.js"></script>
+  <script src="js/theme.js?v=20261105-2"></script>
 </head>
 <body>
 
@@ -397,17 +413,85 @@
         <img src="assets/images/videm-text-logo-web.png" alt="VIDEM" class="brand-text-wordmark" width="124" height="26">
       </a>
 
-      <!-- Center Status Badge -->
+      <!-- Center Status Badge / Interactive Popover Trigger -->
       <div class="nav-status-wrapper">
-        <div class="nav-center-badge">
+        <button 
+          type="button" 
+          class="nav-center-badge nav-status-trigger" 
+          id="cdnStatusTrigger" 
+          aria-expanded="false" 
+          aria-haspopup="true" 
+          aria-controls="cdnStatusPopover" 
+          title="Haz clic para ver el monitor de salud de la red europea"
+        >
           <span class="status-dot"></span>
           <span>Red CDN Europa: 100% Operacional</span>
+          <svg class="chevron-status" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
+
+        <!-- Popover Monitor de Salud de la Red CDN Europa con Termómetro -->
+        <div class="cdn-status-popover" id="cdnStatusPopover" aria-hidden="true">
+          <div class="popover-header">
+            <div class="popover-title-row">
+              <span class="status-pulse-dot"></span>
+              <span class="popover-title">Monitor CDN Europa (Madrid / París)</span>
+            </div>
+            <span class="popover-badge-live">EN VIVO</span>
+          </div>
+
+          <div class="thermometer-container">
+            <div class="thermometer-header">
+              <span class="thermometer-label">Termómetro de Red:</span>
+              <span class="thermometer-status-text">99.9% • ÓPTIMA</span>
+            </div>
+            <div class="thermometer-bar-track">
+              <div class="thermometer-step step-bad" title="Mala: Menor a 25 Mbps, alto buffering">
+                <span>Mala</span>
+              </div>
+              <div class="thermometer-step step-unstable" title="Inestable: 25 - 80 Mbps, caídas en hora punta">
+                <span>Inestable</span>
+              </div>
+              <div class="thermometer-step step-good" title="Buena: 80 - 150 Mbps, 1080p y 4K comprimido">
+                <span>Buena</span>
+              </div>
+              <div class="thermometer-step step-optimal is-current" title="Óptima: Fibra CDN > 150 Mbps, Remux 4K sin pérdidas">
+                <span>Óptima</span>
+                <span class="optimal-dot-beacon"></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="popover-metrics-grid">
+            <div class="pop-metric-item">
+              <span class="pop-metric-name">Ancho de Banda CDN</span>
+              <span class="pop-metric-val">&gt; 100 Gbps</span>
+            </div>
+            <div class="pop-metric-item">
+              <span class="pop-metric-name">Latencia España</span>
+              <span class="pop-metric-val">&lt; 12 ms</span>
+            </div>
+            <div class="pop-metric-item">
+              <span class="pop-metric-name">Congestión Servidor</span>
+              <span class="pop-metric-val val-green">0% (Sin P2P)</span>
+            </div>
+            <div class="pop-metric-item">
+              <span class="pop-metric-name">Disponibilidad</span>
+              <span class="pop-metric-val val-green">99.9% Uptime</span>
+            </div>
+          </div>
+
+          <div class="popover-footer-note">
+            <span>🛡️ Enlace privado cifrado (HTTPS) hacia nodos europeos de fibra óptica para que las películas 4K Remux nunca sufran bloqueos ni buffering en horas punta.</span>
+          </div>
         </div>
       </div>
 
       <!-- Actions -->
       <div class="nav-actions">
         <nav class="nav-menu-links" id="navMenuLinks" aria-label="Navegación Principal">
+          <a href="#requisitos" class="nav-text-link">Diagnóstico TV</a>
           <a href="#tarifas" class="nav-text-link">Pases y Tarifas</a>
           <a href="#faqs" class="nav-text-link">Preguntas Frecuentes</a>
           <a href="https://wa.me/34746057776?text=Hola,%20estoy%20en%20Espa%C3%B1a%20y%20quiero%20probar%20VIDEM%20en%20mi%20Smart%20TV" target="_blank" rel="noopener noreferrer" class="btn-nav-cta">
@@ -691,6 +775,141 @@
       </div>
     </section>
 
+    <!-- SECTION REQUISITOS Y DIAGNÓSTICO DE COMPATIBILIDAD EN ESPAÑA -->
+    <section class="section-filter" id="requisitos">
+      <div class="container">
+        
+        <div class="filter-card-container">
+          
+          <div class="filter-header text-center">
+            <span class="filter-badge-pill">Filtro de Calidad</span>
+            <h2 class="filter-title">Diagnóstico de Compatibilidad</h2>
+            <p class="filter-intro">
+              Comprueba en 10 segundos si tu televisor y la fibra óptica de tu hogar en España están listos para <img src="assets/images/videm-text-logo-web.png" alt="Videm" class="inline-wordmark" width="82" height="17"> en 4K Remux:
+            </p>
+          </div>
+
+          <!-- Requirements Dual Cards -->
+          <div class="requirements-duo">
+            
+            <!-- Requisito 1 -->
+            <div class="req-box">
+              <div class="req-number">1</div>
+              <div class="req-content">
+                <h4>Smart TV, Fire TV Stick o TV Box</h4>
+                <p>Compatible de forma nativa con los principales televisores del salón y dispositivos de reproducción.</p>
+                <div class="tech-badges-row">
+                  <span class="os-pill">Samsung Tizen</span>
+                  <span class="os-pill">LG WebOS</span>
+                  <span class="os-pill">Fire TV Stick 4K</span>
+                  <span class="os-pill">Google TV / Android TV</span>
+                  <span class="os-pill">Sony / Philips / TCL</span>
+                  <span class="os-pill">Xiaomi TV Box</span>
+                  <span class="os-pill">Apple TV 4K</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Requisito 2 -->
+            <div class="req-box">
+              <div class="req-number">2</div>
+              <div class="req-content">
+                <h4>Fibra óptica en España (&gt; 100 Mbps)</h4>
+                <p>Compatible con cualquier operador (Movistar, Digi, Orange, Vodafone, MásMóvil, Yoigo, O2) mediante enlace CDN cifrado sin P2P.</p>
+                <div class="tech-badges-row">
+                  <span class="os-pill">Fibra Simétrica</span>
+                  <span class="os-pill">&gt; 100 Mbps</span>
+                  <span class="os-pill">Cero Bloqueos P2P</span>
+                  <span class="os-pill">1 Hogar / 1 IP</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Interactive Pre-qualifier Simulator -->
+          <div class="interactive-validator">
+            <div class="val-header">
+              <span class="val-title">Diagnóstico Inmediato de Compatibilidad</span>
+              <span class="val-status-tag" style="font-size:0.75rem; color:var(--text-muted); font-family:var(--font-mono);">
+                Paso 1 de 2
+              </span>
+            </div>
+
+            <div class="val-inputs">
+              <div class="val-group">
+                <label for="qualifierTvSelect">Marca o Dispositivo de tu Salón:</label>
+                <select id="qualifierTvSelect" class="val-select">
+                  <option value="lg" selected>LG Smart TV (WebOS)</option>
+                  <option value="samsung">Samsung Smart TV (Tizen)</option>
+                  <option value="firetv">Amazon Fire TV Stick 4K / Max</option>
+                  <option value="googletv">Google TV / Android TV (Sony, TCL, Philips)</option>
+                  <option value="xiaomi">Xiaomi TV Box S / Mi Stick 4K</option>
+                  <option value="appletv">Apple TV 4K</option>
+                  <option value="shield">Nvidia Shield TV Pro</option>
+                  <option value="other">Otro televisor / Dispositivo</option>
+                </select>
+              </div>
+
+              <div class="val-group">
+                <div class="val-label-row">
+                  <label for="qualifierSpeedSelect">Fibra Óptica Contratada en Casa:</label>
+                  <button type="button" class="btn-speedtest-inline" id="openSpeedtestModalBtn" title="Medir velocidad real">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+                    </svg>
+                    <span>¿No sabes tus Mbps? Medir en Speedtest</span>
+                  </button>
+                </div>
+                <select id="qualifierSpeedSelect" class="val-select">
+                  <option value="300" selected>Fibra 300 Mbps a 600 Mbps (Ideal 4K Remux)</option>
+                  <option value="500">Fibra 600 Mbps a 1 Gbps / 10 Gbps (Máxima Fidelidad)</option>
+                  <option value="150">Fibra 100 - 250 Mbps (Óptimo 4K HDR)</option>
+                  <option value="low">Menos de 100 Mbps (Requiere Evaluación)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Quick Speed Entry from Speedtest -->
+            <div class="speedtest-quick-entry">
+              <span class="quick-entry-label">⚡ O ingresa el resultado de tu prueba en Speedtest:</span>
+              <div class="quick-entry-input-group">
+                <input type="number" id="manualSpeedInput" class="manual-speed-input" placeholder="Ej: 300" min="5" max="10000">
+                <span class="manual-speed-unit">Mbps</span>
+                <button type="button" id="applyManualSpeedBtn" class="btn-apply-speed">Calcular</button>
+              </div>
+            </div>
+
+            <!-- Dynamic Result Notification -->
+            <div class="val-result-box" id="qualifierResultBox">
+              <!-- Dynamically populated by app.js -->
+            </div>
+          </div>
+
+          <!-- Secondary CTA Button -->
+          <div class="filter-action-wrapper">
+            <a 
+              href="https://wa.me/34746057776?text=Hola,%20estoy%20en%20Espa%C3%B1a%20y%20quiero%20probar%20VIDEM%20en%20mi%20Smart%20TV" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              class="btn-secondary-wa" 
+              id="secondaryCtaBtn"
+            >
+              <svg class="wa-icon-svg" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.05 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+              </svg>
+              <span>Cumplo los requisitos. Pedir Prueba Gratis (2h)</span>
+            </a>
+            <p class="guarantee-note">
+              Atención directa en España por WhatsApp (+34 746 05 77 76). Sin tarjeta ni permanencia.
+            </p>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
     <!-- FAQS ESPECÍFICAS DE ESPAÑA -->
     <section class="section-faqs" id="faqs" style="padding: 70px 0;">
       <div class="container">
@@ -786,6 +1005,98 @@
     </div>
   </footer>
 
-  <script src="js/app.js"></script>
+  <!-- MODAL SPEEDTEST HELPER -->
+  <div class="modal-backdrop" id="speedtestModal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <button type="button" class="modal-close-btn" id="closeSpeedtestModalBtn" aria-label="Cerrar ventana">
+        &times;
+      </button>
+
+      <div class="modal-header">
+        <div class="modal-icon-badge">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8Z"/>
+            <path d="m14 10 4-4"/>
+            <circle cx="12" cy="12" r="2"/>
+          </svg>
+        </div>
+        <h3 class="modal-title">Medidor Rápido de Conexión</h3>
+        <p class="modal-desc">
+          Para garantizar que tu Smart TV disfrute de películas 4K Remux sin buffering, mide la velocidad real de descarga de tu hogar.
+        </p>
+      </div>
+
+      <div class="modal-steps">
+        <div class="modal-step-item">
+          <span class="step-num">1</span>
+          <div class="step-body">
+            <strong>Abre el test oficial de Speedtest.net</strong>
+            <p>Se abrirá en una nueva pestaña. Presiona el botón circular <em>«INICIO»</em> y espera 15 segundos.</p>
+            <a 
+              href="https://www.speedtest.net/es" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              class="btn-open-speedtest"
+            >
+              <span>Abrir Speedtest.net Oficial</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <line x1="10" y1="14" x2="21" y2="3"></line>
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="modal-step-item">
+          <span class="step-num">2</span>
+          <div class="step-body">
+            <strong>Fíjate en el valor de Descarga (Mbps)</strong>
+            <p>No te preocupes por el "Ping": si es menor a 40 ms, tu inicio de video será instantáneo.</p>
+            
+            <div class="step-interactive-grid">
+              <div class="modal-input-col">
+                <label for="modalMbpsInput">Ingresa tu número de Descarga:</label>
+                <div class="modal-input-wrap">
+                  <input type="number" id="modalMbpsInput" placeholder="Ej: 300" min="5" max="10000">
+                  <span>Mbps</span>
+                  <button type="button" id="confirmModalSpeedBtn" class="btn-confirm-speed">Aplicar Evaluación</button>
+                </div>
+              </div>
+
+              <div class="speedtest-sample-badge" aria-label="Muestra visual de Speedtest">
+                <div class="sample-badge-top">
+                  <span class="sample-tag">Ejemplo Ookla</span>
+                  <span class="sample-radar-dot"></span>
+                </div>
+                <div class="sample-type-label">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M12 5v14M19 12l-7 7-7-7"/>
+                  </svg>
+                  <span>DESCARGA Mbps</span>
+                </div>
+                <div class="sample-val-display">
+                  <span class="sample-val-int">300</span><span class="sample-val-dec">.00</span>
+                </div>
+                <div class="sample-badge-hint">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                  </svg>
+                  <span>Copia este número</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer-note">
+        💡 Nota técnica: Videm requiere al menos 100 Mbps para flujos 4K Remux con Dolby Vision y Dolby Atmos sin compresión.
+      </div>
+    </div>
+  </div>
+
+  <script src="js/app.js?v=20261105-2"></script>
 </body>
 </html>

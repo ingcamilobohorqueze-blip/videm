@@ -8,8 +8,9 @@
 // ==========================================================================
 const VIDEM_CONFIG = {
   // Configura aquí tu número de WhatsApp oficial (código de país + número, sin signos + ni espacios)
-  // Configurado para: +57 301 5568904
+  // Colombia: +57 301 5568904 | España: +34 746 05 77 76
   whatsappNumber: "573015568904",
+  whatsappNumberEs: "34746057776",
 
   // Mensajes predeterminados del embudo
   defaultMessages: {
@@ -20,11 +21,16 @@ const VIDEM_CONFIG = {
   }
 };
 
+function isSpainPage() {
+  return document.documentElement.lang === 'es-ES' || window.location.pathname.startsWith('/es');
+}
+
 /**
  * Builds a direct WhatsApp click-to-chat URL with properly encoded message.
  */
 function buildWhatsAppUrl(message) {
-  const cleanNumber = VIDEM_CONFIG.whatsappNumber.replace(/[^0-9]/g, '');
+  const targetNum = isSpainPage() ? VIDEM_CONFIG.whatsappNumberEs : VIDEM_CONFIG.whatsappNumber;
+  const cleanNumber = targetNum.replace(/[^0-9]/g, '');
   return `https://wa.me/${cleanNumber}?text=${encodeURIComponent(message)}`;
 }
 

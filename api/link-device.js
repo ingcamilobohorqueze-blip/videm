@@ -6,10 +6,13 @@ const DEMO_PHONE = '573015568904';
 
 const VIDEM_MANIFEST = {
   id: 'tv.videm.cinema',
-  version: '1.3.0',
+  version: '1.5.0',
   name: 'VIDEM 4K Cinema',
-  description: 'Infraestructura privada VIDEM en ultra alta definición 4K Remux Dolby Atmos (Multi-Engine Latino, Turcas, K-Dramas & Global)',
-  resources: ['stream'],
+  description: 'Infraestructura privada VIDEM en ultra alta definición 4K Remux Dolby Atmos (Curaduría VIP Latino, K-Dramas & Metadatos Actualizados)',
+  resources: [
+    'stream',
+    { name: 'meta', types: ['series', 'movie'], idPrefixes: ['tt'] }
+  ],
   types: ['movie', 'series', 'anime'],
   idPrefixes: ['tt', 'kitsu', 'tmdb:'],
   catalogs: [],
@@ -43,10 +46,10 @@ async function ensureDemoAddons(authKey, region = 'latam') {
       ? 'https://videm.tv/api/addon/es/manifest.json'
       : 'https://videm.tv/api/addon/manifest.json';
 
-    const hasVidem = existing.some(a => a.manifest?.id === 'tv.videm.cinema' && a.transportUrl === targetUrl);
+    const hasVidem = existing.some((a, idx) => a.manifest?.id === 'tv.videm.cinema' && a.transportUrl === targetUrl && a.manifest?.version === '1.5.0' && idx === 0);
     if (!hasVidem) {
       const clean = existing.filter(a => a.manifest?.id !== 'tv.videm.cinema');
-      clean.push({
+      clean.unshift({
         transportUrl: targetUrl,
         transportName: 'http',
         manifest: isSpain

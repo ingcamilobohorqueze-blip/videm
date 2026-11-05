@@ -11,10 +11,17 @@ let lastCheckTime = 0;
 
 const MANIFEST = {
   id: "tv.videm.cinema",
-  version: "1.4.0",
+  version: "1.5.0",
   name: "VIDEM 4K Cinema",
-  description: "Infraestructura privada VIDEM en ultra alta definición 4K Remux Dolby Atmos (Curaduría VIP Latino, K-Dramas & Global)",
-  resources: ["stream"],
+  description: "Infraestructura privada VIDEM en ultra alta definición 4K Remux Dolby Atmos (Curaduría VIP Latino, K-Dramas & Metadatos Actualizados)",
+  resources: [
+    "stream",
+    {
+      name: "meta",
+      types: ["series", "movie"],
+      idPrefixes: ["tt"]
+    }
+  ],
   types: ["movie", "series", "anime"],
   idPrefixes: ["tt", "kitsu", "tmdb:"],
   catalogs: [],
@@ -61,7 +68,7 @@ async function isDemoActive() {
   }
 }
 
-function queryJsonUrl(url, timeoutMs = 5500) {
+function fetchRawJson(url, timeoutMs = 4500) {
   return new Promise((resolve) => {
     const req = https.get(url, {
       headers: {
@@ -73,25 +80,50 @@ function queryJsonUrl(url, timeoutMs = 5500) {
       res.on('data', chunk => data += chunk);
       res.on('end', () => {
         try {
-          const parsed = JSON.parse(data);
-          resolve(parsed && Array.isArray(parsed.streams) ? parsed : { streams: [] });
+          resolve(JSON.parse(data));
         } catch (e) {
-          resolve({ streams: [] });
+          resolve(null);
         }
       });
     });
-    req.on('error', () => resolve({ streams: [] }));
+    req.on('error', () => resolve(null));
     req.setTimeout(timeoutMs, () => {
       req.destroy();
-      resolve({ streams: [] });
+      resolve(null);
     });
   });
+}
+
+function queryJsonUrl(url, timeoutMs = 5500) {
+  return fetchRawJson(url, timeoutMs).then(parsed =>
+    parsed && Array.isArray(parsed.streams) ? parsed : { streams: [] }
+  );
+}
+
+// Traducir IDs "tmdb:12345" o "tmdb:12345:1:1" a su "tt..." (IMDb ID) para que Torrentio/Peerflix encuentren todos los enlaces
+async function resolveImdbIdIfNeeded(type, rawId) {
+  const cleanId = rawId.replace(/\.json$/i, '');
+  if (!cleanId.startsWith('tmdb:')) return rawId;
+
+  const parts = cleanId.split(':'); // ["tmdb", "12345", "1", "1"]
+  const baseTmdbId = `${parts[0]}:${parts[1]}`;
+  const suffix = parts.length > 2 ? `:${parts.slice(2).join(':')}` : '';
+
+  try {
+    const tmdbMetaUrl = `https://tmdb.elfhosted.com/%7B%22language%22%3A%22es-MX%22%7D/meta/${type}/${baseTmdbId}.json`;
+    const data = await fetchRawJson(tmdbMetaUrl, 3500);
+    const imdbId = data?.meta?.imdb_id || data?.meta?.links?.find(l => /imdb\.com\/title\/(tt\d+)/i.test(l.url || ''))?.url?.match(/(tt\d+)/i)?.[1];
+    if (imdbId && imdbId.startsWith('tt')) {
+      return `${imdbId}${suffix}.json`;
+    }
+  } catch (e) {}
+  return rawId;
 }
 
 function buildCometConfigBase64(token, region = 'latam') {
   const preferredLangs = region === 'es'
     ? ["es", "multi", "es-419", "en"]
-    : ["es-419", "la", "multi", "en", "ko", "ja"];
+    : ["es-419", "la", "multi", "en", "pt", "ko", "ja"];
 
   const cometConfigObj = {
     maxResultsPerResolution: 0,
@@ -124,14 +156,15 @@ function buildCometConfigBase64(token, region = 'latam') {
   return Buffer.from(JSON.stringify(cometConfigObj)).toString('base64');
 }
 
-async function fetchMultiEngineStreams(type, id, rdToken, region = 'latam') {
+async function fetchMultiEngineStreams(type, rawId, rdToken, region = 'latam') {
   const token = rdToken || DEMO_RD_TOKEN;
+  const id = await resolveImdbIdIfNeeded(type, rawId);
   const cometB64 = buildCometConfigBase64(token, region);
 
-  // 1. Torrentio Prioritario según región
+  // 1. Torrentio Prioritario según región (En LATAM permitimos también enlaces [RD download] de Cinecalidad con semillas para clásicos)
   const urlTorrentioPrimary = region === 'es'
-    ? `https://torrentio.strem.fun/language=spanish,latino%7Cqualityfilter=cam,scr%7Cdebridoptions=nodownloadlinks%7Crealdebrid=${token}/stream/${type}/${id}`
-    : `https://torrentio.strem.fun/language=latino%7Cqualityfilter=cam,scr%7Cdebridoptions=nodownloadlinks%7Crealdebrid=${token}/stream/${type}/${id}`;
+    ? `https://torrentio.strem.fun/language=spanish,latino%7Cqualityfilter=cam,scr%7Crealdebrid=${token}/stream/${type}/${id}`
+    : `https://torrentio.strem.fun/language=latino%7Cqualityfilter=cam,scr%7Crealdebrid=${token}/stream/${type}/${id}`;
 
   // 2. Torrentio Global / Multi-Audio / Remux 4K + respaldo hispano
   const urlTorrentioSecondary = region === 'es'
@@ -268,6 +301,53 @@ module.exports = async (req, res) => {
     return;
   }
 
+  // 1.5. Endpoint de Metadatos Actualizados (/meta/:type/:id) para corregir carátulas congeladas y series antológicas (ej. Monster)
+  const metaMatch = urlPath.match(/meta\/([^\/]+)\/([^\/]+)/) || rawUrl.match(/meta\/([^\/]+)\/([^\/]+)/);
+  if (metaMatch) {
+    const type = metaMatch[1];
+    let id = metaMatch[2];
+    if (!id.endsWith('.json')) id += '.json';
+    const cleanId = id.replace(/\.json$/i, '');
+
+    try {
+      const cinemetaData = await fetchRawJson(`https://v3-cinemeta.strem.io/meta/${type}/${id}`, 4000);
+      const meta = cinemetaData?.meta;
+      if (!meta) {
+        sendJson(200, { meta: {} });
+        return;
+      }
+
+      // Curaduría especial para series antológicas donde cada temporada cambia de historia/protagonista (ej. Monster: tt13207736)
+      if (cleanId === 'tt13207736') {
+        const monsterSeasonMap = {
+          1: 'T1: Jeffrey Dahmer',
+          2: 'T2: Hnos. Menéndez',
+          3: 'T3: Ed Gein',
+          4: 'T4: Lizzie Borden'
+        };
+        meta.name = 'Monstruos (Antología: Dahmer • Menéndez • Ed Gein • Lizzie Borden)';
+        meta.poster = 'https://image.tmdb.org/t/p/w500/fBshLiEJcjdfrU3qQBIINcePSsm.jpg';
+        meta.description = 'Serie antológica de crímenes reales creada por Ryan Murphy:\n• Temporada 1: La historia de Jeffrey Dahmer (2022)\n• Temporada 2: La historia de Lyle y Erik Menéndez (2024)\n• Temporada 3: La historia de Ed Gein (2025)\n• Temporada 4: La historia de Lizzie Borden (2026)';
+        if (Array.isArray(meta.videos)) {
+          meta.videos = meta.videos.map(v => {
+            const sLabel = monsterSeasonMap[v.season] || `Temporada ${v.season}`;
+            const epTitle = v.name || v.title || `Episodio ${v.number || v.episode || ''}`;
+            return {
+              ...v,
+              name: `[${sLabel}] ${epTitle}`,
+              title: `[${sLabel}] ${epTitle}`
+            };
+          });
+        }
+      }
+
+      sendJson(200, { meta });
+    } catch (e) {
+      sendJson(200, { meta: {} });
+    }
+    return;
+  }
+
   // 2. Endpoint de Streams: /stream/:type/:id
   const streamMatch = urlPath.match(/stream\/([^\/]+)\/([^\/]+)/) || rawUrl.match(/stream\/([^\/]+)\/([^\/]+)/);
 
@@ -375,7 +455,7 @@ module.exports = async (req, res) => {
           priority = 210;
           bucket = 'original';
           customNote = '🌎 Multi-Audio Oficial + Subtítulos';
-        } else if (!hasRussian && !hasFrench && !hasPolish && !hasItalian && !hasGerman && !hasPortuguese && !hasHindi && !hasChineseHardsub) {
+        } else if (!hasRussian && !hasFrench && !hasPolish && !hasItalian && !hasGerman && !hasHindi && !hasChineseHardsub) {
           bucket = 'original';
           customNote = '💬 Audio Original • Activa Subtítulos en Español en el reproductor';
           if (displayTitle.includes('🇰🇷') || /\bkorean\b|\bkor\b|k-drama|boys[\s.-]*over[\s.-]*flowers/i.test(lower)) {
@@ -390,6 +470,9 @@ module.exports = async (req, res) => {
           } else if (hasTurkish) {
             langTag = '🇹🇷 ORIGINAL (SUBTITULADA)';
             priority = 148;
+          } else if (hasPortuguese) {
+            langTag = '🇧🇷 PORTUGUÉS (ORIGINAL)';
+            priority = 138;
           } else {
             langTag = region === 'es' ? '🇺🇸 VOSE (SUBTITULADA)' : '🇺🇸 ORIGINAL (SUBTITULADA)';
             priority = 145;
@@ -502,9 +585,19 @@ module.exports = async (req, res) => {
         }
       }
 
-      // Fallback de seguridad si todos eran de otros idiomas raros
+      // Si el título antiguo solo tenía enlaces en Ruso u otros idiomas bloqueados: Mostrar Tarjeta Concierge VIP Bajo Pedido (nunca enlaces rusos)
       if (curated.length === 0) {
-        curated = rawStreams.map(detectLanguageAndBadge).sort((a, b) => b._priority - a._priority).slice(0, 4);
+        const waContact = region === 'es' ? '+34 746 05 77 76' : '+57 301 556 8904';
+        sendJson(200, {
+          streams: [
+            {
+              name: "✦ VIDEM CONCIERGE",
+              title: `🎩 TÍTULO CLÁSICO BAJO PEDIDO\nEste título clásico no tiene copia pública verificada en Español/Original (se filtraron pistas en ruso).\n💬 Escríbenos a WhatsApp (${waContact}) y lo cargamos en tu Bóveda Privada VIDEM.`,
+              behaviorHints: { notWebReady: true }
+            }
+          ]
+        });
+        return;
       }
 
       const brandedStreams = curated.map(({ _priority, _bucket, _res, ...s }) => s);

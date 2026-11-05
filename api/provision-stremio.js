@@ -56,12 +56,15 @@ module.exports = async (req, res) => {
     const manifestUrl = `https://videm.tv/api/addon/${encodeURIComponent(tokenPath)}/manifest.json`;
     const videmManifest = {
       id: 'tv.videm.cinema',
-      version: '1.3.0',
+      version: '1.5.0',
       name: isSpain ? 'VIDEM 4K Cinema (España)' : 'VIDEM 4K Cinema',
       description: isSpain
         ? 'Infraestructura privada VIDEM en ultra alta definición 4K Remux Dolby Atmos (Castellano, VOSE, Multi-Audio & Global)'
-        : 'Infraestructura privada VIDEM en ultra alta definición 4K Remux Dolby Atmos (Multi-Engine Latino, Turcas, K-Dramas & Global)',
-      resources: ['stream'],
+        : 'Infraestructura privada VIDEM en ultra alta definición 4K Remux Dolby Atmos (Curaduría VIP Latino, K-Dramas & Metadatos Actualizados)',
+      resources: [
+        'stream',
+        { name: 'meta', types: ['series', 'movie'], idPrefixes: ['tt'] }
+      ],
       types: ['movie', 'series', 'anime'],
       idPrefixes: ['tt', 'kitsu', 'tmdb:'],
       catalogs: [],
@@ -91,9 +94,9 @@ module.exports = async (req, res) => {
       req.end();
     });
 
-    // 4. Limpiar duplicados (Torrentio genérico y versiones anteriores) e inyectar VIDEM 4K
+    // 4. Limpiar duplicados (Torrentio genérico y versiones anteriores) e inyectar VIDEM 4K en Posición #1
     const cleanAddons = existingAddons.filter(a => a.manifest?.id !== 'com.stremio.torrentio.addon' && a.manifest?.id !== 'tv.videm.cinema');
-    cleanAddons.push({
+    cleanAddons.unshift({
       transportUrl: manifestUrl,
       transportName: 'http',
       manifest: videmManifest

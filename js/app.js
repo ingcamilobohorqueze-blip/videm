@@ -33,6 +33,7 @@ function buildWhatsAppUrl(message) {
 // ==========================================================================
 document.addEventListener('DOMContentLoaded', () => {
   initWhatsAppLinks();
+  initMobileMenu();
   initInteractiveQualifier();
   initSpeedtestModal();
   initFaqsAccordion();
@@ -44,6 +45,11 @@ document.addEventListener('DOMContentLoaded', () => {
  * Initializes static and data-driven WhatsApp links across the page.
  */
 function initWhatsAppLinks() {
+  // Do not overwrite Spain landing links (+34 746057776)
+  if (document.documentElement.lang === 'es-ES' || window.location.pathname.startsWith('/es')) {
+    return;
+  }
+
   // Hero Main CTA
   const heroBtn = document.getElementById('heroCtaBtn');
   if (heroBtn) {
@@ -61,6 +67,57 @@ function initWhatsAppLinks() {
   if (navCta) {
     navCta.href = buildWhatsAppUrl(VIDEM_CONFIG.defaultMessages.heroValidation);
   }
+}
+
+/**
+ * Mobile Hamburger Menu Controller
+ */
+function initMobileMenu() {
+  const toggleBtn = document.getElementById('mobileMenuToggle');
+  const menuLinks = document.getElementById('navMenuLinks');
+
+  if (!toggleBtn || !menuLinks) return;
+
+  function closeMenu() {
+    menuLinks.classList.remove('is-open');
+    toggleBtn.setAttribute('aria-expanded', 'false');
+    toggleBtn.setAttribute('aria-label', 'Abrir menú de navegación');
+  }
+
+  function toggleMenu(e) {
+    e.stopPropagation();
+    const isOpen = menuLinks.classList.contains('is-open');
+    if (isOpen) {
+      closeMenu();
+    } else {
+      menuLinks.classList.add('is-open');
+      toggleBtn.setAttribute('aria-expanded', 'true');
+      toggleBtn.setAttribute('aria-label', 'Cerrar menú de navegación');
+    }
+  }
+
+  toggleBtn.addEventListener('click', toggleMenu);
+
+  // Close menu when clicking any link inside
+  menuLinks.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      closeMenu();
+    });
+  });
+
+  // Close menu when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!menuLinks.contains(e.target) && !toggleBtn.contains(e.target)) {
+      closeMenu();
+    }
+  });
+
+  // Close menu on Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeMenu();
+    }
+  });
 }
 
 /**

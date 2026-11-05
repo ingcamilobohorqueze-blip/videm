@@ -70,10 +70,10 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 4px 10px;
+      padding: 4px 12px;
       border-radius: 999px;
-      background: rgba(229, 9, 20, 0.12);
-      border: 1px solid rgba(229, 9, 20, 0.3);
+      background: rgba(229, 9, 20, 0.14);
+      border: 1px solid rgba(229, 9, 20, 0.35);
       color: #ff4d5a;
       font-size: 0.8rem;
       font-weight: 700;
@@ -81,6 +81,22 @@
       text-transform: uppercase;
       margin-bottom: 12px;
     }
+    [data-theme="light"] .es-badge-flag {
+      background: rgba(229, 9, 20, 0.1);
+      border-color: rgba(229, 9, 20, 0.3);
+      color: #C81E1E;
+    }
+
+    .section-pricing {
+      padding: 70px 0;
+      background: rgba(6, 8, 13, 0.6);
+      border-top: 1px solid var(--nav-border);
+      border-bottom: 1px solid var(--nav-border);
+    }
+    [data-theme="light"] .section-pricing {
+      background: #F1F5F9;
+    }
+
     .pricing-grid-es {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -88,8 +104,8 @@
       margin-top: 36px;
     }
     .pricing-card-es {
-      background: var(--surface-card, rgba(14, 18, 27, 0.7));
-      border: 1px solid var(--border-card, rgba(255, 255, 255, 0.08));
+      background: var(--bg-card);
+      border: 1px solid var(--bg-card-border);
       border-radius: 20px;
       padding: 32px 24px;
       display: flex;
@@ -97,16 +113,28 @@
       position: relative;
       transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
       backdrop-filter: blur(16px);
+      box-shadow: var(--shadow-md);
     }
     .pricing-card-es:hover {
       transform: translateY(-6px);
       border-color: rgba(229, 9, 20, 0.5);
       box-shadow: 0 20px 40px -15px rgba(229, 9, 20, 0.2);
     }
+    .pricing-card-title {
+      font-size: 1.3rem;
+      font-weight: 800;
+      margin: 0;
+      color: var(--text-primary);
+    }
     .pricing-card-featured {
-      border-color: #E50914;
-      background: linear-gradient(180deg, rgba(229, 9, 20, 0.08) 0%, rgba(14, 18, 27, 0.85) 100%);
-      box-shadow: 0 10px 30px -10px rgba(229, 9, 20, 0.3);
+      border: 1.5px solid #E50914;
+      background: linear-gradient(180deg, rgba(229, 9, 20, 0.1) 0%, rgba(14, 18, 27, 0.88) 100%);
+      box-shadow: 0 12px 32px -10px rgba(229, 9, 20, 0.3);
+    }
+    [data-theme="light"] .pricing-card-featured {
+      border: 2px solid #E50914;
+      background: linear-gradient(180deg, rgba(229, 9, 20, 0.05) 0%, #FFFFFF 100%);
+      box-shadow: 0 16px 35px -10px rgba(229, 9, 20, 0.18);
     }
     .pricing-badge-popular {
       position: absolute;
@@ -120,34 +148,45 @@
       border-radius: 999px;
       text-transform: uppercase;
       letter-spacing: 0.05em;
+      box-shadow: 0 4px 12px rgba(229, 9, 20, 0.35);
     }
     .price-value-row {
       display: flex;
       align-items: baseline;
-      gap: 6px;
+      gap: 4px;
       margin: 16px 0 8px;
+      color: var(--text-primary);
     }
     .price-currency {
       font-size: 1.75rem;
       font-weight: 800;
-      color: var(--text-primary, #fff);
+      color: var(--text-primary);
     }
     .price-amount {
       font-size: 3rem;
       font-weight: 900;
       letter-spacing: -0.03em;
-      color: var(--text-primary, #fff);
+      color: var(--text-primary);
       font-family: 'Space Grotesk', sans-serif;
     }
+    .price-cents {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
     .price-period {
-      color: var(--text-muted, #8E9BAE);
+      color: var(--text-muted);
       font-size: 0.95rem;
+      margin-left: 4px;
     }
     .price-monthly-equiv {
-      font-size: 0.85rem;
+      font-size: 0.86rem;
       color: #00E676;
-      font-weight: 600;
+      font-weight: 700;
       margin-bottom: 20px;
+    }
+    [data-theme="light"] .price-monthly-equiv {
+      color: #059669;
     }
     .pricing-features-list {
       list-style: none;
@@ -162,9 +201,9 @@
       display: flex;
       align-items: flex-start;
       gap: 10px;
-      font-size: 0.9rem;
-      color: var(--text-secondary, #C8D1DE);
-      line-height: 1.4;
+      font-size: 0.92rem;
+      color: var(--text-secondary);
+      line-height: 1.45;
     }
     .pricing-features-list li svg {
       width: 18px;
@@ -173,52 +212,173 @@
       color: #00E676;
       margin-top: 2px;
     }
+    [data-theme="light"] .pricing-features-list li svg {
+      color: #059669;
+    }
+
+    /* Métodos de Pago en España */
     .payment-methods-strip {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 16px;
+      gap: 12px 18px;
       flex-wrap: wrap;
-      margin-top: 24px;
-      padding: 14px 20px;
-      background: rgba(255, 255, 255, 0.03);
-      border-radius: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.06);
+      margin-top: 28px;
+      padding: 16px 22px;
+      background: var(--bg-card);
+      border-radius: 16px;
+      border: 1px solid var(--bg-card-border);
+      box-shadow: var(--shadow-sm);
+    }
+    .payment-methods-label {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      font-weight: 700;
     }
     .payment-method-item {
-      display: flex;
+      display: inline-flex;
       align-items: center;
       gap: 6px;
-      font-size: 0.85rem;
+      font-size: 0.86rem;
       font-weight: 600;
-      color: var(--text-secondary, #C8D1DE);
+      color: var(--text-primary);
+      background: var(--pill-bg);
+      border: 1px solid var(--pill-border);
+      padding: 6px 12px;
+      border-radius: 999px;
     }
+
+    /* Tabla Comparativa (Modo Oscuro, Modo Claro y Vista Móvil Apilada) */
     .comparison-table-wrap {
       overflow-x: auto;
       margin: 32px 0;
-      border-radius: 16px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      background: rgba(14, 18, 27, 0.6);
+      border-radius: 18px;
+      border: 1px solid var(--bg-card-border);
+      background: var(--bg-card);
+      box-shadow: var(--shadow-md);
     }
     .comparison-table {
       width: 100%;
       border-collapse: collapse;
       text-align: left;
-      font-size: 0.9rem;
+      font-size: 0.94rem;
     }
     .comparison-table th, .comparison-table td {
-      padding: 16px 20px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 16px 22px;
+      border-bottom: 1px solid var(--pill-border);
+      color: var(--text-secondary);
+    }
+    .comparison-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+    .comparison-table td:first-child {
+      color: var(--text-primary);
+      font-weight: 700;
     }
     .comparison-table th {
-      background: rgba(255, 255, 255, 0.03);
-      font-weight: 700;
-      color: var(--text-primary, #fff);
+      background: var(--pill-bg);
+      font-weight: 800;
+      color: var(--text-primary);
+      font-size: 0.92rem;
     }
     .comparison-table .highlight-col {
-      background: rgba(229, 9, 20, 0.07);
-      color: #fff;
+      background: rgba(229, 9, 20, 0.1);
+      color: #FFFFFF;
       font-weight: 700;
+    }
+    [data-theme="light"] .comparison-table .highlight-col {
+      background: rgba(229, 9, 20, 0.07);
+      color: #991B1B;
+    }
+    [data-theme="light"] .comparison-table th.highlight-col {
+      background: rgba(229, 9, 20, 0.12);
+      color: #B91C1C;
+    }
+
+    /* Vista Móvil: Convertir tabla comparativa en tarjetas apiladas 100% visibles */
+    @media (max-width: 768px) {
+      .comparison-table-wrap {
+        background: transparent;
+        border: none;
+        box-shadow: none;
+        overflow-x: visible;
+        margin: 20px 0;
+      }
+      .comparison-table,
+      .comparison-table tbody {
+        display: block;
+        width: 100%;
+      }
+      .comparison-table thead {
+        display: none;
+      }
+      .comparison-table tbody tr {
+        display: flex;
+        flex-direction: column;
+        background: var(--bg-card);
+        border: 1px solid var(--bg-card-border);
+        border-radius: 16px;
+        padding: 16px;
+        margin-bottom: 14px;
+        box-shadow: var(--shadow-sm);
+        gap: 10px;
+      }
+      .comparison-table tbody td {
+        display: block;
+        padding: 0;
+        border-bottom: none;
+      }
+      .comparison-table tbody td:first-child {
+        font-family: var(--font-mono);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--accent-primary);
+        border-bottom: 1px solid var(--pill-border);
+        padding-bottom: 8px;
+        margin-bottom: 2px;
+      }
+      .comparison-table tbody td:nth-child(2) {
+        font-size: 0.88rem;
+        color: var(--text-secondary);
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .comparison-table tbody td:nth-child(2)::before {
+        content: "❌ Plataformas Tradicionales:";
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--text-muted);
+      }
+      .comparison-table tbody td.highlight-col {
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: 1px solid rgba(229, 9, 20, 0.28);
+        font-size: 0.92rem;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .comparison-table tbody td.highlight-col::before {
+        content: "✦ VIDEM Cinema 4K:";
+        font-size: 0.75rem;
+        font-weight: 800;
+        color: #ff4d5a;
+        letter-spacing: 0.03em;
+      }
+      [data-theme="light"] .comparison-table tbody td.highlight-col::before {
+        color: #DC2626;
+      }
+      .payment-methods-strip {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+        padding: 16px;
+      }
+      .payment-method-item {
+        justify-content: center;
+      }
     }
   </style>
 
@@ -247,22 +407,38 @@
 
       <!-- Actions -->
       <div class="nav-actions">
-        <a href="#tarifas" class="nav-text-link">Pases y Tarifas</a>
-        <a href="#faqs" class="nav-text-link">Preguntas Frecuentes</a>
+        <nav class="nav-menu-links" id="navMenuLinks" aria-label="Navegación Principal">
+          <a href="#tarifas" class="nav-text-link">Pases y Tarifas</a>
+          <a href="#faqs" class="nav-text-link">Preguntas Frecuentes</a>
+          <a href="https://wa.me/34746057776?text=Hola,%20estoy%20en%20Espa%C3%B1a%20y%20quiero%20probar%20VIDEM%20en%20mi%20Smart%20TV" target="_blank" rel="noopener noreferrer" class="btn-nav-cta">
+            <span>Prueba Gratis (2h)</span>
+          </a>
+        </nav>
 
-        <button type="button" class="theme-toggle-btn" id="themeToggleBtn" aria-label="Cambiar tema">
-          <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true">
-            <circle cx="12" cy="12" r="4"></circle>
-            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
-          </svg>
-          <svg class="icon-moon" style="display:none;" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M12 3a6 6 0 0 0 9 9 9 0 1 1-9-9Z"></path>
-          </svg>
-        </button>
+        <div class="nav-controls-right">
+          <button type="button" class="theme-toggle-btn" id="themeToggleBtn" aria-label="Cambiar tema">
+            <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="4"></circle>
+              <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+            </svg>
+            <svg class="icon-moon" style="display:none;" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+              <path d="M19 3v4M17 5h4" fill="none" stroke="currentColor" stroke-width="2"></path>
+            </svg>
+          </button>
 
-        <a href="https://wa.me/34746057776?text=Hola,%20estoy%20en%20Espa%C3%B1a%20y%20quiero%20probar%20VIDEM%20en%20mi%20Smart%20TV" target="_blank" rel="noopener noreferrer" class="btn-nav-cta">
-          <span>Prueba Gratis (2h)</span>
-        </a>
+          <button type="button" class="mobile-menu-toggle" id="mobileMenuToggle" aria-expanded="false" aria-controls="navMenuLinks" aria-label="Abrir menú de navegación">
+            <svg class="icon-open-menu" viewBox="0 0 24 24" aria-hidden="true">
+              <line x1="4" y1="7" x2="20" y2="7"></line>
+              <line x1="4" y1="12" x2="20" y2="12"></line>
+              <line x1="4" y1="17" x2="20" y2="17"></line>
+            </svg>
+            <svg class="icon-close-menu" viewBox="0 0 24 24" aria-hidden="true">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
   </header>
@@ -371,7 +547,7 @@
     </section>
 
     <!-- SECTION TARIFAS Y PASES VIP EN ESPAÑA -->
-    <section class="section-pricing" id="tarifas" style="padding: 70px 0; background: rgba(6, 8, 13, 0.6);">
+    <section class="section-pricing" id="tarifas">
       <div class="container">
         <div class="section-header">
           <span class="section-tag">Transparencia Total</span>
@@ -385,12 +561,12 @@
           
           <!-- Plan 1 Mes -->
           <div class="pricing-card-es">
-            <h3 style="font-size: 1.3rem; margin: 0; color: #fff;">Pase 1 Mes Flex</h3>
+            <h3 class="pricing-card-title">Pase 1 Mes Flex</h3>
             <p style="color: var(--text-muted); font-size: 0.85rem; margin: 4px 0 16px;">Ideal para probar un mes completo sin compromiso.</p>
             
             <div class="price-value-row">
               <span class="price-currency">€</span>
-              <span class="price-amount">9</span><span style="font-size: 1.5rem; font-weight: 800;">,99</span>
+              <span class="price-amount">9</span><span class="price-cents">,99</span>
               <span class="price-period">/ mes</span>
             </div>
             <div class="price-monthly-equiv">Sin permanencia • Pago único</div>
@@ -421,12 +597,12 @@
 
           <!-- Plan 6 Meses -->
           <div class="pricing-card-es">
-            <h3 style="font-size: 1.3rem; margin: 0; color: #fff;">Pase 6 Meses VIP</h3>
+            <h3 class="pricing-card-title">Pase 6 Meses VIP</h3>
             <p style="color: var(--text-muted); font-size: 0.85rem; margin: 4px 0 16px;">El equilibrio perfecto para disfrutar la temporada.</p>
             
             <div class="price-value-row">
               <span class="price-currency">€</span>
-              <span class="price-amount">49</span><span style="font-size: 1.5rem; font-weight: 800;">,99</span>
+              <span class="price-amount">49</span><span class="price-cents">,99</span>
               <span class="price-period">/ 6 meses</span>
             </div>
             <div class="price-monthly-equiv">Te sale a sólo ~8,33 € / mes</div>
@@ -459,12 +635,12 @@
           <div class="pricing-card-es pricing-card-featured">
             <span class="pricing-badge-popular">El Más Elegido</span>
 
-            <h3 style="font-size: 1.3rem; margin: 0; color: #fff;">Pase Anual VIP (12 Meses)</h3>
+            <h3 class="pricing-card-title">Pase Anual VIP (12 Meses)</h3>
             <p style="color: var(--text-muted); font-size: 0.85rem; margin: 4px 0 16px;">Máximo ahorro. Cine ilimitado durante todo el año.</p>
             
             <div class="price-value-row">
               <span class="price-currency">€</span>
-              <span class="price-amount">89</span><span style="font-size: 1.5rem; font-weight: 800;">,99</span>
+              <span class="price-amount">89</span><span class="price-cents">,99</span>
               <span class="price-period">/ año</span>
             </div>
             <div class="price-monthly-equiv">🔥 Sólo ~7,50 € / mes (Ahorras más de 150 €)</div>
@@ -497,7 +673,7 @@
 
         <!-- MÉTODOS DE PAGO EN ESPAÑA -->
         <div class="payment-methods-strip">
-          <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">Métodos de pago aceptados en España:</span>
+          <span class="payment-methods-label">Métodos de pago aceptados en España:</span>
           <div class="payment-method-item">
             <span>📱 <strong>Bizum</strong></span>
           </div>

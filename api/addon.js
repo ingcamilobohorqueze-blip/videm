@@ -4,6 +4,7 @@ const SUPABASE_URL = 'https://crkkakwpiggnbuwqopsc.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNya2tha3dwaWdnbmJ1d3FvcHNjIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc5MzQzNTg3MSwiZXhwIjoyMTA5MDExODcxfQ.n4yTSUUIC4QL-_UKPJSs2qvPwCNJVoFcf-kbZqEpRo4';
 const DEMO_RD_TOKEN = '76N4SFYLKTKDADDLDIAGR6MDKCG7VQT2FMEGTQDQM3X5U2PFU6QQ';
 const DEMO_PHONE = '573015568904';
+const ADDON_LATAM_BASE = 'https://addonlatam.duckdns.org/FaIqffOcY0y_S5WfVLrsXq6s';
 
 // Caché en memoria para respuesta ultra rápida (<20ms)
 let cachedStatus = 'demo_active';
@@ -180,17 +181,21 @@ async function fetchMultiEngineStreams(type, rawId, rdToken, region = 'latam') {
   const urlCometDmm = `https://comet.elfhosted.com/${cometB64}/stream/${type}/${id}`;
   // 5. TorrentsDB RD (Trackers asiáticos 1lou, Knaben, ilCorSaRoNeRo, EZTV)
   const urlTorrentsDb = `https://torrentsdb.com/realdebrid=${token}/stream/${type}/${id}`;
+  // 6. Addon Latam (34 sitios web hispanos en Español Latino para películas clásicas, novelas, doramas y anime)
+  const urlAddonLatam = `${ADDON_LATAM_BASE}/stream/${type}/${id}`;
 
-  const [resTPrimary, resTSecondary, resPeerflix, resComet, resTdb] = await Promise.all([
+  const [resTPrimary, resTSecondary, resPeerflix, resComet, resTdb, resLatam] = await Promise.all([
     queryJsonUrl(urlTorrentioPrimary, 5000),
     queryJsonUrl(urlTorrentioSecondary, 5500),
     queryJsonUrl(urlPeerflix, 5000),
     queryJsonUrl(urlCometDmm, 5500),
-    queryJsonUrl(urlTorrentsDb, 5000)
+    queryJsonUrl(urlTorrentsDb, 5000),
+    region === 'latam' ? queryJsonUrl(urlAddonLatam, 8000) : Promise.resolve({ streams: [] })
   ]);
 
   let combined = [
     ...(resTPrimary.streams || []),
+    ...(resLatam.streams || []),
     ...(resTSecondary.streams || []),
     ...(resPeerflix.streams || []),
     ...(resComet.streams || []),
@@ -212,23 +217,31 @@ async function fetchMultiEngineStreams(type, rawId, rdToken, region = 'latam') {
     // Exigir URL HTTP directa en caché CDN (descartar torrents P2P crudos o [RD download] sin semillas que no cargan)
     if (!s || !s.url || /\[rd\s*download\]/i.test(s.name || '')) continue;
 
+    // Limpiar colas HTML malformadas en enlaces directos y descartar enlaces okcdn.ru atados a IP de servidor
+    s.url = String(s.url).split(/&quot;|"|'/)[0].trim();
+    if (/okcdn\.ru\/.*\/srcIp\//i.test(s.url)) continue;
+
     const fullText = `${s.name || ''} ${s.title || ''} ${s.description || ''} ${s.behaviorHints?.filename || ''}`;
     // Si estamos consultando una película, descartar packs de series infiltrados por palabra clave (ej. "DRAGON BALL Z: Complete 1989-2019 Series" en "Red Dragon")
     if (type === 'movie' && /complete\s+\d{4}-\d{4}\s+series|dragon\s*ball\s*z|\bs\d{2}e\d{2}\b/i.test(fullText)) {
       continue;
     }
+    // Descartar enlaces de aviso o "Idioma sin confirmar" de baja confianza si ya hay opciones confirmadas
+    if (/acceso no es válido|acceso no autorizado|solicitar contenido/i.test(fullText)) {
+      continue;
+    }
 
-    // Extraer hash de la URL de Real-Debrid/Torrentio/Peerflix/Comet si existe (40 hex chars)
+    const isFromLatamWeb = (s.name || '') === 'Addon Latam';
     const hashMatch = (s.url || '').match(/\/([a-fA-F0-9]{40})\//);
     const firstLineTitle = ((s.title || s.description || '').split('\n')[0] || '').replace(/^📄\s*/, '').toLowerCase().trim();
     const fileHint = (s.behaviorHints?.filename || firstLineTitle || '').toLowerCase().trim();
-    const dedupKey = hashMatch
-      ? `${hashMatch[1].toLowerCase()}`
-      : (fileHint || s.url || s.infoHash);
+    const dedupKey = isFromLatamWeb
+      ? s.url
+      : (hashMatch ? `${hashMatch[1].toLowerCase()}` : (fileHint || s.url || s.infoHash));
 
-    if (seenKeys.has(dedupKey) || (firstLineTitle.length > 12 && seenKeys.has(firstLineTitle))) continue;
+    if (seenKeys.has(dedupKey) || (!isFromLatamWeb && firstLineTitle.length > 12 && seenKeys.has(firstLineTitle))) continue;
     seenKeys.add(dedupKey);
-    if (firstLineTitle.length > 12) seenKeys.add(firstLineTitle);
+    if (!isFromLatamWeb && firstLineTitle.length > 12) seenKeys.add(firstLineTitle);
     uniqueStreams.push(s);
   }
 
@@ -389,10 +402,13 @@ module.exports = async (req, res) => {
         const hasRussian = hasCyrillicOrRusStudio || /\brus\b/i.test(text) || displayTitle.includes('🇷🇺');
         const hasChineseHardsub = /中字|dygangs|1lou|qqhdtv|国英韩/i.test(text);
 
-        // 1. Detección estricta de Audio Español Latino (incluye banderas LATAM, emoji 💃 y trackers latinos)
+        // 1. Detección estricta de Audio Español Latino (incluye banderas LATAM, emoji 💃, Addon Latam y trackers latinos)
+        const isFromLatamWeb = (stream.name || '') === 'Addon Latam';
+        const isLatamWebSubtitled = isFromLatamWeb && /\bsubtitulado\b/i.test(displayTitle);
+        const isLatamWebUnconfirmed = isFromLatamWeb && /idioma sin confirmar/i.test(displayTitle);
         const hasLatinoFlag = displayTitle.includes('🇲🇽') || displayTitle.includes('🇨🇴') || displayTitle.includes('🇦🇷') || displayTitle.includes('🇨🇱') || displayTitle.includes('🇵🇪') || displayTitle.includes('💃');
         const hasExplicitLatinoWord = /latino|audio[\s.-]*lat|dual[\s.-]*lat|es-419|es-la|latin[\s.-]*america|\blat\b|cinecalidad|pelisenhd|hackstore|latinoamerica|mega1080p/i.test(lower);
-        const isLatinoAny = !hasCyrillicOrRusStudio && (hasLatinoFlag || hasExplicitLatinoWord);
+        const isLatinoAny = !hasCyrillicOrRusStudio && !isLatamWebSubtitled && (hasLatinoFlag || hasExplicitLatinoWord);
 
         // 2. Detección de otros idiomas regionales europeos y extranjeros
         const hasFrench = /french|français|\bfr\b|\bvfi\b|\bvfq\b|\bvff\b|torrent9|vostfr|truefrench/i.test(lower) || displayTitle.includes('🇫🇷');
@@ -517,9 +533,16 @@ module.exports = async (req, res) => {
         }
 
         const isInstantCached = /\[rd\+\]|\[rd⚡\]/i.test(stream.name || '');
-        if (isInstantCached) priority += 5;
+        if (isInstantCached) priority += 15;
+        if (isFromLatamWeb && /addonlatam\.duckdns\.org\/(px|redirect)\/|pluto\.tv/i.test(stream.url || '')) {
+          priority += 10;
+        }
+        if (isLatamWebUnconfirmed) priority -= 20;
 
-        const cleanFirstLine = (displayTitle.split('\n')[0] || '').replace(/^📄\s*/, '').trim();
+        const lines = displayTitle.split('\n').map(l => l.trim()).filter(Boolean);
+        const cleanFirstLine = isFromLatamWeb
+          ? `${lines[1] || lines[0] || ''} (${lines[0] || 'Servidor Latino'})`
+          : (lines[0] || '').replace(/^📄\s*/, '').trim();
         const enhancedTitle = customNote
           ? `${customNote}\n🎬 ${cleanFirstLine}`
           : displayTitle;

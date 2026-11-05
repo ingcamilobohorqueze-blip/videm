@@ -1,24 +1,31 @@
 /**
  * MOTOR CURADOR DE PARRILLA M3U - TREX IPTV (90 DÍAS)
- * Filtra, organiza y agrupa los canales en vivo de TREX para Colombia, Deportes,
- * Cine/Series, Documentales (incluyendo Investigation Discovery) e Infantiles.
+ * Lee directamente iptv/PARRILLA-CANALES.md como fuente de verdad:
+ * - Incluye únicamente los canales marcados con [x] o [X]
+ * - Soporta diales exactos (ej. 130, 601) y diales automáticos terminados en XX (ej. 3XX, 7XX)
+ * - Incluye sección 24/7 (COPS en Español, Just For Laughs Gags, Impractical Jokers, etc.)
+ * - Incluye sección 900 PPV Dinámica (filtra canales vacíos "- NO EVENT STREAMING -")
+ * - Transporte HLS (.m3u8) anti-congelamiento + Logos Oficiales + Guía EDT/EPG Colombia/LatAm
  */
 
+const fs = require('fs');
+const path = require('path');
 const http = require('http');
 const config = require('./config');
 
 const { host: TREX_HOST, port: TREX_PORT, username: TREX_USER, password: TREX_PASS } = config.credentials;
 
-let cachedM3U = null;
+let cachedM3UByFormat = {};
 let lastFetchTime = 0;
+let lastMdMtime = 0;
 
 function fetchTrexStreams() {
   return new Promise((resolve, reject) => {
-    const path = `/player_api.php?username=${TREX_USER}&password=${TREX_PASS}&action=get_live_streams`;
+    const apiPath = `/player_api.php?username=${TREX_USER}&password=${TREX_PASS}&action=get_live_streams`;
     const req = http.get({
       host: TREX_HOST,
       port: TREX_PORT,
-      path: path,
+      path: apiPath,
       headers: { 'User-Agent': config.userAgent },
       timeout: 25000
     }, (res) => {
@@ -37,138 +44,203 @@ function fetchTrexStreams() {
   });
 }
 
-function buildCleanM3U(streams) {
-  let m3u = `#EXTM3U x-tvg-url="${config.endpoints.epgXmltv}" name="${config.subscription.playlistName}"\n\n`;
+function resolveEpgAndLogo(stream, customTitle = '') {
+  const targetText = `${customTitle} ${stream.name || ''}`;
+  let epgId = (stream.epg_channel_id || '').trim();
+  let logo = (stream.stream_icon || '').trim();
 
-  const targetCats = new Set(['154', '151', '152', '166', '2171', '2368', '1667']);
+  for (const rule of (config.channelCatalog || [])) {
+    if (rule.match.test(targetText)) {
+      if (rule.epgId) epgId = rule.epgId;
+      if (rule.logo) logo = rule.logo;
+      break;
+    }
+  }
 
-  const vipStreams = streams.filter(s => {
-    const name = (s.name || '').toUpperCase();
-    const cat = String(s.category_id);
+  return { epgId, logo };
+}
 
-    // Evitar estaciones locales de radio en USA
-    if (name.includes('BOISE') || name.includes('TWIN FALLS') || name.includes('IDAHO')) return false;
-    // Evitar idiomas no hispanos
-    if (name.match(/\b(SWE|DNK|NOR|FIN|PL|RU|HINDI|FR|BE|NL|RO|ALB|RS|MO|GR|BR|BG|IS|CZ|ARABIC|TURK)\b/)) return false;
+function parseParrillaMarkdown() {
+  const mdPath = path.join(__dirname, 'PARRILLA-CANALES.md');
+  const content = fs.readFileSync(mdPath, 'utf8');
+  const lines = content.split(/\r?\n/);
 
-    // 1. Canal favorito: Investigation Discovery (ID)
-    if (name.includes('INVESTIGATION DISCOVERY') || name.includes('DISCOVERY ID') || name === 'LAT| INVESTIGATION DISCOVERY HD' || name === 'US| ID HD') {
-      return true;
+  let currentGroup = '📺 Parrilla Principal';
+  const entries = [];
+  const usedDials = new Set();
+
+  for (const line of lines) {
+    const h2Match = line.match(/^##\s+\d+\.\s+(.+?)(?:\s*\(Dial.*\))?$/);
+    if (h2Match) {
+      currentGroup = h2Match[1].trim();
+      continue;
     }
 
-    // 2. Todos los canales de Colombia (Caracol, RCN, Win, Dsports, Citytv, etc.)
-    if (cat === '154') return true;
+    const itemMatch = line.match(/^\s*-\s*\[([xX])\]\s*\*\*([0-9xX]+)\*\*\s*—\s*(.+)$/);
+    if (!itemMatch) continue;
 
-    // 3. Parrilla Deportiva Total (Directv Sports/Dsports, Win Sports, ESPN, Fox, Claro, TyC, TUDN, DAZN, etc.)
-    if (
-      name.includes('DSPORTS') ||
-      name.includes('DIRECTV SPORTS') ||
-      name.includes('WIN SPORTS') ||
-      name.includes('WINSPORTS') ||
-      name.includes('ESPN') ||
-      name.includes('FOX SPORTS') ||
-      name.includes('CLARO SPORTS') ||
-      name.includes('TYC SPORTS') ||
-      name.includes('TUDN') ||
-      name.includes('DAZN') ||
-      name.includes('GOLTV') ||
-      name.includes('NBA TV') ||
-      name.includes('F1') ||
-      name.includes('LALIGA') ||
-      name.includes('PREMIER LEAGUE')
-    ) {
-      if (name.includes('LAT') || name.includes('CO|') || name.includes('AR|') || name.includes('MX|') || name.includes('US|') || name.includes('ES|')) {
-        return true;
+    let rawDial = itemMatch[2].trim();
+    const rest = itemMatch[3].trim();
+
+    const titleMatch = rest.match(/^\*\*([^*]+)\*\*/);
+    const title = titleMatch ? titleMatch[1].trim() : rest.replace(/\*.*$/, '').trim();
+
+    // Resolver diales con XX automáticamente (ej. 3XX -> 341, 7XX -> 739)
+    let dialNum = parseInt(rawDial, 10);
+    if (/[xX]/.test(rawDial) || isNaN(dialNum)) {
+      const prefixDigits = rawDial.replace(/[xX]+/g, '');
+      let base = (parseInt(prefixDigits || '8', 10) * 100) + 1;
+      while (usedDials.has(base)) base++;
+      dialNum = base;
+    }
+    usedDials.add(dialNum);
+
+    // Extraer IDs explícitos de TREX entre backticks `12345` si están documentados en la línea
+    const idMatches = [];
+    const idSectionMatch = rest.match(/IDs?\s+TREX:([^)]+)/i);
+    if (idSectionMatch) {
+      const tickRegex = /`(\d+)`/g;
+      let m;
+      while ((m = tickRegex.exec(idSectionMatch[1])) !== null) {
+        idMatches.push(Number(m[1]));
       }
     }
 
-    // 4. Parrilla Cable / Satélite (DirecTV / Claro / Movistar: Cine, Series, Documentales, Infantiles)
-    if (targetCats.has(cat)) {
-      if (
-        name.includes('HBO') ||
-        name.includes('UNIVERSAL') ||
-        name.includes('STAR CHANNEL') ||
-        name.includes('WARNER') ||
-        name.includes('SONY') ||
-        name.includes('PARAMOUNT') ||
-        name.includes('CINECANAL') ||
-        name.includes('SPACE') ||
-        name.includes('TNT') ||
-        name.includes('AXN') ||
-        name.includes('FX') ||
-        name.includes('A&E') ||
-        name.includes('DISCOVERY') ||
-        name.includes('ANIMAL PLANET') ||
-        name.includes('NATIONAL GEO') ||
-        name.includes('NAT GEO') ||
-        name.includes('HISTORY') ||
-        name.includes('TLC') ||
-        name.includes('DISNEY') ||
-        name.includes('CARTOON') ||
-        name.includes('NICKELODEON') ||
-        name.includes('NICK') ||
-        name.includes('CNN') ||
-        name.includes('TELEMUNDO') ||
-        name.includes('UNIVISION')
-      ) {
-        return true;
-      }
-    }
+    entries.push({
+      dial: dialNum,
+      title,
+      group: currentGroup,
+      streamIds: idMatches,
+      rawLine: rest
+    });
+  }
 
+  return entries;
+}
+
+function isLivePpvEvent(name) {
+  if (!name) return false;
+  const upper = name.toUpperCase().trim();
+  if (
+    upper.startsWith('END |') ||
+    upper.startsWith('END:') ||
+    upper.includes('| END |') ||
+    upper.includes('NO EVENT') ||
+    upper.includes('OFFLINE') ||
+    upper.includes('#####') ||
+    upper.includes('INFO ') ||
+    upper.endsWith('INFO')
+  ) {
     return false;
-  });
+  }
+  return (
+    upper.includes('NEXT') ||
+    upper.includes('LIVE') ||
+    upper.includes(' VS ') ||
+    upper.includes(' VS. ') ||
+    upper.includes(' @ ')
+  );
+}
 
-  vipStreams.forEach(s => {
-    let group = 'Entretenimiento VIP';
-    const name = (s.name || '').toUpperCase();
+function buildCleanM3U(streams, format = config.streamOptions.defaultFormat) {
+  const epgUrls = config.endpoints.epgXmltv;
+  let m3u = `#EXTM3U url-tvg="${epgUrls}" x-tvg-url="${epgUrls}" name="${config.subscription.playlistName}"\n\n`;
 
-    if (name.includes('INVESTIGATION DISCOVERY') || name.includes('DISCOVERY ID') || name.includes('ID HD')) {
-      group = '🕵️ Cultura & ID';
-    } else if (String(s.category_id) === '154' || name.includes('CO|') || name.includes('COLOMBIA')) {
-      group = '🇨🇴 Colombia (Nacionales & TDT)';
-    } else if (
-      name.includes('SPORTS') ||
-      name.includes('ESPN') ||
-      name.includes('WIN') ||
-      name.includes('TYC') ||
-      name.includes('TUDN') ||
-      name.includes('DSPORTS') ||
-      name.includes('DIRECTV') ||
-      name.includes('DAZN')
-    ) {
-      group = '⚽ Deportes VIP (Parrilla Total)';
-    } else if (
-      name.includes('HBO') ||
-      name.includes('CINEMA') ||
-      name.includes('MOVIE') ||
-      name.includes('UNIVERSAL') ||
-      name.includes('STAR') ||
-      name.includes('WARNER') ||
-      name.includes('SONY') ||
-      name.includes('TNT') ||
-      name.includes('SPACE') ||
-      name.includes('AXN')
-    ) {
-      group = '🎬 Cine & Series (DirecTV / Claro)';
-    } else if (
-      name.includes('DISCOVERY') ||
-      name.includes('HISTORY') ||
-      name.includes('NATIONAL') ||
-      name.includes('NAT GEO') ||
-      name.includes('ANIMAL')
-    ) {
-      group = '🌍 Documentales & Ciencia';
-    } else if (name.includes('DISNEY') || name.includes('CARTOON') || name.includes('NICK')) {
-      group = '🧒 Infantiles';
+  const streamById = new Map();
+  streams.forEach(s => streamById.set(Number(s.stream_id), s));
+
+  const entries = parseParrillaMarkdown();
+
+  const appendChannel = (stream, displayTitle, group, dial) => {
+    const { epgId, logo } = resolveEpgAndLogo(stream, displayTitle);
+    const streamUrl = format === 'ts'
+      ? `http://${TREX_HOST}:${TREX_PORT}/${TREX_USER}/${TREX_PASS}/${stream.stream_id}.ts`
+      : `http://${TREX_HOST}:${TREX_PORT}/live/${TREX_USER}/${TREX_PASS}/${stream.stream_id}.m3u8`;
+
+    const chnoAttr = dial ? ` tvg-chno="${dial}"` : '';
+    const label = dial ? `${dial} - ${displayTitle}` : displayTitle;
+
+    m3u += `#EXTINF:-1${chnoAttr} tvg-id="${epgId}" tvg-name="${label}" tvg-logo="${logo}" group-title="${group}" reconnect="true",${label}\n`;
+    if (config.streamOptions.httpReconnect) {
+      m3u += `#EXTVLCOPT:http-reconnect=true\n`;
+    }
+    if (config.streamOptions.networkCachingMs) {
+      m3u += `#EXTVLCOPT:network-caching=${config.streamOptions.networkCachingMs}\n`;
+    }
+    m3u += `${streamUrl}\n\n`;
+  };
+
+  for (const entry of entries) {
+    // Manejo especial para diales 901-904 (Eventos PPV Dinámicos)
+    if (entry.dial >= 901 && entry.dial <= 904) {
+      let ppvStreams = [];
+      if (entry.dial === 901) {
+        // Disney+ / ESPN+ / Conmebol Fanatiz
+        ppvStreams = streams.filter(s => ['2460', '2028', '2202'].includes(String(s.category_id)) && isLivePpvEvent(s.name)).slice(0, 15);
+      } else if (entry.dial === 902) {
+        // Eventos DAZN (España & USA)
+        ppvStreams = streams.filter(s => ['1520', '1521'].includes(String(s.category_id)) && isLivePpvEvent(s.name)).slice(0, 15);
+      } else if (entry.dial === 903) {
+        // Eventos TUDN / ViX Deportes & PPV LatAm
+        const fixedVix = [1369550, 1369549, 1369548, 1369547, 543974, 543975, 543976, 543977, 543978]
+          .map(id => streamById.get(id))
+          .filter(Boolean);
+        const liveVix = streams.filter(s => String(s.category_id) === '2368' && isLivePpvEvent(s.name)).slice(0, 12);
+        ppvStreams = [...liveVix, ...fixedVix];
+      } else if (entry.dial === 904) {
+        // Otros PPV USA (UFC / Boxeo / Fite TV / MLS)
+        const fite247 = streamById.get(437271) || streamById.get(1387198);
+        const liveUsa = streams.filter(s => ['1592', '668', '2270'].includes(String(s.category_id)) && isLivePpvEvent(s.name)).slice(0, 15);
+        ppvStreams = [...(fite247 ? [fite247] : []), ...liveUsa];
+      }
+
+      ppvStreams.forEach((s, idx) => {
+        const cleanEventName = (s.name || '').replace(/\|\s*8K EXCLUSIVE/gi, '').trim();
+        appendChannel(s, cleanEventName, entry.group, entry.dial);
+      });
+      continue;
     }
 
-    const streamUrl = `http://${TREX_HOST}:${TREX_PORT}/${TREX_USER}/${TREX_PASS}/${s.stream_id}.ts`;
-    const logo = s.stream_icon || '';
-    const epgId = s.epg_channel_id || '';
+    // 1. Si el renglón tiene IDs explícitos de TREX
+    if (entry.streamIds && entry.streamIds.length > 0) {
+      const isMultiChannelLine = entry.dial === 602 || /[\/&]|(\b1\s+y\s+2\b)/i.test(entry.title);
+      const idsToEmit = isMultiChannelLine ? entry.streamIds : [entry.streamIds[0]];
 
-    m3u += `#EXTINF:-1 tvg-id="${epgId}" tvg-name="${s.name}" tvg-logo="${logo}" group-title="${group}",${s.name}\n`;
-    m3u += `${streamUrl}\n\n`;
-  });
+      idsToEmit.forEach((id, idx) => {
+        const s = streamById.get(id);
+        if (!s) return;
+        let displayTitle = entry.title;
+        if (idsToEmit.length > 1) {
+          if (entry.dial === 602) {
+            displayTitle = `Win Sports+ HD (Señal Alterna ${idx + 1})`;
+          } else {
+            const cleanRaw = (s.name || '').replace(/^(LAT|CO|MXC|ARG|US|VIX|PRIME|TV|YP)\|\s*/i, '').replace(/ᴿᴬᵂ/g, '').trim();
+            displayTitle = cleanRaw || `${entry.title} (${idx + 1})`;
+          }
+        }
+        appendChannel(s, displayTitle, entry.group, entry.dial);
+      });
+      continue;
+    }
+
+    // 2. Búsqueda automática en TREX para canales nuevos agregados con XX sin ID explícito
+    const searchKey = entry.title
+      .replace(/\(.*?\)/g, '')
+      .replace(/\b(HD|FHD|4K|24\/7)\b/gi, '')
+      .trim()
+      .toUpperCase();
+
+    if (searchKey.length >= 2) {
+      const preferredCats = new Set(['154', '166', '151', '2171', '152', '2338', '1667', '2186', '1611']);
+      const candidates = streams.filter(s => {
+        const n = (s.name || '').toUpperCase();
+        return n.includes(searchKey) && (preferredCats.has(String(s.category_id)) || /^(CO|LAT|MXC|ARG|VIX|US|PRIME)\|/i.test(n));
+      });
+      if (candidates.length > 0) {
+        appendChannel(candidates[0], entry.title, entry.group, entry.dial);
+      }
+    }
+  }
 
   return m3u;
 }
@@ -184,23 +256,39 @@ module.exports = async (req, res) => {
     res.end(text);
   };
 
+  const reqUrl = (req && req.url) ? req.url : '';
+  const format = reqUrl.includes('output=ts') ? 'ts' : config.streamOptions.defaultFormat;
+
+  let currentMdMtime = 0;
+  try {
+    currentMdMtime = fs.statSync(path.join(__dirname, 'PARRILLA-CANALES.md')).mtimeMs;
+  } catch (e) {}
+
   const now = Date.now();
-  if (cachedM3U && (now - lastFetchTime < config.cacheTtlMs)) {
-    return sendText(200, cachedM3U);
+  if (
+    cachedM3UByFormat[format] &&
+    (now - lastFetchTime < config.cacheTtlMs) &&
+    currentMdMtime === lastMdMtime
+  ) {
+    return sendText(200, cachedM3UByFormat[format]);
   }
 
   try {
     const streams = await fetchTrexStreams();
     if (!streams || streams.length === 0) {
-      if (cachedM3U) return sendText(200, cachedM3U);
+      if (cachedM3UByFormat[format]) return sendText(200, cachedM3UByFormat[format]);
       return sendText(500, '#EXTM3U\n# Error al conectar con el servidor TREX');
     }
 
-    cachedM3U = buildCleanM3U(streams);
+    cachedM3UByFormat = {
+      hls: buildCleanM3U(streams, 'hls'),
+      ts: buildCleanM3U(streams, 'ts')
+    };
     lastFetchTime = now;
-    return sendText(200, cachedM3U);
+    lastMdMtime = currentMdMtime;
+    return sendText(200, cachedM3UByFormat[format]);
   } catch (err) {
-    if (cachedM3U) return sendText(200, cachedM3U);
+    if (cachedM3UByFormat[format]) return sendText(200, cachedM3UByFormat[format]);
     return sendText(500, '#EXTM3U\n# Error: ' + err.message);
   }
 };

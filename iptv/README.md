@@ -22,9 +22,11 @@ Cualquier ajuste de canales, categorías, orden de parrilla, EPG o credenciales 
 ## 2. Credenciales y Enlaces de Conexión
 
 ### A. Enlace M3U Curado (Parrilla Limpia Colombia + Deportes + Cine + ID)
-Filtra automáticamente los +30.000 canales globales del servidor TREX para dejar únicamente la parrilla hispana/colombiana organizada por grupos limpios y con guía EPG inyectada en cabecera:
-* **URL Lista M3U Curada:** `https://videm.tv/api/trex`
-* **URL Guía EPG (XMLTV):** `http://line.prim01.com:80/xmltv.php?username=493da0239d&password=69b4dd0ebc7f`
+Filtra automáticamente los +55.000 canales globales del servidor TREX para dejar únicamente la parrilla hispana/colombiana organizada por grupos limpios, con **transporte HLS (`.m3u8`) anti-congelamiento**, **logos oficiales corregidos** (ej. *Win Sports+* oficial en lugar del picon erróneo *Infosport+*) y **guía EDT/EPG real de Colombia + Latinoamérica** inyectada en cabecera:
+* **URL Lista M3U Curada (HLS recomendado):** `https://videm.tv/api/trex`
+* **URL Lista M3U Curada (Modo MPEG-TS opcional):** `https://videm.tv/api/trex?output=ts`
+* **URL Guía EDT / EPG Colombia (XMLTV Ligera):** `https://epgshare01.online/epgshare01/epg_ripper_CO1.xml.gz`
+* **URL Guía EPG Nativa TREX (Global sin filtrar):** `http://line.prim01.com:80/xmltv.php?username=493da0239d&password=69b4dd0ebc7f`
 
 ### B. Conexión Directa Xtream Codes (Para TiviMate / IPTV Smarters Pro / Televizo)
 Si prefieres iniciar sesión por API Xtream Codes directamente en la app del televisor:
@@ -60,3 +62,4 @@ Si prefieres iniciar sesión por API Xtream Codes directamente en la app del tel
    ```
 4. **Puente Serverless ([`api/trex.js`](file:///c:/Users/Usuario/Documents/Proyectos%20Antigravity/VIDEM/api/trex.js))**
    Archivo ligero de 3 líneas que redirige las peticiones de `https://videm.tv/api/trex` hacia `iptv/curated-m3u.js` para mantener compatibilidad en producción sin mezclar el código de IPTV con VIDEM.
+

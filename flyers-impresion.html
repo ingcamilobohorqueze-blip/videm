@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VIDEM | Artes Listas para Impresión (Flyer Porterías + Cartel Vehicular Anti-Perros)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Space+Grotesk:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --font-main: 'Plus Jakarta Sans', sans-serif;
+      --font-mono: 'Space Grotesk', sans-serif;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background: #0B0F19;
+      color: #F8FAFC;
+      font-family: var(--font-main);
+      padding: 32px 16px 80px;
+    }
+    .toolbar {
+      max-width: 1100px;
+      margin: 0 auto 32px;
+      background: #131B2E;
+      border: 1px solid rgba(0, 240, 255, 0.25);
+      border-radius: 16px;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .toolbar-info h1 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #00F0FF;
+      margin-bottom: 4px;
+    }
+    .toolbar-info p {
+      font-size: 0.88rem;
+      color: #94A3B8;
+    }
+    .toolbar-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .btn-print {
+      background: linear-gradient(135deg, #00F0FF 0%, #6366F1 100%);
+      color: #fff;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+    .section-label {
+      max-width: 1100px;
+      margin: 36px auto 16px;
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      color: #00F0FF;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      padding-bottom: 8px;
+    }
+
+    /* =========================================================================
+       1. FLYER DE PORTERÍAS (MEDIA CARTA: 14cm x 21.5cm - ANVERSO Y REVERSO)
+       ========================================================================= */
+    .flyers-pair {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 28px;
+      justify-items: center;
+    }
+
+    .flyer-sheet {
+      width: 420px;
+      height: 645px; /* Proporción exacta Media Carta 14 x 21.5 cm */
+      background: #06080D;
+      border-radius: 16px;
+      border: 2px solid rgba(0, 240, 255, 0.35);
+      padding: 28px 26px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.7);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .flyer-sheet::before {
+      content: '';
+      position: absolute;
+      top: -80px;
+      right: -80px;
+      width: 240px;
+      height: 240px;
+      background: radial-gradient(circle, rgba(0, 240, 255, 0.18) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .flyer-top-notice {
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.5);
+      color: #FBBF24;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-align: center;
+      padding: 6px 10px;
+      border-radius: 8px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .flyer-brand-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin: 14px 0 8px;
+    }
+    .flyer-brand-row img.logo-iso {
+      width: 34px;
+      height: 34px;
+    }
+    .flyer-brand-row img.logo-word {
+      height: 24px;
+      width: auto;
+    }
+
+    .flyer-headline {
+      font-size: 1.48rem;
+      font-weight: 800;
+      line-height: 1.18;
+      text-align: center;
+      color: #FFFFFF;
+      margin-bottom: 10px;
+    }
+    .flyer-headline .hl-cyan {
+      color: #00F0FF;
+    }
+    .flyer-headline .hl-red {
+      color: #FF4D5A;
+    }
+
+    .bill-shock-box {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px dashed rgba(239, 68, 68, 0.45);
+      border-radius: 12px;
+      padding: 12px 14px;
+      text-align: center;
+      margin-bottom: 14px;
+    }
+    .bill-shock-box p {
+      font-size: 0.84rem;
+      color: #E2E8F0;
+      line-height: 1.4;
+    }
+    .bill-shock-box strong {
+      color: #F87171;
+      font-size: 0.95rem;
+    }
+
+    .flyer-benefits {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .flyer-benefits li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 0.84rem;
+      line-height: 1.35;
+      color: #E2E8F0;
+    }
+    .flyer-benefits li .b-icon {
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+    .flyer-benefits li strong {
+      color: #00F0FF;
+      display: block;
+      margin-bottom: 1px;
+    }
+
+    .flyer-footer-strip {
+      background: linear-gradient(135deg, rgba(0, 240, 255, 0.15) 0%, rgba(99, 102, 241, 0.2) 100%);
+      border: 1px solid rgba(0, 240, 255, 0.4);
+      border-radius: 12px;
+      padding: 10px 14px;
+      text-align: center;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #FFFFFF;
+    }
+
+    /* REVERSO DEL FLYER */
+    .qr-promo-card {
+      background: #FFFFFF;
+      color: #0F172A;
+      border-radius: 16px;
+      padding: 18px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      margin: 8px 0;
+      box-shadow: 0 10px 25px rgba(0, 240, 255, 0.2);
+    }
+    .qr-promo-card img {
+      width: 155px;
+      height: 155px;
+      display: block;
+    }
+    .qr-promo-card .qr-scan-label {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: #0284C7;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .wa-number-box {
+      background: #10B981;
+      color: #FFFFFF;
+      padding: 10px 16px;
+      border-radius: 12px;
+      text-align: center;
+      font-family: var(--font-mono);
+    }
+    .wa-number-box .wa-small {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: block;
+      opacity: 0.92;
+    }
+    .wa-number-box .wa-big {
+      font-size: 1.45rem;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+    }
+
+    /* =========================================================================
+       2. CARTEL AÉREO VEHICULAR "ANTI-PERROS" (70cm x 50cm - LECTURA EN 3 SEG)
+       ========================================================================= */
+    .car-sign-wrapper {
+      max-width: 980px;
+      margin: 0 auto;
+    }
+    .car-sign-board {
+      width: 100%;
+      aspect-ratio: 7 / 5;
+      background: radial-gradient(circle at 80% 20%, #162038 0%, #05070B 70%);
+      border: 4px solid #00F0FF;
+      border-radius: 24px;
+      padding: 36px 42px;
+      display: grid;
+      grid-template-columns: 1.35fr 0.65fr;
+      gap: 28px;
+      align-items: center;
+      position: relative;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.8);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    /* Puntos de guía para ventosas/chupas en las 4 esquinas */
+    .suction-guide {
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px dashed rgba(255,255,255,0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.55rem;
+      color: rgba(255,255,255,0.35);
+    }
+    .suction-tl { top: 12px; left: 12px; }
+    .suction-tr { top: 12px; right: 12px; }
+    .suction-bl { bottom: 12px; left: 12px; }
+    .suction-br { bottom: 12px; right: 12px; }
+
+    .car-left-col {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .car-brand-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      align-self: flex-start;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(0, 240, 255, 0.4);
+      padding: 8px 18px;
+      border-radius: 999px;
+    }
+    .car-brand-pill img.logo-iso {
+      width: 36px;
+      height: 36px;
+    }
+    .car-brand-pill img.logo-word {
+      height: 26px;
+      width: auto;
+    }
+    .car-giant-title {
+      font-size: clamp(1.8rem, 3.6vw, 2.85rem);
+      font-weight: 900;
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+      color: #FFFFFF;
+      text-transform: uppercase;
+    }
+    .car-giant-title .yellow-pop {
+      color: #FACC15;
+    }
+    .car-giant-title .cyan-pop {
+      color: #00F0FF;
+    }
+    .car-sub-bullets {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .car-pill-feature {
+      background: rgba(16, 185, 129, 0.16);
+      border: 1.5px solid #10B981;
+      color: #A7F3D0;
+      font-weight: 800;
+      font-size: 0.95rem;
+      padding: 8px 14px;
+      border-radius: 10px;
+    }
+    .car-cta-banner {
+      background: #E50914;
+      color: #FFFFFF;
+      padding: 14px 20px;
+      border-radius: 14px;
+      font-size: 1.25rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      display: inline-block;
+      box-shadow: 0 10px 25px rgba(229, 9, 20, 0.4);
+    }
+
+    .car-right-col {
+      background: #FFFFFF;
+      color: #0F172A;
+      border-radius: 22px;
+      padding: 24px 20px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 20px 40px rgba(0, 240, 255, 0.25);
+    }
+    .car-right-col .scan-top {
+      font-family: var(--font-mono);
+      font-weight: 800;
+      font-size: 0.9rem;
+      color: #0284C7;
+      text-transform: uppercase;
+    }
+    .car-right-col img.qr-giant {
+      width: 200px;
+      height: 200px;
+    }
+    .car-wa-box {
+      background: #0F172A;
+      color: #FFFFFF;
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 12px;
+    }
+    .car-wa-box .wa-lbl {
+      font-size: 0.72rem;
+      color: #10B981;
+      font-weight: 800;
+      text-transform: uppercase;
+      display: block;
+    }
+    .car-wa-box .wa-num {
+      font-family: var(--font-mono);
+      font-size: 1.4rem;
+      font-weight: 900;
+      letter-spacing: 0.02em;
+    }
+    .car-web-url {
+      font-family: var(--font-mono);
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #0F172A;
+    }
+
+    @media print {
+      body {
+        background: #FFFFFF;
+        padding: 0;
+      }
+      .toolbar, .section-label {
+        display: none;
+      }
+      .flyers-pair {
+        display: flex;
+        flex-direction: row;
+        gap: 16px;
+        page-break-after: always;
+      }
+      .car-sign-wrapper {
+        page-break-before: always;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .car-sign-board {
+        grid-template-columns: 1fr;
+        aspect-ratio: auto;
+        padding: 24px 20px;
+      }
+      .flyer-sheet {
+        width: 100%;
+        height: auto;
+        min-height: 620px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="toolbar">
+    <div class="toolbar-info">
+      <h1>🖨️ Centro de Impresión Publicitaria VIDEM</h1>
+      <p>Incluye el Flyer de Casilleros (Media Carta Anverso/Reverso) y el Cartel Aéreo de Carro (con guías para ventosas/imán, 100% libre del suelo).</p>
+    </div>
+    <div class="toolbar-actions">
+      <button class="btn-print" onclick="window.print()">🖨️ Imprimir / Guardar en PDF</button>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       PIEZA 1: FLYER PARA PORTERÍAS / CASILLEROS DE CORRESPONDENCIA
+       ========================================================================= -->
+  <div class="section-label">1. Flyer de Casilleros para Portería (Media Carta 14 × 21.5 cm — Cara A y Cara B)</div>
+
+  <div class="flyers-pair">
+    
+    <!-- CARA A (FRENTE: IMPACTO CON LOS RECIBOS PÚBLICOS) -->
+    <div class="flyer-sheet">
+      <div>
+        <div class="flyer-top-notice">
+          📍 Aviso para Residentes • Beneficio Exclusivo Vecinos
+        </div>
+
+        <div class="flyer-brand-row">
+          <img src="assets/images/logo-videm.png" alt="Videm" class="logo-iso">
+          <img src="assets/images/videm-text-logo-web.png" alt="VIDEM" class="logo-word">
+        </div>
+
+        <h2 class="flyer-headline">
+          ¿Ya sumaste cuánto pagas al mes en <span class="hl-red">Netflix, Disney+, Max y Prime</span>?
+        </h2>
+
+        <div class="bill-shock-box">
+          <p>
+            Un hogar promedio gasta más de <strong>$140.000 al mes ($1.680.000 al año)</strong> en apps separadas… y aun así el video viene comprimido y muchas películas no están.
+          </p>
+        </div>
+
+        <ul class="flyer-benefits">
+          <li>
+            <span class="b-icon">🎬</span>
+            <div>
+              <strong>Todo el Cine y Series en 1 Sola App en tu TV</strong>
+              Estrenos de cine, clásicas, Netflix, Max, Apple TV+, Disney+ y Prime unificados en el menú de tu televisor.
+            </div>
+          </li>
+          <li>
+            <span class="b-icon">💎</span>
+            <div>
+              <strong>Calidad 4K Ultra HD Real + Dolby Atmos</strong>
+              Conectado a servidores privados de fibra óptica (CDN). Cero pausas los viernes o domingos por la noche.
+            </div>
+          </li>
+          <li>
+            <span class="b-icon">🌎</span>
+            <div>
+              <strong>Super-Catálogo en Audio Español Latino</strong>
+              Hollywood, K-Dramas coreanos en español, novelas turcas, colombianas y series españolas completas.
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="flyer-footer-strip">
+        👉 Voltea esta tarjeta para reclamar tu PRUEBA GRATIS en el conjunto
+      </div>
+    </div>
+
+    <!-- CARA B (REVERSO: INVITACIÓN DE VECINO + QR DEMO GRATIS) -->
+    <div class="flyer-sheet">
+      <div>
+        <div class="flyer-top-notice" style="background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.5); color: #34D399;">
+          🎁 3 Cupos de Prueba Gratis por Fin de Semana
+        </div>
+
+        <div class="flyer-brand-row">
+          <img src="assets/images/logo-videm.png" alt="Videm" class="logo-iso">
+          <img src="assets/images/videm-text-logo-web.png" alt="VIDEM" class="logo-word">
+        </div>
+
+        <h2 class="flyer-headline" style="font-size: 1.38rem;">
+          Pruébalo <span class="hl-cyan">GRATIS hoy mismo</span> en el Smart TV de tu sala
+        </h2>
+
+        <p style="font-size: 0.84rem; color: #CBD5E1; text-align: center; line-height: 1.45; margin-bottom: 10px;">
+          Soy vecino e ingeniero de soporte. Activamos tu acceso de prueba en <strong>30 segundos por WhatsApp</strong> (sin visitas a tu apartamento, sin cables y sin pedirte tarjetas de crédito).
+        </p>
+
+        <div class="qr-promo-card">
+          <span class="qr-scan-label">📱 Escanea con la cámara de tu celular</span>
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=320x320&margin=6&data=https%3A%2F%2Fvidem.tv%2Fwa" alt="QR WhatsApp Videm">
+          <span style="font-size: 0.78rem; color: #475569; font-weight: 600;">Envía la palabra <strong>"VECINO"</strong> al abrir el chat</span>
+        </div>
+
+        <div class="wa-number-box">
+          <span class="wa-small">O escríbenos directo por WhatsApp:</span>
+          <span class="wa-big">301 556 8904</span>
+        </div>
+      </div>
+
+      <div style="text-align: center; font-size: 0.75rem; color: #94A3B8; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
+        Compatible con Smart TV <strong>LG, Samsung, Sony, TCL, Xiaomi, Fire TV Stick y TV Box</strong> • Conoce más en <strong style="color:#00F0FF;">videm.tv</strong>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- =========================================================================
+       PIEZA 2: CARTEL RÍGIDO AÉREO PARA CARRO (VENTOSAS / IMÁN - CERO PISO)
+       ========================================================================= -->
+  <div class="section-label">2. Cartel Aéreo para Ventana/Puerta de Carro (70 × 50 cm con Ventosas o Imán — 100% Libre del Suelo / Anti-Perros)</div>
+
+  <div class="car-sign-wrapper">
+    <div class="car-sign-board">
+      <!-- Guías de ventosas para colgar en el vidrio del carro a 1.20m del suelo -->
+      <div class="suction-guide suction-tl" title="Punto de ventosa">◎</div>
+      <div class="suction-guide suction-tr" title="Punto de ventosa">◎</div>
+      <div class="suction-guide suction-bl" title="Punto de ventosa">◎</div>
+      <div class="suction-guide suction-br" title="Punto de ventosa">◎</div>
+
+      <div class="car-left-col">
+        <div class="car-brand-pill">
+          <img src="assets/images/logo-videm.png" alt="Videm" class="logo-iso">
+          <img src="assets/images/videm-text-logo-web.png" alt="VIDEM" class="logo-word">
+        </div>
+
+        <div class="car-giant-title">
+          ¿Pagas Netflix, Disney y Max?<br>
+          <span class="cyan-pop">Todo el Cine 4K</span> en tu Smart TV <span class="yellow-pop">en 1 Sola App</span>
+        </div>
+
+        <div class="car-sub-bullets">
+          <span class="car-pill-feature">✓ Estrenos + Series + K-Dramas</span>
+          <span class="car-pill-feature">✓ 4K Real Sin Cortes</span>
+          <span class="car-pill-feature">✓ Audio Español Latino</span>
+        </div>
+
+        <div>
+          <div class="car-cta-banner">
+            🎁 Pide tu DEMO GRATIS hoy en tu TV (En 30 Segundos)
+          </div>
+        </div>
+      </div>
+
+      <div class="car-right-col">
+        <span class="scan-top">📲 Escanea y Prueba Gratis</span>
+        <img class="qr-giant" src="https://api.qrserver.com/v1/create-qr-code/?size=400x400&margin=6&data=https%3A%2F%2Fvidem.tv%2Fwa" alt="QR Videm Carro">
+        <div class="car-wa-box">
+          <span class="wa-lbl">WhatsApp Directo</span>
+          <span class="wa-num">301 556 8904</span>
+        </div>
+        <span class="car-web-url">🌐 videm.tv</span>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

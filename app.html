@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>VIDEM VIP | Tu Sala Privada 4K</title>
+  <meta name="description" content="App móvil PWA exclusiva para clientes de VIDEM. Enlaza tu Smart TV en 1 segundo y gestiona tu Bóveda Privada de Cine 4K.">
+  <meta name="theme-color" content="#06080D">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="VIDEM VIP">
+
+  <!-- Manifest PWA -->
+  <link rel="manifest" href="/app.webmanifest">
+  <link rel="icon" type="image/png" href="/assets/icons/icon-192.png">
+  <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+
+  <!-- App CSS -->
+  <link rel="stylesheet" href="/css/app.css">
+</head>
+<body class="vip-app-body">
+
+  <div class="vip-glow-ambient" aria-hidden="true"></div>
+
+  <!-- Header -->
+  <header class="app-header">
+    <a href="/app" class="app-brand">
+      <img src="/assets/icons/icon-192.png" alt="VIDEM" class="app-brand-logo">
+      <span class="app-brand-text">VIDEM <span class="badge-vip">VIP</span></span>
+    </a>
+
+    <button id="userLogoutBtn" class="header-user-btn" onclick="handleClientLogout()" style="display: none;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+      </svg>
+      <span>Salir</span>
+    </button>
+  </header>
+
+  <!-- Main Container -->
+  <main class="app-container">
+
+    <!-- PWA Install Banner -->
+    <div id="pwaInstallBanner" class="pwa-install-banner" style="display: none;">
+      <span class="pwa-banner-text">📲 Instala VIDEM VIP en tu pantalla de inicio</span>
+      <button class="btn-pwa-install" onclick="triggerPwaInstall()">Instalar</button>
+    </div>
+
+    <!-- 1. LOGIN SECTION -->
+    <section id="loginSection" class="vip-card login-view">
+      <div class="login-icon-wrap">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="7" x2="7" y2="7"/><line x1="2" y1="17" x2="7" y2="17"/><line x1="17" y1="17" x2="22" y2="17"/><line x1="17" y1="7" x2="22" y2="7"/>
+        </svg>
+      </div>
+
+      <h1 class="login-title">Tu Sala de Cine VIP</h1>
+      <p class="login-subtitle">Ingresa con tus credenciales privadas para enlazar televisores y gestionar tu Bóveda 4K.</p>
+
+      <form onsubmit="handleClientLogin(event)">
+        <div class="app-form-group">
+          <label class="app-form-label" for="clientUser">Usuario o Teléfono</label>
+          <input type="text" id="clientUser" class="app-input" placeholder="ej. vip.9299@videm.tv o 310..." required autocomplete="username">
+        </div>
+
+        <div class="app-form-group">
+          <label class="app-form-label" for="clientPass">Contraseña de Sala</label>
+          <input type="password" id="clientPass" class="app-input" placeholder="••••••••" required autocomplete="current-password">
+        </div>
+
+        <div id="loginErrorMsg" style="color: var(--danger); font-size: 0.8rem; margin: 8px 0; display: none;"></div>
+
+        <button type="submit" id="btnLoginSubmit" class="btn-primary-glow">
+          <span>Entrar a mi Sala Privada</span>
+        </button>
+      </form>
+
+      <div style="margin-top: 20px; font-size: 0.8rem; color: var(--text-dim);">
+        ¿Aún no tienes membresía? <a href="/#planes" style="color: var(--accent-cyan); text-decoration: none; font-weight: 700;">Ver pases VIP</a>
+      </div>
+    </section>
+
+    <!-- 2. CLIENT DASHBOARD SECTION (AUTHENTICATED) -->
+    <section id="clientDashboardSection" style="display: none;">
+
+      <!-- Client Welcome Banner -->
+      <div class="client-hero-strip">
+        <div>
+          <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Bienvenido de vuelta</div>
+          <div class="client-name-lg" id="clientName">Camilo Bohórquez</div>
+          <div class="client-plan-pill" id="clientPlanBadge">Membresía VIP</div>
+        </div>
+        <div style="text-align: right;">
+          <span style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--success); box-shadow: 0 0 10px var(--success);"></span>
+          <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 4px;">CDN 80 Mbps</div>
+        </div>
+      </div>
+
+      <!-- TV Link Card -->
+      <div class="vip-card">
+        <div class="vip-card-header">
+          <div class="vip-card-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="7" width="20" height="15" rx="2" ry="2"/><polyline points="17 2 12 7 7 2"/>
+            </svg>
+            <span>Vincular Smart TV</span>
+          </div>
+          <span style="font-size: 0.72rem; color: var(--accent-cyan); font-weight: 700;">0.8s Sincronización</span>
+        </div>
+
+        <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.5;">
+          Abre Stremio en tu Smart TV, selecciona <em>"Iniciar sesión con código web"</em> y escribe el código de tu pantalla aquí:
+        </p>
+
+        <div class="tv-code-input-wrap">
+          <input type="text" id="tvCodeInput" class="tv-code-input" placeholder="W X Y Z" maxlength="6" autocomplete="off">
+        </div>
+
+        <div id="tvLinkFeedback" style="font-size: 0.85rem; font-weight: 600; margin-bottom: 12px; display: none;"></div>
+
+        <button id="btnLinkTvSubmit" class="btn-primary-glow" onclick="handleLinkTvDevice()">
+          <span>Vincular Televisor Ahora</span>
+        </button>
+      </div>
+
+      <!-- Title Request Vault Card -->
+      <div class="vip-card">
+        <div class="vip-card-header">
+          <div class="vip-card-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/>
+            </svg>
+            <span>Bóveda Concierge: "Pide tu Título"</span>
+          </div>
+          <span style="font-size: 0.72rem; color: var(--success); font-weight: 700;">Carga Automática</span>
+        </div>
+
+        <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 12px;">
+          ¿Buscas una película, serie clásica o K-Drama? Búscala aquí y añádela directamente a tu TV:
+        </p>
+
+        <div class="search-input-wrap">
+          <svg class="search-icon-inside" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input type="text" id="vaultSearchInput" class="app-input" placeholder="Buscar por título (ej. Ip Man 2, El Padrino...)" oninput="handleVaultSearchInput(event)">
+        </div>
+
+        <div id="vaultResultsContainer" class="vault-results-grid">
+          <!-- Dynamic TMDB Search Cards -->
+        </div>
+      </div>
+
+      <!-- Membership Spec Grid -->
+      <div class="vip-card">
+        <div class="vip-card-header">
+          <div class="vip-card-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+            </svg>
+            <span>Estado de tu Conexión VIP</span>
+          </div>
+        </div>
+
+        <div class="membership-grid">
+          <div class="membership-stat-box">
+            <div class="stat-label">Estado de Cuenta</div>
+            <div class="stat-val" id="statStatus" style="color: var(--success);">Membresía Activa</div>
+          </div>
+
+          <div class="membership-stat-box">
+            <div class="stat-label">Fecha de Renovación</div>
+            <div class="stat-val" id="statRenewal">26 Ene 2027</div>
+          </div>
+
+          <div class="membership-stat-box">
+            <div class="stat-label">Perfil de Audio</div>
+            <div class="stat-val">Dolby Atmos / 5.1</div>
+          </div>
+
+          <div class="membership-stat-box">
+            <div class="stat-label">Ancho de Banda CDN</div>
+            <div class="stat-val">Hasta 80 Mbps</div>
+          </div>
+        </div>
+
+        <div style="margin-top: 14px; text-align: center;">
+          <a href="https://wa.me/573015568904?text=Hola,%20soy%20cliente%20VIDEM%20VIP%20y%20necesito%20asistencia%20con%20mi%20sala" target="_blank" rel="noopener noreferrer" style="color: var(--text-muted); font-size: 0.8rem; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+            <span>💬 Escribir a Conserje Técnico en WhatsApp</span>
+          </a>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <script src="/js/app-client.js"></script>
+</body>
+</html>

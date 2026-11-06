@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VIDEM | Generador de Historias y Plantillas para WhatsApp</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- html2canvas para exportar PNGs en 1 clic -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+  <style>
+    :root {
+      --font-main: 'Plus Jakarta Sans', sans-serif;
+      --font-mono: 'Space Grotesk', sans-serif;
+      --cyan: #00F0FF;
+      --cyan-glow: rgba(0, 240, 255, 0.35);
+      --gold: #F5A623;
+      --red: #FF4D5A;
+      --green: #10B981;
+      --bg: #07090E;
+      --card-bg: #0B0F17;
+      --border: rgba(255, 255, 255, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: #F8FAFC;
+      font-family: var(--font-main);
+      padding: 30px 16px 80px;
+      line-height: 1.4;
+    }
+
+    /* Top Control Bar */
+    .control-header {
+      max-width: 1200px;
+      margin: 0 auto 30px;
+      background: #111726;
+      border: 1px solid rgba(0, 240, 255, 0.25);
+      border-radius: 16px;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .control-header h1 {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--cyan);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .control-header p {
+      font-size: 0.85rem;
+      color: #94A3B8;
+      margin-top: 4px;
+    }
+
+    .control-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn-toggle {
+      background: rgba(255, 255, 255, 0.06);
+      color: #CBD5E1;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-toggle.active {
+      background: rgba(0, 240, 255, 0.15);
+      color: var(--cyan);
+      border-color: var(--cyan);
+    }
+
+    /* Grid Layout */
+    .templates-grid {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 32px;
+      justify-items: center;
+    }
+
+    .template-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      max-width: 380px;
+    }
+
+    .btn-download-card {
+      width: 100%;
+      background: linear-gradient(135deg, #00F0FF 0%, #3B82F6 100%);
+      color: #040810;
+      border: none;
+      padding: 12px;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 0.88rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .btn-download-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 240, 255, 0.35);
+    }
+
+    /* STORY CARD BASE (Proporción exacta 9:16 vertical) */
+    .story-card {
+      width: 375px;
+      height: 667px;
+      background: #080C14;
+      border: 2px solid rgba(0, 240, 255, 0.3);
+      border-radius: 28px;
+      padding: 30px 24px 26px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+      user-select: none;
+    }
+
+    /* Ambient Background Glow */
+    .story-card::before {
+      content: '';
+      position: absolute;
+      top: -100px;
+      right: -100px;
+      width: 280px;
+      height: 280px;
+      background: radial-gradient(circle, rgba(0, 240, 255, 0.18) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .story-card::after {
+      content: '';
+      position: absolute;
+      bottom: -100px;
+      left: -100px;
+      width: 280px;
+      height: 280px;
+      background: radial-gradient(circle, rgba(245, 166, 35, 0.12) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .story-content {
+      position: relative;
+      z-index: 2;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    /* BRAND BAR PROPORCIONADA (+30% Logo, -60% Wordmark) */
+    .brand-header-story {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 14px;
+      margin-bottom: 16px;
+    }
+
+    .brand-unit {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-iso {
+      width: 48px;
+      height: 48px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.45));
+      flex-shrink: 0;
+    }
+
+    .brand-text-col {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .brand-wordmark {
+      height: 16px;
+      width: auto;
+      object-fit: contain;
+      filter: brightness(1.2);
+    }
+
+    .brand-tagline {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--cyan);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      font-family: var(--font-mono);
+    }
+
+    .badge-pill-vip {
+      background: linear-gradient(135deg, rgba(245, 166, 35, 0.25) 0%, rgba(245, 166, 35, 0.05) 100%);
+      border: 1px solid rgba(245, 166, 35, 0.6);
+      color: #FBBF24;
+      font-size: 0.68rem;
+      font-weight: 800;
+      padding: 5px 10px;
+      border-radius: 999px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      font-family: var(--font-mono);
+    }
+
+    /* Tag / Pill Superior */
+    .story-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      font-family: var(--font-mono);
+      margin-bottom: 12px;
+      padding: 6px 12px;
+      border-radius: 8px;
+      align-self: flex-start;
+    }
+
+    .tag-cyan {
+      background: rgba(0, 240, 255, 0.12);
+      border: 1px solid rgba(0, 240, 255, 0.4);
+      color: var(--cyan);
+    }
+
+    .tag-gold {
+      background: rgba(245, 166, 35, 0.15);
+      border: 1px solid rgba(245, 166, 35, 0.5);
+      color: #FBBF24;
+    }
+
+    .tag-green {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.5);
+      color: #34D399;
+    }
+
+    .story-title {
+      font-size: 1.55rem;
+      font-weight: 900;
+      line-height: 1.2;
+      color: #FFFFFF;
+      margin-bottom: 14px;
+      letter-spacing: -0.02em;
+    }
+
+    .story-title .hl-cyan { color: var(--cyan); }
+    .story-title .hl-gold { color: var(--gold); }
+    .story-title .hl-red { color: var(--red); }
+
+    /* Cards / Cajas interiores */
+    .story-box-highlight {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .price-shock-badge {
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px dashed rgba(239, 68, 68, 0.5);
+      border-radius: 12px;
+      padding: 14px;
+      text-align: center;
+      margin: 12px 0 16px;
+    }
+
+    .price-shock-badge .shock-lbl {
+      font-size: 0.75rem;
+      color: #CBD5E1;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .price-shock-badge .shock-val {
+      font-family: var(--font-mono);
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: #F87171;
+    }
+
+    /* Lista de beneficios */
+    .story-features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .story-features li {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.88rem;
+      color: #E2E8F0;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-weight: 600;
+    }
+
+    .story-features li .ico {
+      font-size: 1.15rem;
+      flex-shrink: 0;
+    }
+
+    /* 3 Pasos */
+    .steps-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 12px 0;
+    }
+
+    .step-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(0, 240, 255, 0.06);
+      border: 1px solid rgba(0, 240, 255, 0.2);
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 0.84rem;
+    }
+
+    .step-num {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--cyan);
+      color: #040810;
+      font-weight: 900;
+      font-family: var(--font-mono);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 0.85rem;
+    }
+
+    /* Call To Action Inferior */
+    .story-cta-footer {
+      background: linear-gradient(135deg, rgba(0, 240, 255, 0.15) 0%, rgba(59, 130, 246, 0.25) 100%);
+      border: 1.5px solid var(--cyan);
+      border-radius: 16px;
+      padding: 14px 16px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
+    }
+
+    .story-cta-footer .cta-top {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--cyan);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-family: var(--font-mono);
+    }
+
+    .story-cta-footer .cta-action {
+      font-size: 1.05rem;
+      font-weight: 900;
+      color: #FFFFFF;
+      letter-spacing: 0.02em;
+    }
+
+    .story-cta-footer .cta-sub {
+      font-size: 0.72rem;
+      color: #94A3B8;
+    }
+
+    /* Cartelera 1:1 Cuadrada para Grupos de Vecinos */
+    .feed-card {
+      width: 375px;
+      height: 480px;
+      background: #080C14;
+      border: 2px solid rgba(245, 166, 35, 0.4);
+      border-radius: 28px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+    }
+
+    .feed-card::before {
+      content: '';
+      position: absolute;
+      top: -80px;
+      right: -80px;
+      width: 240px;
+      height: 240px;
+      background: radial-gradient(circle, rgba(245, 166, 35, 0.18) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .movie-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin: 10px 0;
+    }
+
+    .movie-item {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .movie-title {
+      font-size: 0.82rem;
+      font-weight: 800;
+      color: #FFFFFF;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .movie-spec {
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--cyan);
+      font-family: var(--font-mono);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- BARRA DE CONTROL SUPERIOR -->
+  <div class="control-header">
+    <div class="control-info">
+      <h1>🎬 Generador Visual de Historias & Estados VIDEM</h1>
+      <p>Plantillas en proporción 9:16 con logotipo armonizado y proporciones premium (+30% Isotipo / -60% Wordmark).</p>
+    </div>
+
+    <div class="control-actions">
+      <button class="btn-toggle active" id="btnCol" onclick="setRegion('co')">🇨🇴 Versión Colombia (COP)</button>
+      <button class="btn-toggle" id="btnEsp" onclick="setRegion('es')">🇪🇸 Versión España (EUR €)</button>
+    </div>
+  </div>
+
+  <!-- GRILLA DE PLANTILLAS -->
+  <div class="templates-grid">
+
+    <!-- =========================================================================
+         PLANTILLA 1: EL DOLOR / EL SHOCK DE PAGAR 5 PLATAFORMAS (9:16)
+         ========================================================================= -->
+    <div class="template-wrapper">
+      <div class="story-card" id="cardStory1">
+        <div class="story-content">
+          
+          <div>
+            <!-- Header Armonizado -->
+            <div class="brand-header-story">
+              <div class="brand-unit">
+                <img src="/assets/images/logo-videm.png" alt="Videm" class="brand-iso">
+                <div class="brand-text-col">
+                  <img src="/assets/images/videm-text-logo-web.png" alt="VIDEM" class="brand-wordmark">
+                  <span class="brand-tagline">CINEMA 4K VIP</span>
+                </div>
+              </div>
+              <span class="badge-pill-vip">PREMIUM</span>
+            </div>
+
+            <!-- Tag & Título -->
+            <div class="story-tag tag-cyan">✦ LA REALIDAD DEL STREAMING</div>
+            <h2 class="story-title">
+              ¿Ya sumaste cuánto pagas al mes en <span class="hl-red">múltiples suscripciones</span>?
+            </h2>
+
+            <!-- Tarjeta de Shock Financiero -->
+            <div class="price-shock-badge">
+              <span class="shock-lbl" id="p1ShockLabel">Un hogar promedio gasta más de:</span>
+              <span class="shock-val" id="p1ShockPrice">$140.000 COP / mes</span>
+              <span style="font-size: 0.72rem; color: #CBD5E1; display: block; margin-top: 4px;" id="p1ShockSub">
+                Más de $1.680.000 al año en apps fragmentadas
+              </span>
+            </div>
+
+            <ul class="story-features">
+              <li>
+                <span class="ico">📉</span>
+                <span>Video comprimido a solo 12–16 Mbps</span>
+              </li>
+              <li>
+                <span class="ico">🔍</span>
+                <span>Catálogos divididos: lo que buscas nunca está</span>
+              </li>
+              <li>
+                <span class="ico">💳</span>
+                <span>Cobros automáticos sorpresa cada 30 días</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Footer CTA -->
+          <div class="story-cta-footer">
+            <span class="cta-top">Existe una alternativa superior</span>
+            <span class="cta-action">Desliza para ver la solución ➔</span>
+            <span class="cta-sub">Cero compresión • Todo el cine en 1 app</span>
+          </div>
+
+        </div>
+      </div>
+      <button class="btn-download-card" onclick="downloadCard('cardStory1', 'videm_historia_1_dolor.png')">
+        📥 Descargar Historia 1 (PNG HD)
+      </button>
+    </div>
+
+    <!-- =========================================================================
+         PLANTILLA 2: LA SOLUCIÓN VIDEM 4K REMUX (9:16)
+         ========================================================================= -->
+    <div class="template-wrapper">
+      <div class="story-card" id="cardStory2">
+        <div class="story-content">
+          
+          <div>
+            <!-- Header Armonizado -->
+            <div class="brand-header-story">
+              <div class="brand-unit">
+                <img src="/assets/images/logo-videm.png" alt="Videm" class="brand-iso">
+                <div class="brand-text-col">
+                  <img src="/assets/images/videm-text-logo-web.png" alt="VIDEM" class="brand-wordmark">
+                  <span class="brand-tagline">CINEMA 4K VIP</span>
+                </div>
+              </div>
+              <span class="badge-pill-vip">4K REMUX</span>
+            </div>
+
+            <!-- Tag & Título -->
+            <div class="story-tag tag-gold">✦ EL ESTÁNDAR DEFINITIVO</div>
+            <h2 class="story-title">
+              Todo el Cine y Series en <span class="hl-cyan">1 Sola App</span> en tu Smart TV
+            </h2>
+
+            <div class="story-box-highlight">
+              <p style="font-size: 0.85rem; color: #E2E8F0; line-height: 1.45;">
+                Conectamos tu televisor directamente a <strong>servidores privados de fibra óptica</strong> para disfrutar calidad Blu-ray pura sin caídas.
+              </p>
+            </div>
+
+            <ul class="story-features">
+              <li>
+                <span class="ico">💎</span>
+                <span>4K Remux Puro (Hasta 80 Mbps sin compresión)</span>
+              </li>
+              <li>
+                <span class="ico">🔊</span>
+                <span>Dolby Atmos & Dolby Vision cinematográfico</span>
+              </li>
+              <li>
+                <span class="ico" id="p2Flag">🌎</span>
+                <span id="p2Audio">Curaduría oficial en Español Latino y VOSE</span>
+              </li>
+              <li>
+                <span class="ico">📺</span>
+                <span>Compatible con Samsung, LG, Android TV y Fire Stick</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Footer CTA -->
+          <div class="story-cta-footer">
+            <span class="cta-top">Experiencia Llave en Mano</span>
+            <span class="cta-action">Pruébalo gratis en tu televisor ➔</span>
+            <span class="cta-sub">Activación en 30 segundos por WhatsApp</span>
+          </div>
+
+        </div>
+      </div>
+      <button class="btn-download-card" onclick="downloadCard('cardStory2', 'videm_historia_2_solucion.png')">
+        📥 Descargar Historia 2 (PNG HD)
+      </button>
+    </div>
+
+    <!-- =========================================================================
+         PLANTILLA 3: ESCASEZ / OFERTA DE FIN DE SEMANA (3 CUPOS HOY) (9:16)
+         ========================================================================= -->
+    <div class="template-wrapper">
+      <div class="story-card" id="cardStory3">
+        <div class="story-content">
+          
+          <div>
+            <!-- Header Armonizado -->
+            <div class="brand-header-story">
+              <div class="brand-unit">
+                <img src="/assets/images/logo-videm.png" alt="Videm" class="brand-iso">
+                <div class="brand-text-col">
+                  <img src="/assets/images/videm-text-logo-web.png" alt="VIDEM" class="brand-wordmark">
+                  <span class="brand-tagline">CINEMA 4K VIP</span>
+                </div>
+              </div>
+              <span class="badge-pill-vip">DEMO GRATIS</span>
+            </div>
+
+            <!-- Tag de Escasez -->
+            <div class="story-tag tag-green">🎁 SOLO 3 CUPOS DE CORTESÍA HOY</div>
+            <h2 class="story-title">
+              Pruébalo <span class="hl-cyan">GRATIS hoy</span> en el televisor de tu sala
+            </h2>
+
+            <p style="font-size: 0.82rem; color: #CBD5E1; margin-bottom: 12px;" id="p3NeighborDesc">
+              Soy vecino e ingeniero de soporte. Te enlazo tu pantalla en 3 pasos sencillos sin visitas técnicas ni tarjetas:
+            </p>
+
+            <div class="steps-list">
+              <div class="step-item">
+                <span class="step-num">1</span>
+                <span>Abre la app <strong>Stremio</strong> en tu Smart TV</span>
+              </div>
+              <div class="step-item">
+                <span class="step-num">2</span>
+                <span>Aparecerá un <strong>código de 4 letras</strong> en pantalla</span>
+              </div>
+              <div class="step-item">
+                <span class="step-num">3</span>
+                <span>Envíamelo por WhatsApp y <strong>te calibro en 4K</strong></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Footer CTA WhatsApp Gigante -->
+          <div class="story-cta-footer" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.3) 100%); border-color: #10B981;">
+            <span class="cta-top" style="color: #6EE7B7;">💬 Escríbeme por mensaje privado</span>
+            <span class="cta-action" style="font-size: 1.15rem;" id="p3WaNumber">WhatsApp: 301 556 8904</span>
+            <span class="cta-sub" style="color: #A7F3D0;">Envía la palabra "DEMO" y aparta tu cupo</span>
+          </div>
+
+        </div>
+      </div>
+      <button class="btn-download-card" onclick="downloadCard('cardStory3', 'videm_historia_3_cupos.png')">
+        📥 Descargar Historia 3 (PNG HD)
+      </button>
+    </div>
+
+    <!-- =========================================================================
+         PLANTILLA 4: CARTELERA DE ESTRENOS (FORMATO FEED / CHATS DE VECINOS)
+         ========================================================================= -->
+    <div class="template-wrapper">
+      <div class="feed-card" id="cardFeed">
+        <div class="story-content">
+          
+          <div>
+            <!-- Header Armonizado -->
+            <div class="brand-header-story" style="margin-bottom: 10px; padding-bottom: 10px;">
+              <div class="brand-unit">
+                <img src="/assets/images/logo-videm.png" alt="Videm" class="brand-iso" style="width: 42px; height: 42px;">
+                <div class="brand-text-col">
+                  <img src="/assets/images/videm-text-logo-web.png" alt="VIDEM" class="brand-wordmark" style="height: 15px;">
+                  <span class="brand-tagline">CARTELERA DE FIN DE SEMANA</span>
+                </div>
+              </div>
+              <span class="badge-pill-vip">ESTRENOS</span>
+            </div>
+
+            <div class="story-tag tag-gold" style="margin-bottom: 8px; font-size: 0.68rem;">🍿 SELECCIÓN CURADA EN 4K REMUX</div>
+            
+            <div class="movie-grid">
+              <div class="movie-item">
+                <span class="movie-title">⚔️ Gladiator II</span>
+                <span class="movie-spec">4K Dolby Vision • Atmos</span>
+              </div>
+              <div class="movie-item">
+                <span class="movie-title">🚀 Alien: Romulus</span>
+                <span class="movie-spec">Remux 80 Mbps • HDR</span>
+              </div>
+              <div class="movie-item">
+                <span class="movie-title">🏜️ Dune: Parte Dos</span>
+                <span class="movie-spec">Sonido Espacial Sin Pérdidas</span>
+              </div>
+              <div class="movie-item">
+                <span class="movie-title">🐧 The Penguin</span>
+                <span class="movie-spec" id="p4Audio">Temp. Completa • Audio Latino</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Footer CTA Feed -->
+          <div class="story-cta-footer" style="padding: 10px 14px;">
+            <span class="cta-top">Solo 3 cupos demo de cortesía hoy</span>
+            <span class="cta-action" style="font-size: 0.95rem;" id="p4WaContact">WhatsApp: 301 556 8904</span>
+            <span class="cta-sub" id="p4Portal">Conoce más en videm.tv</span>
+          </div>
+
+        </div>
+      </div>
+      <button class="btn-download-card" onclick="downloadCard('cardFeed', 'videm_cartelera_estrenos.png')">
+        📥 Descargar Cartelera (PNG HD)
+      </button>
+    </div>
+
+  </div>
+
+  <script>
+    let currentRegion = 'co';
+
+    function setRegion(region) {
+      currentRegion = region;
+      document.getElementById('btnCol').classList.toggle('active', region === 'co');
+      document.getElementById('btnEsp').classList.toggle('active', region === 'es');
+
+      if (region === 'es') {
+        // España
+        document.getElementById('p1ShockLabel').textContent = 'Un hogar en España paga al año más de:';
+        document.getElementById('p1ShockPrice').textContent = 'Más de 600 € / año';
+        document.getElementById('p1ShockSub').textContent = 'Entre 50 € y 75 € / mes en suscripciones fragmentadas';
+        
+        document.getElementById('p2Flag').textContent = '🇪🇸';
+        document.getElementById('p2Audio').textContent = 'Curaduría en Castellano oficial de España y VOSE';
+        
+        document.getElementById('p3NeighborDesc').textContent = 'Servicio de conserjería técnica en España. Te enlazo tu Smart TV en 3 pasos sin visitas técnicas ni tarjetas:';
+        document.getElementById('p3WaNumber').textContent = 'WhatsApp: +34 746 05 77 76';
+        
+        document.getElementById('p4Audio').textContent = 'Temp. Completa • Castellano / VOSE';
+        document.getElementById('p4WaContact').textContent = 'WhatsApp: +34 746 05 77 76';
+        document.getElementById('p4Portal').textContent = 'Conoce más en videm.tv/es';
+      } else {
+        // Colombia
+        document.getElementById('p1ShockLabel').textContent = 'Un hogar promedio gasta más de:';
+        document.getElementById('p1ShockPrice').textContent = '$140.000 COP / mes';
+        document.getElementById('p1ShockSub').textContent = 'Más de $1.680.000 al año en apps fragmentadas';
+        
+        document.getElementById('p2Flag').textContent = '🌎';
+        document.getElementById('p2Audio').textContent = 'Curaduría oficial en Español Latino y VOSE';
+        
+        document.getElementById('p3NeighborDesc').textContent = 'Soy vecino e ingeniero de soporte. Te enlazo tu pantalla en 3 pasos sencillos sin visitas técnicas ni tarjetas:';
+        document.getElementById('p3WaNumber').textContent = 'WhatsApp: 301 556 8904';
+        
+        document.getElementById('p4Audio').textContent = 'Temp. Completa • Audio Latino';
+        document.getElementById('p4WaContact').textContent = 'WhatsApp: 301 556 8904';
+        document.getElementById('p4Portal').textContent = 'Conoce más en videm.tv';
+      }
+    }
+
+    async function downloadCard(elementId, filename) {
+      const card = document.getElementById(elementId);
+      if (!card) return;
+
+      const btn = event.currentTarget;
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '⏳ Generando imagen HD...';
+      btn.disabled = true;
+
+      try {
+        const canvas = await html2canvas(card, {
+          scale: 3, // Calidad ultra nítida 3x (aprox 1125 x 2000 px)
+          useCORS: true,
+          backgroundColor: '#080C14',
+          logging: false
+        });
+
+        const link = document.createElement('a');
+        link.download = filename;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      } catch (err) {
+        alert('Error al generar la imagen: ' + err.message);
+      } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }
+    }
+  </script>
+</body>
+</html>

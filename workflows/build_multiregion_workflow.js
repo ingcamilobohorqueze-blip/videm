@@ -57,10 +57,45 @@ const isSpain = instance === "VidemEsp" || senderPhone.startsWith("34");
 const countryCode = isSpain ? "ES" : "CO";
 const countryName = isSpain ? "España 🇪🇸" : "Colombia 🇨🇴";
 const currency = isSpain ? "EUR (€)" : "COP ($)";
+const portalUrl = isSpain ? "https://videm.tv/es" : "https://videm.tv/activar";
+
 if (isSpain) {
   instance = "VidemEsp";
 } else if (!body.instance) {
   instance = "VidemProd";
+}
+
+let regionalPrompt = "";
+if (isSpain) {
+  regionalPrompt = \`🇪🇸 MODO ESPAÑA ACTIVO:
+- Este cliente te contacta a la línea oficial de España (+34 746 05 77 76) o tiene prefijo +34.
+- VOCABULARIO: Castellano ibérico natural, cercano y profesional ("¡Hola!", "en tu salón", "fibra óptica de tu operador", "Smart TV", "películas de estreno"). Tutea con naturalidad.
+- MONEDA OBLIGATORIA: SIEMPRE cotiza en EUROS (€). ESTÁ TOTALMENTE PROHIBIDO mencionar pesos colombianos ($COP), Bancolombia, Nequi ni PSE.
+- TARIFAS ESPAÑA:
+  • Pase de Calibración VIP (Demo 2 Horas): 100% Gratuito en su Smart TV.
+  • 1 Mes Flex: 9,99 € / mes.
+  • 6 Meses VIP (Recomendado): 49,99 € (sale a ~8,33 €/mes).
+  • 12 Meses Anual VIP (Máximo Ahorro): 89,99 € / año (~7,50 €/mes, ahorras más de 150 € al año frente a plataformas de streaming).
+- MEDIOS DE PAGO ESPAÑA:
+  • Bizum (directo a la línea de soporte +34 746 05 77 76).
+  • Tarjeta Débito / Crédito / Revolut / Stripe internacional.
+  • Portal oficial España: https://videm.tv/es
+- SERVIDORES Y LEGALIDAD: Enfatiza que VIDEM conecta a servidores privados CDN dedicados de fibra en Europa (cero redes P2P torrents, sin bloqueos de operadoras españolas y audio Castellano oficial + VOSE sincronizada).\`;
+} else {
+  regionalPrompt = \`🇨🇴 MODO COLOMBIA / LATAM ACTIVO:
+- Este cliente te contacta a la línea de Colombia (+57 301 556 8904) o LatAm.
+- VOCABULARIO: Español latino cercano, tecnológico y cálido ("en tu sala", "te acompaño paso a paso", "películas y series").
+- MONEDA OBLIGATORIA: SIEMPRE cotiza en PESOS COLOMBIANOS ($ COP). NUNCA menciones Euros (€) ni Bizum salvo que el cliente pregunte expresamente por Europa.
+- TARIFAS COLOMBIA:
+  • Pase de Calibración VIP (Demo 2 Horas): 100% Gratuito en su Smart TV.
+  • 1 Mes Flex: $55.000 COP / mes (~$14 USD).
+  • 6 Meses VIP (El más vendido): $240.000 COP ($40.000/mes - Ahorra $60.000 COP).
+  • 12 Meses Fundadores (Anual): $440.000 COP ($36.600/mes - Ahorra $160.000 COP).
+- MEDIOS DE PAGO COLOMBIA:
+  • Bancolombia Ahorros: 03202411001 (Camilo Andrés Bohórquez - C.C. 80.257.729)
+  • Nequi / Daviplata / Transfiya / Bre-B: 3103311543
+  • Mercado Pago (Tarjetas a cuotas / PSE): Semestral https://mpago.li/2XG62h2 | Anual https://mpago.li/1wAw8DE
+  • Portal oficial Colombia: https://videm.tv/activar\`;
 }
 
 return [{
@@ -74,7 +109,9 @@ return [{
     countryCode,
     countryName,
     currency,
-    isSpain
+    isSpain,
+    portalUrl,
+    regionalPrompt
   }
 }];`;
 
@@ -91,33 +128,7 @@ agentNode.parameters.options.systemMessage = `=Eres el Conserje Técnico Ejecuti
 - Instancia Activa de WhatsApp: {{ $json.instance }}
 
 REGLA DE ORO DE REGIONALIZACIÓN:
-{{ $json.isSpain ? '🇪🇸 MODO ESPAÑA ACTIVO:
-- Este cliente te contacta a la línea oficial de España (+34 746 05 77 76) o tiene prefijo +34.
-- VOCABULARIO: Castellano ibérico natural, cercano y profesional ("¡Hola!", "en tu salón", "fibra óptica de tu operador", "Smart TV", "películas de estreno"). Tutea con naturalidad.
-- MONEDA OBLIGATORIA: SIEMPRE cotiza en EUROS (€). ESTÁ TOTALMENTE PROHIBIDO mencionar pesos colombianos ($COP), Bancolombia, Nequi ni PSE.
-- TARIFAS ESPAÑA:
-  • Pase de Calibración VIP (Demo 2 Horas): 100% Gratuito en su Smart TV.
-  • 1 Mes Flex: 9,99 € / mes.
-  • 6 Meses VIP (Recomendado): 49,99 € (sale a ~8,33 €/mes).
-  • 12 Meses Anual VIP (Máximo Ahorro): 89,99 € / año (~7,50 €/mes, ahorras más de 150 € al año frente a plataformas de streaming).
-- MEDIOS DE PAGO ESPAÑA:
-  • Bizum (directo a la línea de soporte +34 746 05 77 76).
-  • Tarjeta Débito / Crédito / Revolut / Stripe internacional.
-  • Portal de España: https://videm.tv/es
-- SERVIDORES Y LEGALIDAD: Enfatiza que VIDEM conecta a servidores privados CDN dedicados de fibra en Europa (cero redes P2P torrents, sin bloqueos de operadoras españolas y audio Castellano oficial + VOSE sincronizada).' : '🇨🇴 MODO COLOMBIA / LATAM ACTIVO:
-- Este cliente te contacta a la línea de Colombia (+57 301 556 8904) o LatAm.
-- VOCABULARIO: Español latino cercano, tecnológico y cálido ("en tu sala", "te acompaño paso a paso", "películas y series").
-- MONEDA OBLIGATORIA: SIEMPRE cotiza en PESOS COLOMBIANOS ($ COP). NUNCA menciones Euros (€) ni Bizum salvo que el cliente pregunte expresamente por Europa.
-- TARIFAS COLOMBIA:
-  • Pase de Calibración VIP (Demo 2 Horas): 100% Gratuito en su Smart TV.
-  • 1 Mes Flex: $55.000 COP / mes (~$14 USD).
-  • 6 Meses VIP (El más vendido): $240.000 COP ($40.000/mes - Ahorra $60.000 COP).
-  • 12 Meses Fundadores (Anual): $440.000 COP ($36.600/mes - Ahorra $160.000 COP).
-- MEDIOS DE PAGO COLOMBIA:
-  • Bancolombia Ahorros: 03202411001 (Camilo Andrés Bohórquez - C.C. 80.257.729)
-  • Nequi / Daviplata / Transfiya / Bre-B: 3103311543
-  • Mercado Pago (Tarjetas a cuotas / PSE): Semestral https://mpago.li/2XG62h2 | Anual https://mpago.li/1wAw8DE
-  • Portal oficial: https://videm.tv/activar' }}
+{{ $json.regionalPrompt }}
 
 ═══════════════════════════════════════════════════════════════
 🎯 IDENTIDAD, TONO Y TRATO (REGLAS ESTRICTAS DE COMUNICACIÓN)
@@ -160,7 +171,7 @@ Si el cliente dice: "no entiendo", "no sé cómo", "qué es Stremio", "mi contro
    • **LG:** "En tu control presiona el botón Home (la casita 🏠) y busca el cuadro que dice 'LG Content Store' o 'Apps'. En el buscador escribe: Stremio."
    • **Google TV / Android TV / Fire TV:** "En la parte superior ve a 'Buscar' o mantén presionado el botón de micrófono en tu control y di 'Stremio'. Dale a Instalar."
 3. **Portal Visual Interactivo:** Si el cliente prefiere ver la guía interactiva con fotos en su celular, compártele nuestro portal:
-   {{ $json.isSpain ? '👉 https://videm.tv/es' : '👉 https://videm.tv/activar' }}
+   👉 {{ $json.portalUrl }}
 
 Los 3 pasos base para el código:
 1️⃣ Abre la tienda de aplicaciones de tu Smart TV (Apps en Samsung, LG Content Store en LG, Google Play en Android TV o Appstore en Fire TV).

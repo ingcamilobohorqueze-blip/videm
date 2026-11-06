@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VIDEM | Artes Listas para Impresión (Flyer Porterías + Cartel Vehicular Anti-Perros)</title>
+  <title>VIDEM | Centro de Impresión Publicitaria (Colombia & España)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Space+Grotesk:wght@700;800&display=swap" rel="stylesheet">
@@ -11,6 +11,9 @@
     :root {
       --font-main: 'Plus Jakarta Sans', sans-serif;
       --font-mono: 'Space Grotesk', sans-serif;
+      --cyan: #00F0FF;
+      --bg: #0B0F19;
+      --card-bg: #06080D;
     }
     * {
       box-sizing: border-box;
@@ -18,7 +21,7 @@
       padding: 0;
     }
     body {
-      background: #0B0F19;
+      background: var(--bg);
       color: #F8FAFC;
       font-family: var(--font-main);
       padding: 32px 16px 80px;
@@ -39,7 +42,7 @@
     .toolbar-info h1 {
       font-size: 1.25rem;
       font-weight: 800;
-      color: #00F0FF;
+      color: var(--cyan);
       margin-bottom: 4px;
     }
     .toolbar-info p {
@@ -51,11 +54,27 @@
       gap: 10px;
       flex-wrap: wrap;
     }
+    .btn-tab {
+      background: rgba(255, 255, 255, 0.08);
+      color: #CBD5E1;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .btn-tab.active {
+      background: rgba(0, 240, 255, 0.18);
+      color: var(--cyan);
+      border-color: var(--cyan);
+    }
     .btn-print {
       background: linear-gradient(135deg, #00F0FF 0%, #6366F1 100%);
       color: #fff;
       border: none;
-      padding: 12px 20px;
+      padding: 12px 22px;
       border-radius: 10px;
       font-weight: 700;
       font-size: 0.9rem;
@@ -66,15 +85,26 @@
       margin: 36px auto 16px;
       font-family: var(--font-mono);
       font-size: 1rem;
-      color: #00F0FF;
+      color: var(--cyan);
       text-transform: uppercase;
       letter-spacing: 0.06em;
       border-bottom: 1px solid rgba(255,255,255,0.1);
       padding-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .badge-country {
+      font-size: 0.75rem;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #F8FAFC;
     }
 
     /* =========================================================================
-       1. FLYER DE PORTERÍAS (MEDIA CARTA: 14cm x 21.5cm - ANVERSO Y REVERSO)
+       FLYER FORMAT (MEDIA CARTA: 14cm x 21.5cm - ANVERSO Y REVERSO)
        ========================================================================= */
     .flyers-pair {
       max-width: 1100px;
@@ -87,8 +117,8 @@
 
     .flyer-sheet {
       width: 420px;
-      height: 645px; /* Proporción exacta Media Carta 14 x 21.5 cm */
-      background: #06080D;
+      height: 645px;
+      background: var(--card-bg);
       border-radius: 16px;
       border: 2px solid rgba(0, 240, 255, 0.35);
       padding: 28px 26px;
@@ -135,28 +165,24 @@
       margin: 14px 0 8px;
     }
     .flyer-brand-row img.logo-iso {
-      width: 34px;
-      height: 34px;
+      width: 36px;
+      height: 36px;
     }
     .flyer-brand-row img.logo-word {
-      height: 24px;
+      height: 22px;
       width: auto;
     }
 
     .flyer-headline {
-      font-size: 1.48rem;
+      font-size: 1.4rem;
       font-weight: 800;
-      line-height: 1.18;
+      line-height: 1.2;
       text-align: center;
       color: #FFFFFF;
       margin-bottom: 10px;
     }
-    .flyer-headline .hl-cyan {
-      color: #00F0FF;
-    }
-    .flyer-headline .hl-red {
-      color: #FF4D5A;
-    }
+    .flyer-headline .hl-cyan { color: #00F0FF; }
+    .flyer-headline .hl-red { color: #FF4D5A; }
 
     .bill-shock-box {
       background: rgba(239, 68, 68, 0.1);
@@ -219,81 +245,91 @@
     /* REVERSO DEL FLYER */
     .qr-promo-card {
       background: #FFFFFF;
-      color: #0F172A;
-      border-radius: 16px;
-      padding: 18px;
-      text-align: center;
+      border-radius: 14px;
+      padding: 16px 14px;
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
       gap: 8px;
-      margin: 8px 0;
+      margin: 12px 0;
       box-shadow: 0 10px 25px rgba(0, 240, 255, 0.2);
-    }
-    .qr-promo-card img {
-      width: 155px;
-      height: 155px;
-      display: block;
     }
     .qr-promo-card .qr-scan-label {
       font-family: var(--font-mono);
-      font-size: 0.78rem;
+      font-size: 0.72rem;
       font-weight: 800;
       color: #0284C7;
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
+    .qr-promo-card img {
+      width: 180px;
+      height: 180px;
+      display: block;
+    }
+
     .wa-number-box {
-      background: #10B981;
-      color: #FFFFFF;
-      padding: 10px 16px;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.45);
       border-radius: 12px;
+      padding: 10px 14px;
       text-align: center;
-      font-family: var(--font-mono);
+      margin-bottom: 10px;
     }
     .wa-number-box .wa-small {
       font-size: 0.72rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
+      color: #A7F3D0;
       display: block;
-      opacity: 0.92;
     }
     .wa-number-box .wa-big {
-      font-size: 1.45rem;
-      font-weight: 800;
-      letter-spacing: 0.02em;
+      font-family: var(--font-mono);
+      font-size: 1.35rem;
+      font-weight: 900;
+      color: #10B981;
+      letter-spacing: 0.04em;
     }
 
     /* =========================================================================
-       2. CARTEL AÉREO VEHICULAR "ANTI-PERROS" (70cm x 50cm - LECTURA EN 3 SEG)
+       CARTEL VEHICULAR ANTI-PERROS (70cm x 50cm)
        ========================================================================= */
     .car-sign-wrapper {
-      max-width: 980px;
+      max-width: 1100px;
       margin: 0 auto;
     }
     .car-sign-board {
       width: 100%;
       aspect-ratio: 7 / 5;
-      background: radial-gradient(circle at 80% 20%, #162038 0%, #05070B 70%);
-      border: 4px solid #00F0FF;
+      background: #05070B;
       border-radius: 24px;
-      padding: 36px 42px;
+      border: 3px solid rgba(0, 240, 255, 0.55);
+      padding: 36px 40px;
       display: grid;
-      grid-template-columns: 1.35fr 0.65fr;
-      gap: 28px;
+      grid-template-columns: 1.45fr 1fr;
+      gap: 32px;
       align-items: center;
       position: relative;
-      box-shadow: 0 30px 60px rgba(0,0,0,0.8);
+      box-shadow: 0 30px 60px -15px rgba(0,0,0,0.85);
+      overflow: hidden;
       -webkit-print-color-adjust: exact;
       print-color-adjust: exact;
     }
-    /* Puntos de guía para ventosas/chupas en las 4 esquinas */
+    .car-sign-board::before {
+      content: '';
+      position: absolute;
+      top: -120px;
+      left: -120px;
+      width: 380px;
+      height: 380px;
+      background: radial-gradient(circle, rgba(0, 240, 255, 0.16) 0%, transparent 70%);
+      pointer-events: none;
+    }
     .suction-guide {
       position: absolute;
-      width: 22px;
-      height: 22px;
+      width: 32px;
+      height: 32px;
+      border: 2px dashed rgba(255,255,255,0.4);
       border-radius: 50%;
-      border: 2px dashed rgba(255,255,255,0.25);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -325,23 +361,20 @@
       height: 36px;
     }
     .car-brand-pill img.logo-word {
-      height: 26px;
+      height: 24px;
       width: auto;
     }
     .car-giant-title {
-      font-size: clamp(1.8rem, 3.6vw, 2.85rem);
+      font-size: clamp(1.8rem, 3.4vw, 2.7rem);
       font-weight: 900;
-      line-height: 1.08;
+      line-height: 1.1;
       letter-spacing: -0.02em;
       color: #FFFFFF;
       text-transform: uppercase;
     }
-    .car-giant-title .yellow-pop {
-      color: #FACC15;
-    }
-    .car-giant-title .cyan-pop {
-      color: #00F0FF;
-    }
+    .car-giant-title .yellow-pop { color: #FACC15; }
+    .car-giant-title .cyan-pop { color: #00F0FF; }
+    
     .car-sub-bullets {
       display: flex;
       flex-wrap: wrap;
@@ -361,7 +394,7 @@
       color: #FFFFFF;
       padding: 14px 20px;
       border-radius: 14px;
-      font-size: 1.25rem;
+      font-size: 1.2rem;
       font-weight: 900;
       text-transform: uppercase;
       letter-spacing: 0.02em;
@@ -425,8 +458,8 @@
         background: #FFFFFF;
         padding: 0;
       }
-      .toolbar, .section-label {
-        display: none;
+      .toolbar, .section-label, .filter-hide {
+        display: none !important;
       }
       .flyers-pair {
         display: flex;
@@ -458,160 +491,296 @@
   <div class="toolbar">
     <div class="toolbar-info">
       <h1>🖨️ Centro de Impresión Publicitaria VIDEM</h1>
-      <p>Incluye el Flyer de Casilleros (Media Carta Anverso/Reverso) y el Cartel Aéreo de Carro (con guías para ventosas/imán, 100% libre del suelo).</p>
+      <p>Flyers de correspondencia (Media Carta Anverso/Reverso) y Cartel Vehicular (Colombia 🇨🇴 y España 🇪🇸).</p>
     </div>
     <div class="toolbar-actions">
+      <button class="btn-tab active" onclick="switchRegion('all')">Ver Todos</button>
+      <button class="btn-tab" onclick="switchRegion('co')">🇨🇴 Solo Colombia</button>
+      <button class="btn-tab" onclick="switchRegion('es')">🇪🇸 Solo España</button>
       <button class="btn-print" onclick="window.print()">🖨️ Imprimir / Guardar en PDF</button>
     </div>
   </div>
 
   <!-- =========================================================================
-       PIEZA 1: FLYER PARA PORTERÍAS / CASILLEROS DE CORRESPONDENCIA
+       SECCIÓN 1: FLYER PARA COLOMBIA (CASILLEROS / PORTERÍAS)
        ========================================================================= -->
-  <div class="section-label">1. Flyer de Casilleros para Portería (Media Carta 14 × 21.5 cm — Cara A y Cara B)</div>
+  <div class="region-block region-co">
+    <div class="section-label">
+      <span>1. Flyer de Portería Colombia (Media Carta 14 × 21.5 cm)</span>
+      <span class="badge-country">🇨🇴 Colombia • COP</span>
+    </div>
 
-  <div class="flyers-pair">
-    
-    <!-- CARA A (FRENTE: IMPACTO CON LOS RECIBOS PÚBLICOS) -->
-    <div class="flyer-sheet">
-      <div>
-        <div class="flyer-top-notice">
-          📍 Aviso para Residentes • Beneficio Exclusivo Vecinos
+    <div class="flyers-pair">
+      
+      <!-- CARA A COLOMBIA -->
+      <div class="flyer-sheet">
+        <div>
+          <div class="flyer-top-notice">
+            📍 Aviso para Residentes • Beneficio Exclusivo Vecinos
+          </div>
+
+          <div class="flyer-brand-row">
+            <img src="assets/images/logo-videm.png" alt="Videm" class="logo-iso">
+            <img src="assets/images/videm-text-logo-web.png" alt="VIDEM" class="logo-word">
+          </div>
+
+          <h2 class="flyer-headline">
+            ¿Ya sumaste cuánto pagas al mes en <span class="hl-red">múltiples suscripciones de streaming</span>?
+          </h2>
+
+          <div class="bill-shock-box">
+            <p>
+              Un hogar promedio gasta más de <strong>$140.000 COP al mes ($1.680.000 al año)</strong> en apps separadas… y aun así el video viene comprimido y muchas películas no están.
+            </p>
+          </div>
+
+          <ul class="flyer-benefits">
+            <li>
+              <span class="b-icon">🎬</span>
+              <div>
+                <strong>Todo el Cine y Series en 1 Sola App en tu TV</strong>
+                Estrenos de cine, sagas completas, series aclamadas y clásicas mundiales unificadas en tu Smart TV.
+              </div>
+            </li>
+            <li>
+              <span class="b-icon">💎</span>
+              <div>
+                <strong>Calidad 4K Ultra HD Real + Dolby Atmos</strong>
+                Conectado a servidores privados de fibra óptica (CDN). Cero pausas los viernes o domingos por la noche.
+              </div>
+            </li>
+            <li>
+              <span class="b-icon">🌎</span>
+              <div>
+                <strong>Curaduría en Audio Español Latino y VOSE</strong>
+                Grandes producciones, K-Dramas con audio latino, novelas y series completas con subtítulos perfectos.
+              </div>
+            </li>
+          </ul>
         </div>
 
-        <div class="flyer-brand-row">
-          <img src="assets/images/logo-videm.png" alt="Videm" class="logo-iso">
-          <img src="assets/images/videm-text-logo-web.png" alt="VIDEM" class="logo-word">
+        <div class="flyer-footer-strip">
+          👉 Voltea esta tarjeta para reclamar tu PRUEBA GRATIS en el conjunto
         </div>
+      </div>
 
-        <h2 class="flyer-headline">
-          ¿Ya sumaste cuánto pagas al mes en <span class="hl-red">Netflix, Disney+, Max y Prime</span>?
-        </h2>
+      <!-- CARA B COLOMBIA -->
+      <div class="flyer-sheet">
+        <div>
+          <div class="flyer-top-notice" style="background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.5); color: #34D399;">
+            🎁 3 Cupos de Prueba Gratis por Fin de Semana
+          </div>
 
-        <div class="bill-shock-box">
-          <p>
-            Un hogar promedio gasta más de <strong>$140.000 al mes ($1.680.000 al año)</strong> en apps separadas… y aun así el video viene comprimido y muchas películas no están.
+          <div class="flyer-brand-row">
+            <img src="assets/images/logo-videm.png" alt="Videm" class="logo-iso">
+            <img src="assets/images/videm-text-logo-web.png" alt="VIDEM" class="logo-word">
+          </div>
+
+          <h2 class="flyer-headline" style="font-size: 1.38rem;">
+            Pruébalo <span class="hl-cyan">GRATIS hoy mismo</span> en el Smart TV de tu sala
+          </h2>
+
+          <p style="font-size: 0.84rem; color: #CBD5E1; text-align: center; line-height: 1.45; margin-bottom: 10px;">
+            Soy vecino e ingeniero de soporte. Activamos tu acceso de prueba en <strong>30 segundos por WhatsApp</strong> (sin visitas a tu apartamento, sin cables y sin pedirte tarjetas de crédito).
           </p>
+
+          <div class="qr-promo-card">
+            <span class="qr-scan-label">📱 Escanea con la cámara de tu celular</span>
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=320x320&margin=6&data=https%3A%2F%2Fwa.me%2F573015568904%3Ftext%3DHola%20vecino%2C%20quiero%20probar%20la%20demo%20gratis%20en%20mi%20Smart%20TV" alt="QR WhatsApp Videm Colombia">
+            <span style="font-size: 0.78rem; color: #475569; font-weight: 600;">Envía la palabra <strong>"VECINO"</strong> al abrir el chat</span>
+          </div>
+
+          <div class="wa-number-box">
+            <span class="wa-small">O escríbenos directo por WhatsApp:</span>
+            <span class="wa-big">+57 301 556 8904</span>
+          </div>
         </div>
 
-        <ul class="flyer-benefits">
-          <li>
-            <span class="b-icon">🎬</span>
-            <div>
-              <strong>Todo el Cine y Series en 1 Sola App en tu TV</strong>
-              Estrenos de cine, clásicas, Netflix, Max, Apple TV+, Disney+ y Prime unificados en el menú de tu televisor.
-            </div>
-          </li>
-          <li>
-            <span class="b-icon">💎</span>
-            <div>
-              <strong>Calidad 4K Ultra HD Real + Dolby Atmos</strong>
-              Conectado a servidores privados de fibra óptica (CDN). Cero pausas los viernes o domingos por la noche.
-            </div>
-          </li>
-          <li>
-            <span class="b-icon">🌎</span>
-            <div>
-              <strong>Super-Catálogo en Audio Español Latino</strong>
-              Hollywood, K-Dramas coreanos en español, novelas turcas, colombianas y series españolas completas.
-            </div>
-          </li>
-        </ul>
+        <div style="text-align: center; font-size: 0.75rem; color: #94A3B8; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
+          Compatible con Smart TV <strong>LG, Samsung, Sony, TCL, Xiaomi, Fire TV Stick y TV Box</strong> • Conoce más en <strong style="color:#00F0FF;">videm.tv</strong>
+        </div>
       </div>
 
-      <div class="flyer-footer-strip">
-        👉 Voltea esta tarjeta para reclamar tu PRUEBA GRATIS en el conjunto
-      </div>
     </div>
-
-    <!-- CARA B (REVERSO: INVITACIÓN DE VECINO + QR DEMO GRATIS) -->
-    <div class="flyer-sheet">
-      <div>
-        <div class="flyer-top-notice" style="background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.5); color: #34D399;">
-          🎁 3 Cupos de Prueba Gratis por Fin de Semana
-        </div>
-
-        <div class="flyer-brand-row">
-          <img src="assets/images/logo-videm.png" alt="Videm" class="logo-iso">
-          <img src="assets/images/videm-text-logo-web.png" alt="VIDEM" class="logo-word">
-        </div>
-
-        <h2 class="flyer-headline" style="font-size: 1.38rem;">
-          Pruébalo <span class="hl-cyan">GRATIS hoy mismo</span> en el Smart TV de tu sala
-        </h2>
-
-        <p style="font-size: 0.84rem; color: #CBD5E1; text-align: center; line-height: 1.45; margin-bottom: 10px;">
-          Soy vecino e ingeniero de soporte. Activamos tu acceso de prueba en <strong>30 segundos por WhatsApp</strong> (sin visitas a tu apartamento, sin cables y sin pedirte tarjetas de crédito).
-        </p>
-
-        <div class="qr-promo-card">
-          <span class="qr-scan-label">📱 Escanea con la cámara de tu celular</span>
-          <img src="https://api.qrserver.com/v1/create-qr-code/?size=320x320&margin=6&data=https%3A%2F%2Fvidem.tv%2Fwa" alt="QR WhatsApp Videm">
-          <span style="font-size: 0.78rem; color: #475569; font-weight: 600;">Envía la palabra <strong>"VECINO"</strong> al abrir el chat</span>
-        </div>
-
-        <div class="wa-number-box">
-          <span class="wa-small">O escríbenos directo por WhatsApp:</span>
-          <span class="wa-big">301 556 8904</span>
-        </div>
-      </div>
-
-      <div style="text-align: center; font-size: 0.75rem; color: #94A3B8; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
-        Compatible con Smart TV <strong>LG, Samsung, Sony, TCL, Xiaomi, Fire TV Stick y TV Box</strong> • Conoce más en <strong style="color:#00F0FF;">videm.tv</strong>
-      </div>
-    </div>
-
   </div>
 
   <!-- =========================================================================
-       PIEZA 2: CARTEL RÍGIDO AÉREO PARA CARRO (VENTOSAS / IMÁN - CERO PISO)
+       SECCIÓN 2: FLYER PARA ESPAÑA (BUZONES / COMUNIDADES DE VECINOS)
        ========================================================================= -->
-  <div class="section-label">2. Cartel Aéreo para Ventana/Puerta de Carro (70 × 50 cm con Ventosas o Imán — 100% Libre del Suelo / Anti-Perros)</div>
+  <div class="region-block region-es" style="margin-top: 50px;">
+    <div class="section-label">
+      <span>2. Flyer de Buzones España (Media Carta / A5 14 × 21 cm)</span>
+      <span class="badge-country">🇪🇸 España • EUR (€)</span>
+    </div>
 
-  <div class="car-sign-wrapper">
-    <div class="car-sign-board">
-      <!-- Guías de ventosas para colgar en el vidrio del carro a 1.20m del suelo -->
-      <div class="suction-guide suction-tl" title="Punto de ventosa">◎</div>
-      <div class="suction-guide suction-tr" title="Punto de ventosa">◎</div>
-      <div class="suction-guide suction-bl" title="Punto de ventosa">◎</div>
-      <div class="suction-guide suction-br" title="Punto de ventosa">◎</div>
-
-      <div class="car-left-col">
-        <div class="car-brand-pill">
-          <img src="assets/images/logo-videm.png" alt="Videm" class="logo-iso">
-          <img src="assets/images/videm-text-logo-web.png" alt="VIDEM" class="logo-word">
-        </div>
-
-        <div class="car-giant-title">
-          ¿Pagas Netflix, Disney y Max?<br>
-          <span class="cyan-pop">Todo el Cine 4K</span> en tu Smart TV <span class="yellow-pop">en 1 Sola App</span>
-        </div>
-
-        <div class="car-sub-bullets">
-          <span class="car-pill-feature">✓ Estrenos + Series + K-Dramas</span>
-          <span class="car-pill-feature">✓ 4K Real Sin Cortes</span>
-          <span class="car-pill-feature">✓ Audio Español Latino</span>
-        </div>
-
+    <div class="flyers-pair">
+      
+      <!-- CARA A ESPAÑA -->
+      <div class="flyer-sheet">
         <div>
-          <div class="car-cta-banner">
-            🎁 Pide tu DEMO GRATIS hoy en tu TV (En 30 Segundos)
+          <div class="flyer-top-notice">
+            📍 Aviso para Residentes • Calidad de Cine en tu Salón
           </div>
+
+          <div class="flyer-brand-row">
+            <img src="assets/images/logo-videm.png" alt="Videm" class="logo-iso">
+            <img src="assets/images/videm-text-logo-web.png" alt="VIDEM" class="logo-word">
+          </div>
+
+          <h2 class="flyer-headline">
+            ¿Cuánto gastas al año en <span class="hl-red">4 o 5 plataformas de streaming</span>?
+          </h2>
+
+          <div class="bill-shock-box">
+            <p>
+              Un hogar en España paga más de <strong>600 € al año</strong> en suscripciones fragmentadas para recibir video comprimido que no aprovecha la calidad de tu Smart TV.
+            </p>
+          </div>
+
+          <ul class="flyer-benefits">
+            <li>
+              <span class="b-icon">🎬</span>
+              <div>
+                <strong>Todo el Cine y Series en 1 Sola App en tu Smart TV</strong>
+                Estrenos de cartelera, sagas icónicas y temporadas completas en una sola interfaz limpia sin saltar de app en app.
+              </div>
+            </li>
+            <li>
+              <span class="b-icon">💎</span>
+              <div>
+                <strong>4K Remux Real sin Compresión + Dolby Atmos</strong>
+                Fibra óptica directa a servidores privados CDN en Europa. Cero redes torrent P2P y cero parones los fines de semana.
+              </div>
+            </li>
+            <li>
+              <span class="b-icon">🇪🇸</span>
+              <div>
+                <strong>Castellano Oficial de España y VOSE Perfecta</strong>
+                Curaduría impecable con audio en Castellano oficial y subtítulos sincronizados al milisegundo.
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="flyer-footer-strip">
+          👉 Gira este folleto para pedir tu PRUEBA GRATUITA en tu Smart TV
         </div>
       </div>
 
-      <div class="car-right-col">
-        <span class="scan-top">📲 Escanea y Prueba Gratis</span>
-        <img class="qr-giant" src="https://api.qrserver.com/v1/create-qr-code/?size=400x400&margin=6&data=https%3A%2F%2Fvidem.tv%2Fwa" alt="QR Videm Carro">
-        <div class="car-wa-box">
-          <span class="wa-lbl">WhatsApp Directo</span>
-          <span class="wa-num">301 556 8904</span>
+      <!-- CARA B ESPAÑA -->
+      <div class="flyer-sheet">
+        <div>
+          <div class="flyer-top-notice" style="background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.5); color: #34D399;">
+            🎁 3 Pases de Prueba Gratuita por Fin de Semana
+          </div>
+
+          <div class="flyer-brand-row">
+            <img src="assets/images/logo-videm.png" alt="Videm" class="logo-iso">
+            <img src="assets/images/videm-text-logo-web.png" alt="VIDEM" class="logo-word">
+          </div>
+
+          <h2 class="flyer-headline" style="font-size: 1.38rem;">
+            Pruébalo <span class="hl-cyan">GRATIS hoy mismo</span> en la Smart TV de tu salón
+          </h2>
+
+          <p style="font-size: 0.84rem; color: #CBD5E1; text-align: center; line-height: 1.45; margin-bottom: 10px;">
+            Servicio de conserjería técnica. Activamos tu acceso en <strong>30 segundos por WhatsApp</strong> (sin cables, sin visitas técnicas a tu casa y sin pedir tarjeta de crédito).
+          </p>
+
+          <div class="qr-promo-card">
+            <span class="qr-scan-label">📱 Escanea con la cámara de tu móvil</span>
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=320x320&margin=6&data=https%3A%2F%2Fwa.me%2F34746057776%3Ftext%3DHola%2C%20quiero%20probar%20la%20demo%20gratuita%20de%20VIDEM%20en%20mi%20Smart%20TV" alt="QR WhatsApp Videm España">
+            <span style="font-size: 0.78rem; color: #475569; font-weight: 600;">Envía la palabra <strong>"CINE"</strong> al abrir el chat</span>
+          </div>
+
+          <div class="wa-number-box">
+            <span class="wa-small">O escríbenos directamente por WhatsApp:</span>
+            <span class="wa-big">+34 746 05 77 76</span>
+          </div>
         </div>
-        <span class="car-web-url">🌐 videm.tv</span>
+
+        <div style="text-align: center; font-size: 0.75rem; color: #94A3B8; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
+          Compatible con <strong>LG webOS, Samsung Tizen, Android TV, Google TV y Fire TV Stick</strong> • Pases desde 7,50 €/mes en <strong style="color:#00F0FF;">videm.tv/es</strong>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       SECCIÓN 3: CARTEL AÉREO PARA CARRO (VENTOSAS / IMÁN - CERO CONTACTO SUELO)
+       ========================================================================= -->
+  <div class="region-block region-car" style="margin-top: 50px;">
+    <div class="section-label">
+      <span>3. Cartel Aéreo para Ventana de Carro (70 × 50 cm — Ventosas / Imán)</span>
+      <span class="badge-country">🚗 Publicidad Exterior Anti-Perros</span>
+    </div>
+
+    <div class="car-sign-wrapper">
+      <div class="car-sign-board">
+        <!-- Guías de ventosas -->
+        <div class="suction-guide suction-tl" title="Punto de ventosa">◎</div>
+        <div class="suction-guide suction-tr" title="Punto de ventosa">◎</div>
+        <div class="suction-guide suction-bl" title="Punto de ventosa">◎</div>
+        <div class="suction-guide suction-br" title="Punto de ventosa">◎</div>
+
+        <div class="car-left-col">
+          <div class="car-brand-pill">
+            <img src="assets/images/logo-videm.png" alt="Videm" class="logo-iso">
+            <img src="assets/images/videm-text-logo-web.png" alt="VIDEM" class="logo-word">
+          </div>
+
+          <div class="car-giant-title">
+            ¿Pagas múltiples apps?<br>
+            <span class="cyan-pop">Todo el Cine 4K</span> en tu Smart TV <span class="yellow-pop">en 1 Sola App</span>
+          </div>
+
+          <div class="car-sub-bullets">
+            <span class="car-pill-feature">✓ Estrenos + Series + K-Dramas</span>
+            <span class="car-pill-feature">✓ 4K Remux Sin Cortes</span>
+            <span class="car-pill-feature">✓ Audio Español / VOSE</span>
+          </div>
+
+          <div>
+            <div class="car-cta-banner">
+              🎁 Pide tu DEMO GRATIS hoy en tu TV (En 30 Segundos)
+            </div>
+          </div>
+        </div>
+
+        <div class="car-right-col">
+          <span class="scan-top">📲 Escanea y Prueba Gratis</span>
+          <img class="qr-giant" src="https://api.qrserver.com/v1/create-qr-code/?size=400x400&margin=6&data=https%3A%2F%2Fvidem.tv" alt="QR Videm Carro">
+          <div class="car-wa-box">
+            <span class="wa-lbl">WhatsApp Directo</span>
+            <span class="wa-num">301 556 8904</span>
+          </div>
+          <span class="car-web-url">🌐 videm.tv</span>
+        </div>
       </div>
     </div>
   </div>
 
+  <script>
+    function switchRegion(mode) {
+      const coBlocks = document.querySelectorAll('.region-co');
+      const esBlocks = document.querySelectorAll('.region-es');
+      const buttons = document.querySelectorAll('.btn-tab');
+
+      buttons.forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+
+      if (mode === 'co') {
+        coBlocks.forEach(b => b.style.display = 'block');
+        esBlocks.forEach(b => b.style.display = 'none');
+      } else if (mode === 'es') {
+        coBlocks.forEach(b => b.style.display = 'none');
+        esBlocks.forEach(b => b.style.display = 'block');
+      } else {
+        coBlocks.forEach(b => b.style.display = 'block');
+        esBlocks.forEach(b => b.style.display = 'block');
+      }
+    }
+  </script>
 </body>
 </html>
-

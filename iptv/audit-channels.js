@@ -64,3 +64,4 @@ function queryTrexApi(action = '') {
     console.error('Error:', err.message);
   }
 })();
+

@@ -35,14 +35,24 @@
       "short_name": "Vincular TV",
       "description": "Vincular televisor Stremio en 0.8s",
       "url": "/admin#cardDemoActivator",
-      "icons": [{ "src": "/assets/icons/icon-192.png", "sizes": "192x192" }]
+      "icons": [
+        {
+          "src": "/assets/icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
     },
     {
       "name": "Clientes CRM",
       "short_name": "CRM",
       "description": "Ver lista y estados de suscripción",
       "url": "/admin#crmSection",
-      "icons": [{ "src": "/assets/icons/icon-192.png", "sizes": "192x192" }]
+      "icons": [
+        {
+          "src": "/assets/icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
     }
   ]
 }

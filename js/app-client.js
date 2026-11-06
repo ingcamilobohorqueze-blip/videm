@@ -53,6 +53,12 @@ document.addEventListener('DOMContentLoaded', () => {
     countrySelect.value = '34';
   }
 
+  // Enlace a tarifas según región
+  const linkTarifas = document.getElementById('linkTarifas');
+  if (linkTarifas && isSpain) {
+    linkTarifas.href = '/es#tarifas';
+  }
+
   if (activarParam) {
     openActivationModal();
   }
@@ -96,6 +102,21 @@ function showClientDashboard() {
   if (activeClient.endDate) {
     const end = new Date(activeClient.endDate);
     document.getElementById('statRenewal').textContent = end.toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' });
+  }
+
+  // Soporte de WhatsApp dinámico por país (España vs Colombia)
+  const isClientSpain = (
+    (activeClient.phone && activeClient.phone.startsWith('34')) ||
+    (activeClient.plan && activeClient.plan.includes('€')) ||
+    (new URLSearchParams(window.location.search).get('pais') === 'es')
+  );
+  const supportLink = document.getElementById('appSupportWaLink');
+  if (supportLink) {
+    if (isClientSpain) {
+      supportLink.href = 'https://wa.me/34746057776?text=' + encodeURIComponent('Hola, soy cliente VIDEM VIP (España) y necesito asistencia con mi sala privada');
+    } else {
+      supportLink.href = 'https://wa.me/573015568904?text=' + encodeURIComponent('Hola, soy cliente VIDEM VIP y necesito asistencia con mi sala privada');
+    }
   }
 
   // Pre-load default popular search

@@ -579,8 +579,8 @@ body {
 }
 
 [data-theme="light"] .hero-bg-img {
-  filter: brightness(1.06) contrast(0.95) saturate(0.85);
-  opacity: 0.35;
+  filter: brightness(1.02) contrast(1.06) saturate(1.1);
+  opacity: 0.78;
 }
 
 /* Hero Gradient Overlay - Cinematic depth while keeping living room & OLED vividly visible */
@@ -601,12 +601,12 @@ body {
 
 [data-theme="light"] .hero-backdrop-overlay {
   background: 
-    radial-gradient(ellipse 80% 65% at 50% 48%, rgba(248, 250, 252, 0.78) 0%, rgba(248, 250, 252, 0.92) 100%),
+    radial-gradient(ellipse 75% 58% at 50% 45%, rgba(248, 250, 252, 0.48) 0%, rgba(248, 250, 252, 0.72) 100%),
     linear-gradient(
       180deg,
-      rgba(248, 250, 252, 0.65) 0%,
-      rgba(248, 250, 252, 0.82) 35%,
-      rgba(248, 250, 252, 0.95) 75%,
+      rgba(248, 250, 252, 0.22) 0%,
+      rgba(248, 250, 252, 0.42) 35%,
+      rgba(248, 250, 252, 0.82) 75%,
       var(--bg-canvas) 100%
     );
 }
@@ -2751,4 +2751,185 @@ body {
     color: var(--accent-primary);
     letter-spacing: 0.03em;
   }
+}
+
+/* ==========================================================================
+   SECCIÓN TARIFAS Y PASES VIP (Global: index.html y es.html)
+   ========================================================================== */
+.pricing-grid-es,
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  margin-top: 36px;
+}
+
+.pricing-card-es,
+.pricing-card {
+  background: var(--bg-card);
+  border: 1px solid var(--bg-card-border);
+  border-radius: 20px;
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: var(--shadow-md);
+}
+
+.pricing-card-es:hover,
+.pricing-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(0, 240, 255, 0.45);
+  box-shadow: 0 20px 40px -15px rgba(0, 240, 255, 0.2);
+}
+
+.pricing-card-title {
+  font-size: 1.3rem;
+  font-weight: 800;
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.pricing-card-featured {
+  border: 1.5px solid var(--accent-primary);
+  background: linear-gradient(180deg, rgba(0, 240, 255, 0.08) 0%, rgba(14, 18, 27, 0.92) 100%);
+  box-shadow: 0 14px 35px -10px rgba(0, 240, 255, 0.25);
+}
+
+[data-theme="light"] .pricing-card-featured {
+  border: 2px solid #0284C7;
+  background: linear-gradient(180deg, rgba(2, 132, 199, 0.06) 0%, #FFFFFF 100%);
+  box-shadow: 0 16px 35px -10px rgba(2, 132, 199, 0.22);
+}
+
+.pricing-badge-popular {
+  position: absolute;
+  top: -12px;
+  right: 24px;
+  background: var(--accent-gradient);
+  color: #06080D;
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 4px 14px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  box-shadow: 0 4px 14px rgba(0, 240, 255, 0.35);
+}
+
+[data-theme="light"] .pricing-badge-popular {
+  background: #0284C7;
+  color: #FFFFFF;
+}
+
+.price-value-row {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin: 16px 0 8px;
+  color: var(--text-primary);
+}
+
+.price-currency {
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.price-amount {
+  font-size: 2.7rem;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+}
+
+.price-cents {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.price-period {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  margin-left: 4px;
+}
+
+.price-monthly-equiv {
+  font-size: 0.86rem;
+  color: #00E676;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+[data-theme="light"] .price-monthly-equiv {
+  color: #059669;
+}
+
+.pricing-features-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex-grow: 1;
+}
+
+.pricing-features-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.92rem;
+  color: var(--text-secondary);
+  line-height: 1.45;
+}
+
+.pricing-features-list li svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  color: #00E676;
+  margin-top: 2px;
+}
+
+[data-theme="light"] .pricing-features-list li svg {
+  color: #059669;
+}
+
+.payment-methods-strip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px 18px;
+  flex-wrap: wrap;
+  margin-top: 28px;
+  padding: 16px 22px;
+  background: var(--bg-card);
+  border-radius: 16px;
+  border: 1px solid var(--bg-card-border);
+  box-shadow: var(--shadow-sm);
+}
+
+.payment-methods-label {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  font-weight: 700;
+}
+
+.payment-method-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: var(--pill-bg);
+  border: 1px solid var(--pill-border);
+  padding: 6px 12px;
+  border-radius: 999px;
 }

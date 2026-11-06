@@ -78,26 +78,29 @@ body {
 .brand-wrapper {
   display: flex;
   align-items: center;
-  gap: 0.85rem;
+  gap: 0.65rem;
   text-decoration: none;
   color: inherit;
+  flex-shrink: 0;
 }
 
 .brand-logo-img {
-  width: 38px;
-  height: 38px;
+  width: 48px;
+  height: 48px;
   object-fit: contain;
-  filter: drop-shadow(0 0 12px rgba(0, 240, 255, 0.4));
+  filter: drop-shadow(0 0 14px rgba(0, 240, 255, 0.45));
   transition: transform var(--transition-fast);
+  flex-shrink: 0;
 }
 
 .brand-text-wordmark {
-  height: 25px;
+  height: 15px;
   width: auto;
   object-fit: contain;
   display: block;
-  filter: drop-shadow(0 0 12px rgba(0, 240, 255, 0.35));
+  filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.3));
   transition: all var(--transition-fast);
+  flex-shrink: 0;
 }
 
 .brand-wrapper:hover .brand-logo-img {
@@ -105,7 +108,7 @@ body {
 }
 
 .brand-wrapper:hover .brand-text-wordmark {
-  filter: drop-shadow(0 0 18px rgba(0, 240, 255, 0.75));
+  filter: drop-shadow(0 0 16px rgba(0, 240, 255, 0.7));
   transform: translateY(-0.5px);
 }
 
@@ -396,17 +399,18 @@ body {
 .nav-actions {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.65rem;
 }
 
 .nav-text-link {
   color: var(--text-secondary);
   text-decoration: none;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 600;
-  padding: 0.4rem 0.75rem;
+  padding: 0.35rem 0.6rem;
   border-radius: 8px;
   transition: all var(--transition-fast);
+  white-space: nowrap;
 }
 
 .nav-text-link:hover {
@@ -516,22 +520,23 @@ body {
 .nav-menu-links {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.45rem;
 }
 
 .btn-nav-cta {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
   background: var(--pill-bg);
   border: 1px solid var(--pill-border);
   color: var(--text-primary);
-  font-weight: 600;
-  font-size: 0.88rem;
-  padding: 0.55rem 1.1rem;
-  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.84rem;
+  padding: 0.45rem 0.95rem;
+  border-radius: 999px;
   text-decoration: none;
   transition: all var(--transition-fast);
+  white-space: nowrap;
 }
 
 .btn-nav-cta:hover {
@@ -2590,5 +2595,160 @@ body {
   }
   .btn-app-download {
     width: 100%;
+  }
+}
+
+/* Intermediate Desktop Navigation Responsiveness */
+@media (max-width: 1250px) {
+  .nav-center-badge span {
+    font-size: 0.78rem;
+  }
+  .nav-center-badge {
+    padding: 0.35rem 0.65rem;
+  }
+  .nav-actions {
+    gap: 0.5rem;
+  }
+}
+
+@media (max-width: 1120px) {
+  .nav-status-wrapper {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   TABLA COMPARATIVA: LA REALIDAD DEL STREAMING
+   Modo Oscuro, Modo Claro y Vista Móvil Apilada
+   ========================================================================== */
+.comparison-table-wrap {
+  overflow-x: auto;
+  margin: 32px 0;
+  border-radius: 18px;
+  border: 1px solid var(--bg-card-border);
+  background: var(--bg-card);
+  box-shadow: var(--shadow-md);
+}
+
+.comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.94rem;
+}
+
+.comparison-table th, .comparison-table td {
+  padding: 16px 22px;
+  border-bottom: 1px solid var(--pill-border);
+  color: var(--text-secondary);
+}
+
+.comparison-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.comparison-table td:first-child {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.comparison-table th {
+  background: var(--pill-bg);
+  font-weight: 800;
+  color: var(--text-primary);
+  font-size: 0.92rem;
+}
+
+.comparison-table .highlight-col {
+  background: rgba(0, 240, 255, 0.08);
+  color: var(--text-primary);
+  font-weight: 700;
+  border-left: 1px solid rgba(0, 240, 255, 0.2);
+  border-right: 1px solid rgba(0, 240, 255, 0.2);
+}
+
+[data-theme="light"] .comparison-table .highlight-col {
+  background: rgba(2, 132, 199, 0.08);
+  color: #0369A1;
+  border-left: 1px solid rgba(2, 132, 199, 0.25);
+  border-right: 1px solid rgba(2, 132, 199, 0.25);
+}
+
+[data-theme="light"] .comparison-table th.highlight-col {
+  background: rgba(2, 132, 199, 0.14);
+  color: #0C4A6E;
+}
+
+/* Vista Móvil: Tarjetas apiladas 100% legibles */
+@media (max-width: 768px) {
+  .comparison-table-wrap {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    overflow-x: visible;
+    margin: 20px 0;
+  }
+  .comparison-table,
+  .comparison-table tbody {
+    display: block;
+    width: 100%;
+  }
+  .comparison-table thead {
+    display: none;
+  }
+  .comparison-table tbody tr {
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-card);
+    border: 1px solid var(--bg-card-border);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 14px;
+    box-shadow: var(--shadow-sm);
+    gap: 10px;
+  }
+  .comparison-table tbody td {
+    display: block;
+    padding: 0;
+    border-bottom: none;
+  }
+  .comparison-table tbody td:first-child {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--accent-primary);
+    border-bottom: 1px solid var(--pill-border);
+    padding-bottom: 8px;
+    margin-bottom: 2px;
+  }
+  .comparison-table tbody td:nth-child(2) {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .comparison-table tbody td:nth-child(2)::before {
+    content: "❌ Plataformas Tradicionales:";
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-muted);
+  }
+  .comparison-table tbody td.highlight-col {
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(0, 240, 255, 0.3);
+    font-size: 0.92rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .comparison-table tbody td.highlight-col::before {
+    content: "✦ VIDEM Cinema 4K:";
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--accent-primary);
+    letter-spacing: 0.03em;
   }
 }

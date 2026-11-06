@@ -61,8 +61,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
 
   <!-- Stylesheets -->
-  <link rel="stylesheet" href="css/tokens.css?v=20261105-2">
-  <link rel="stylesheet" href="css/style.css?v=20261105-2">
+  <link rel="stylesheet" href="css/tokens.css?v=20261106-4">
+  <link rel="stylesheet" href="css/style.css?v=20261106-4">
 
   <style>
     /* Critical Mobile Menu & Theme Icon Fallback against stale cache */
@@ -71,8 +71,14 @@
     .mobile-menu-toggle .icon-close-menu { display: none; }
     .mobile-menu-toggle[aria-expanded="true"] .icon-open-menu { display: none; }
     .mobile-menu-toggle[aria-expanded="true"] .icon-close-menu { display: block; }
+    .brand-wrapper { display: flex; align-items: center; gap: 0.65rem; text-decoration: none; color: inherit; flex-shrink: 0; }
+    .brand-logo-img { width: 48px; height: 48px; object-fit: contain; flex-shrink: 0; filter: drop-shadow(0 0 14px rgba(0, 240, 255, 0.45)); }
+    .brand-text-wordmark { height: 15px; width: auto; object-fit: contain; flex-shrink: 0; filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.3)); }
     .nav-controls-right { display: flex; align-items: center; gap: 0.6rem; }
-    .nav-menu-links { display: flex; align-items: center; gap: 0.75rem; }
+    .nav-menu-links { display: flex; align-items: center; gap: 0.45rem; }
+    .nav-text-link { font-size: 0.85rem; padding: 0.35rem 0.6rem; white-space: nowrap; }
+    .nav-app-link { padding: 0.38rem 0.8rem; font-size: 0.82rem; white-space: nowrap; }
+    .btn-nav-cta { padding: 0.45rem 0.95rem; font-size: 0.84rem; white-space: nowrap; }
     @media (max-width: 768px) {
       .nav-container { position: static; justify-content: space-between; }
       .mobile-menu-toggle { display: inline-flex; }
@@ -410,8 +416,8 @@
   <header class="site-header" id="siteHeader">
     <div class="container nav-container">
       <a href="/es" class="brand-wrapper" id="brandHomeLink" aria-label="Videm España">
-        <img src="assets/images/logo-videm.png" alt="Isotipo Videm" class="brand-logo-img" width="38" height="38">
-        <img src="assets/images/videm-text-logo-web.png" alt="VIDEM" class="brand-text-wordmark" width="124" height="26">
+        <img src="assets/images/logo-videm.png" alt="Isotipo Videm" class="brand-logo-img" width="48" height="48">
+        <img src="assets/images/videm-text-logo-web.png" alt="VIDEM" class="brand-text-wordmark" width="82" height="15">
       </a>
 
       <!-- Center Status Badge / Interactive Popover Trigger -->
@@ -492,12 +498,11 @@
       <!-- Actions -->
       <div class="nav-actions">
         <nav class="nav-menu-links" id="navMenuLinks" aria-label="Navegación Principal">
-          <a href="#requisitos" class="nav-text-link">Diagnóstico TV</a>
-          <a href="#tarifas" class="nav-text-link">Pases y Tarifas</a>
-          <a href="#app-clientes" class="nav-text-link">App VIP</a>
-          <a href="#faqs" class="nav-text-link">Preguntas Frecuentes</a>
+          <a href="#requisitos" class="nav-text-link">Diagnóstico</a>
+          <a href="#tarifas" class="nav-text-link">Tarifas</a>
+          <a href="#faqs" class="nav-text-link">Preguntas</a>
           <a href="/app?pais=es" class="nav-app-link" title="App VIP para Clientes">
-            <span>📲 App Clientes</span>
+            <span>📲 App VIP</span>
           </a>
           <a href="https://wa.me/34746057776?text=Hola,%20estoy%20en%20Espa%C3%B1a%20y%20quiero%20probar%20VIDEM%20en%20mi%20Smart%20TV" target="_blank" rel="noopener noreferrer" class="btn-nav-cta">
             <span>Prueba Gratis (2h)</span>
@@ -599,7 +604,7 @@
             <thead>
               <tr>
                 <th>Característica</th>
-                <th>Suscripciones Tradicionales (Netflix, Disney, Max, etc.)</th>
+                <th>Plataformas Tradicionales Combinadas</th>
                 <th class="highlight-col">✦ VIDEM Cinema 4K</th>
               </tr>
             </thead>
@@ -915,93 +920,91 @@
       </div>
     </section>
 
-    <!-- SECCIÓN APP VIP PARA CLIENTES (ESPAÑA) -->
-    <section class="section-app-vip" id="app-clientes">
+    <!-- SECTION: FICHA TÉCNICA APP VIP MÓVIL (ESPAÑA) -->
+    <section class="section-premium" id="app-clientes" style="padding: 70px 0;">
       <div class="container">
-        <div class="app-vip-card">
-          <div class="app-vip-glow" aria-hidden="true"></div>
-          
-          <div class="app-vip-content">
-            <div class="app-vip-badge">
-              <span class="pulse-dot-cyan"></span>
-              <span>✦ Exclusivo para Clientes VIDEM</span>
+        
+        <!-- Header institucional -->
+        <div class="section-header">
+          <span class="section-tag">Ecosistema Móvil VIP</span>
+          <h2 class="section-title">Tu Sala 4K en tus Manos.<br>Ficha Técnica de la App Móvil.</h2>
+          <p class="section-desc">
+            Diseñada como una Progressive Web App (PWA) de nivel cineasta instalable en 1 segundo en tu iPhone o Android. Cero almacenamiento ocupado, cero tiendas de aplicaciones y control total de tu sala.
+          </p>
+        </div>
+
+        <!-- 3 Columnas Ficha Técnica -->
+        <div class="benefits-grid">
+
+          <!-- Ficha 1: Enlace Smart TV -->
+          <article class="benefit-card">
+            <div class="card-icon-container" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect>
+                <polyline points="17 2 12 7 7 2"></polyline>
+              </svg>
             </div>
-            
-            <h2 class="app-vip-title">Tu Sala de Cine en tus Manos: App Móvil para Clientes</h2>
-            
-            <p class="app-vip-desc">
-              Controla tu experiencia cinematográfica en España directamente desde tu smartphone. Nuestra aplicación PWA se instala al instante en tu pantalla de inicio, sin tiendas pesadas y sin consumir almacenamiento.
+            <h3 class="card-title">Enlace de TV en 1 Toque</h3>
+            <p class="card-text">
+              Introduce el código de 4 o 6 caracteres que muestra tu televisor y sincroniza tu sala 4K al instante sin escribir correos ni contraseñas con el mando a distancia.
             </p>
+            <div class="card-pill-tag">Pairing Zero-Config</div>
+          </article>
 
-            <!-- Grilla de Beneficios Clave -->
-            <div class="app-vip-benefits-grid">
-              <div class="app-benefit-item">
-                <div class="app-benefit-icon">📺</div>
-                <div class="app-benefit-text">
-                  <strong>Enlace Smart TV en 1 Toque</strong>
-                  <span>Introduce el código en pantalla de tu televisor y activa tu sala 4K al instante.</span>
-                </div>
-              </div>
-
-              <div class="app-benefit-item">
-                <div class="app-benefit-icon">🎬</div>
-                <div class="app-benefit-text">
-                  <strong>Bóveda Concierge ("Pide tu Título")</strong>
-                  <span>¿No encuentras una película o serie especial? Pídela y se inyecta en 4K a tu sala.</span>
-                </div>
-              </div>
-
-              <div class="app-benefit-item">
-                <div class="app-benefit-icon">🔑</div>
-                <div class="app-benefit-text">
-                  <strong>Acceso Ágil con PIN de 4 Dígitos</strong>
-                  <span>Sin claves complicadas. Entra con tu móvil (+34) y tu PIN personal en 1 segundo.</span>
-                </div>
-              </div>
-
-              <div class="app-benefit-item">
-                <div class="app-benefit-icon">🛡️</div>
-                <div class="app-benefit-text">
-                  <strong>Membresía y Soporte en España</strong>
-                  <span>Consulta tus días restantes, estado CDN europeo y abre soporte prioritario por WhatsApp (+34).</span>
-                </div>
-              </div>
+          <!-- Ficha 2: Bóveda Concierge -->
+          <article class="benefit-card">
+            <div class="card-icon-container" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
+                <line x1="7" y1="2" x2="7" y2="22"></line>
+                <line x1="17" y1="2" x2="17" y2="22"></line>
+                <line x1="2" y1="12" x2="22" y2="12"></line>
+              </svg>
             </div>
+            <h3 class="card-title">Bóveda a la Carta ("Pide tu Título")</h3>
+            <p class="card-text">
+              ¿No encuentras una película clásica o serie especial? Pídela desde el catálogo de la app y el sistema la inyecta automáticamente en 4K Remux a tu sala.
+            </p>
+            <div class="card-pill-tag">Caché Dedicado 10 Gbps</div>
+          </article>
 
-            <!-- Botones y Hints de Descarga -->
-            <div class="app-vip-actions">
-              <a href="/app?pais=es" class="btn-app-download">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-                  <rect x="5" y="2" width="14" height="20" rx="3" ry="3"></rect>
-                  <line x1="12" y1="18" x2="12.01" y2="18"></line>
-                </svg>
-                <span>Descargar App para Clientes</span>
-              </a>
-              <span class="app-install-hint">📲 Compatible con iPhone (Safari: Compartir > Añadir a pantalla de inicio), Android (Chrome: Instalar) y Smart TVs.</span>
+          <!-- Ficha 3: PIN Privado y Membresía -->
+          <article class="benefit-card">
+            <div class="card-icon-container" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
             </div>
+            <h3 class="card-title">PIN Ágil de 4 Dígitos</h3>
+            <p class="card-text">
+              Accede en 1 segundo con tu móvil y tu PIN personal. Consulta tu tiempo restante de membresía, estado CDN en vivo y enlace directo a soporte VIP en España por WhatsApp (+34).
+            </p>
+            <div class="card-pill-tag">Acceso Ultrarrápido</div>
+          </article>
+
+        </div>
+
+        <!-- Ficha de Instalación y Descarga Directa -->
+        <div class="filter-card-container" style="margin-top: 36px; padding: 28px 32px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px;">
+          <div>
+            <div style="font-size: 0.76rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent-primary); margin-bottom: 4px;">Instalación Inmediata PWA</div>
+            <h4 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary); margin-bottom: 6px;">Lleva tu cine privado en el bolsillo</h4>
+            <p style="font-size: 0.88rem; color: var(--text-secondary); max-width: 580px; margin: 0;">
+              Compatible con iPhone (Safari: Compartir &gt; Añadir a pantalla de inicio), Android (Chrome: Instalar app) y Smart TVs.
+            </p>
           </div>
-
-          <!-- Mockup Visual de la App -->
-          <div class="app-vip-mockup" aria-hidden="true">
-            <div class="phone-frame">
-              <div class="phone-screen">
-                <div class="phone-header-mock">
-                  <span class="phone-badge">VIDEM VIP</span>
-                  <span class="phone-status-dot"></span>
-                </div>
-                <div class="phone-card-mock">
-                  <div class="phone-card-title">Enlazar Smart TV</div>
-                  <div class="phone-code-box">A 7 9 K</div>
-                  <div class="phone-btn-mock">Vincular Pantalla</div>
-                </div>
-                <div class="phone-card-mock">
-                  <div class="phone-card-title">Bóveda Privada 4K</div>
-                  <div class="phone-input-mock">Buscar título o serie...</div>
-                </div>
-              </div>
-            </div>
+          <div>
+            <a href="/app?pais=es" class="btn-app-download" style="padding: 0.95rem 1.8rem; font-size: 0.98rem;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <rect x="5" y="2" width="14" height="20" rx="3" ry="3"></rect>
+                <line x1="12" y1="18" x2="12.01" y2="18"></line>
+              </svg>
+              <span>Abrir App para Clientes</span>
+            </a>
           </div>
         </div>
+
       </div>
     </section>
 
@@ -1020,14 +1023,14 @@
           
           <div class="faq-item">
             <button type="button" class="faq-question" aria-expanded="false">
-              <span class="faq-q-text">¿Qué diferencia tiene VIDEM frente a addons gratuitos de Stremio (como Torrentio)?</span>
+              <span class="faq-q-text">¿Qué diferencia tiene VIDEM frente a soluciones o addons gratuitos de Stremio?</span>
               <span class="faq-icon-arrow" aria-hidden="true">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
               </span>
             </button>
             <div class="faq-answer">
               <div class="faq-answer-inner">
-                Stremio es solo un reproductor vacío (como un televisor sin señal). Los addons gratuitos dependen de redes torrent (P2P), que se quedan sin semillas, sufren parones constantes y en España están monitorizadas por las operadoras de internet. <strong>VIDEM te conecta a servidores privados de fibra óptica (CDN) sin torrents</strong>, con más de 80 Mbps continuos, con curaduría de audio en <strong>Castellano oficial y VOSE perfecta</strong>, y entrega lista para usar en 30 segundos sin configurar llaves técnicas.
+                Stremio es solo un reproductor vacío (como un televisor sin señal). Los addons gratuitos y comunitarios dependen de redes torrent (P2P), que se quedan sin semillas, sufren parones constantes y en España están monitorizadas por las operadoras de internet. <strong>VIDEM te conecta a servidores privados de fibra óptica (CDN) sin torrents</strong>, con más de 80 Mbps continuos, con curaduría de audio en <strong>Castellano oficial y VOSE perfecta</strong>, y entrega lista para usar en 30 segundos sin configurar llaves técnicas.
               </div>
             </div>
           </div>

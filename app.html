@@ -113,7 +113,23 @@
 
           <div class="app-form-group">
             <label class="app-form-label" for="actPhone">Tu número de WhatsApp</label>
-            <input type="tel" id="actPhone" class="app-input" placeholder="ej. 3123456789" required inputmode="numeric">
+            <div style="display: flex; gap: 8px;">
+              <select id="actCountryCode" class="app-input" style="width: 145px; flex-shrink: 0; padding: 10px 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer;">
+                <option value="57" selected>🇨🇴 +57 (Col)</option>
+                <option value="34">🇪🇸 +34 (Esp)</option>
+                <option value="1">🇺🇸 +1 (USA)</option>
+                <option value="52">🇲🇽 +52 (Mex)</option>
+                <option value="54">🇦🇷 +54 (Arg)</option>
+                <option value="56">🇨🇱 +56 (Chi)</option>
+                <option value="51">🇵🇪 +51 (Per)</option>
+                <option value="593">🇪🇨 +593 (Ecu)</option>
+                <option value="507">🇵🇦 +507 (Pan)</option>
+                <option value="58">🇻🇪 +58 (Ven)</option>
+                <option value="">🌐 Otro</option>
+              </select>
+              <input type="tel" id="actPhone" class="app-input" placeholder="Número móvil" required inputmode="numeric" style="flex: 1;">
+            </div>
+            <div style="font-size: 0.7rem; color: var(--text-dim); margin-top: 4px;">Selecciona tu país y escribe tu número móvil.</div>
           </div>
 
           <div class="app-form-group">

@@ -32,12 +32,25 @@ document.addEventListener('DOMContentLoaded', () => {
   const urlParams = new URLSearchParams(window.location.search);
   const vipParam = urlParams.get('vip') || urlParams.get('user');
   const activarParam = urlParams.get('activar');
+  const countryParam = urlParams.get('pais') || urlParams.get('country');
 
   if (vipParam) {
     const userField = document.getElementById('clientUser');
     if (userField) userField.value = vipParam;
     const actUserField = document.getElementById('actUser');
     if (actUserField) actUserField.value = vipParam;
+  }
+
+  // Pre-seleccionar código de país (España vs Latinoamérica)
+  const isSpain = (
+    countryParam === 'es' ||
+    countryParam === '34' ||
+    document.referrer.includes('/es') ||
+    (typeof Intl !== 'undefined' && (Intl.DateTimeFormat().resolvedOptions().timeZone || '').includes('Madrid'))
+  );
+  const countrySelect = document.getElementById('actCountryCode');
+  if (countrySelect && isSpain) {
+    countrySelect.value = '34';
   }
 
   if (activarParam) {
@@ -129,10 +142,22 @@ async function handleClientLogin(e) {
 // WhatsApp Forgot PIN handler
 function handleForgotPin() {
   const user = (document.getElementById('clientUser')?.value || '').trim();
+  const urlParams = new URLSearchParams(window.location.search);
+  const countryCode = document.getElementById('actCountryCode')?.value || '';
+  const isSpain = (
+    urlParams.get('pais') === 'es' ||
+    urlParams.get('country') === 'es' ||
+    countryCode === '34' ||
+    user.startsWith('34') ||
+    document.referrer.includes('/es') ||
+    (typeof Intl !== 'undefined' && (Intl.DateTimeFormat().resolvedOptions().timeZone || '').includes('Madrid'))
+  );
+
+  const phoneDest = isSpain ? '34746057776' : '573015568904';
   const msg = user
     ? `Hola VIDEM VIP, olvidé el PIN de mi sala privada de cine 4K (Mi usuario: ${user}). ¿Me ayudas a recuperarlo por favor?`
     : `Hola VIDEM VIP, olvidé el PIN de mi sala privada de cine 4K. ¿Me ayudas a restablecerlo por favor?`;
-  window.open(`https://wa.me/573015568904?text=${encodeURIComponent(msg)}`, '_blank');
+  window.open(`https://wa.me/${phoneDest}?text=${encodeURIComponent(msg)}`, '_blank');
 }
 
 // Activation Modal Controls
@@ -155,6 +180,7 @@ function closeActivationModal() {
 async function handleActivationSubmit(e) {
   if (e) e.preventDefault();
   const actUser = document.getElementById('actUser').value.trim();
+  const actCountryCode = document.getElementById('actCountryCode')?.value || '';
   const actPhone = document.getElementById('actPhone').value.trim();
   const actPin = document.getElementById('actPin').value.trim();
   const errEl = document.getElementById('actErrorMsg');
@@ -180,6 +206,7 @@ async function handleActivationSubmit(e) {
       body: JSON.stringify({
         action: 'activate',
         user: actUser,
+        countryCode: actCountryCode,
         phone: actPhone,
         pin: actPin
       })

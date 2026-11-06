@@ -2204,3 +2204,391 @@ body {
   }
 }
 
+
+/* ==========================================================================
+   APP VIP CLIENT SHOWCASE & DOWNLOAD SECTION
+   Responsive, high-contrast, Light/Dark mode compatible
+   ========================================================================== */
+
+/* Nav App VIP Pill */
+.nav-app-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0.45rem 0.95rem;
+  border-radius: 999px;
+  font-family: var(--font-main);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: none;
+  background: rgba(0, 240, 255, 0.12);
+  border: 1px solid rgba(0, 240, 255, 0.45);
+  color: var(--color-brand-cyan);
+  transition: all var(--transition-normal);
+  white-space: nowrap;
+}
+
+.nav-app-link:hover {
+  background: rgba(0, 240, 255, 0.22);
+  border-color: var(--color-brand-cyan);
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.35);
+  transform: translateY(-1px);
+  color: #FFFFFF;
+}
+
+[data-theme="light"] .nav-app-link {
+  background: #E0F2FE;
+  border: 1.5px solid #0284C7;
+  color: #0369A1;
+  font-weight: 800;
+  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.15);
+}
+
+[data-theme="light"] .nav-app-link:hover {
+  background: #BAE6FD;
+  border-color: #0369A1;
+  color: #0C4A6E;
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.25);
+}
+
+@media (max-width: 768px) {
+  .nav-menu-links .nav-app-link {
+    justify-content: center;
+    padding: 0.85rem 1.1rem;
+    border-radius: 10px;
+    font-size: 0.95rem;
+  }
+}
+
+/* App VIP Showcase Section */
+.section-app-vip {
+  padding: 80px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.app-vip-card {
+  position: relative;
+  background: linear-gradient(135deg, rgba(14, 18, 27, 0.95) 0%, rgba(20, 26, 42, 0.92) 100%);
+  border: 1.5px solid rgba(0, 240, 255, 0.3);
+  border-radius: 28px;
+  padding: 48px 44px;
+  box-shadow: 0 24px 60px -15px rgba(0, 0, 0, 0.85), 0 0 35px rgba(0, 240, 255, 0.12);
+  display: grid;
+  grid-template-columns: 1.25fr 0.85fr;
+  gap: 48px;
+  align-items: center;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+[data-theme="light"] .app-vip-card {
+  background: #FFFFFF;
+  border: 2px solid #0284C7;
+  box-shadow: 0 20px 45px -10px rgba(2, 132, 199, 0.22), 0 4px 16px rgba(15, 23, 42, 0.08);
+}
+
+.app-vip-glow {
+  position: absolute;
+  top: -80px;
+  right: -80px;
+  width: 320px;
+  height: 320px;
+  background: radial-gradient(circle, rgba(0, 240, 255, 0.2) 0%, rgba(99, 102, 241, 0.15) 50%, transparent 70%);
+  filter: blur(60px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+[data-theme="light"] .app-vip-glow {
+  background: radial-gradient(circle, rgba(2, 132, 199, 0.15) 0%, rgba(79, 70, 229, 0.1) 50%, transparent 70%);
+}
+
+.app-vip-content {
+  position: relative;
+  z-index: 1;
+}
+
+.app-vip-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0, 240, 255, 0.1);
+  border: 1px solid rgba(0, 240, 255, 0.35);
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--color-brand-cyan);
+  text-transform: uppercase;
+  margin-bottom: 18px;
+}
+
+[data-theme="light"] .app-vip-badge {
+  background: #E0F2FE;
+  border-color: #0284C7;
+  color: #0369A1;
+}
+
+.pulse-dot-cyan {
+  width: 8px;
+  height: 8px;
+  background-color: var(--color-brand-cyan);
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--color-brand-cyan);
+}
+
+[data-theme="light"] .pulse-dot-cyan {
+  background-color: #0284C7;
+  box-shadow: 0 0 10px #0284C7;
+}
+
+.app-vip-title {
+  font-family: var(--font-mono);
+  font-size: 2.1rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+  letter-spacing: -0.02em;
+}
+
+.app-vip-desc {
+  font-size: 1.02rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin-bottom: 28px;
+}
+
+/* Grilla de Beneficios */
+.app-vip-benefits-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.app-benefit-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 14px 16px;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.app-benefit-item:hover {
+  transform: translateY(-2px);
+  border-color: rgba(0, 240, 255, 0.4);
+}
+
+[data-theme="light"] .app-benefit-item {
+  background: #F8FAFC;
+  border: 1px solid #CBD5E1;
+}
+
+[data-theme="light"] .app-benefit-item:hover {
+  border-color: #0284C7;
+  background: #F1F5F9;
+}
+
+.app-benefit-icon {
+  font-size: 1.4rem;
+  line-height: 1;
+  flex-shrink: 0;
+  padding-top: 2px;
+}
+
+.app-benefit-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.app-benefit-text strong {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.app-benefit-text span {
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: var(--text-muted);
+}
+
+/* Botones y Hints de Descarga */
+.app-vip-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.btn-app-download {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 1rem 2rem;
+  background: var(--accent-gradient);
+  color: #06080D;
+  font-family: var(--font-main);
+  font-size: 1.05rem;
+  font-weight: 800;
+  border-radius: 14px;
+  text-decoration: none;
+  box-shadow: 0 10px 30px rgba(0, 240, 255, 0.35);
+  transition: all var(--transition-normal);
+  width: fit-content;
+}
+
+.btn-app-download:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 14px 40px rgba(0, 240, 255, 0.5);
+  filter: brightness(1.08);
+}
+
+[data-theme="light"] .btn-app-download {
+  background: linear-gradient(135deg, #0284C7 0%, #4F46E5 100%);
+  color: #FFFFFF;
+  box-shadow: 0 10px 25px rgba(2, 132, 199, 0.35);
+}
+
+[data-theme="light"] .btn-app-download:hover {
+  box-shadow: 0 14px 35px rgba(2, 132, 199, 0.45);
+}
+
+.app-install-hint {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+/* Mockup Visual Interactivo */
+.app-vip-mockup {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+}
+
+.phone-frame {
+  width: 270px;
+  background: #000;
+  border: 8px solid #1E2538;
+  border-radius: 40px;
+  padding: 12px 10px;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.9), 0 0 30px rgba(0, 240, 255, 0.2);
+  position: relative;
+}
+
+[data-theme="light"] .phone-frame {
+  border: 8px solid #334155;
+  box-shadow: 0 20px 45px -10px rgba(15, 23, 42, 0.35), 0 0 25px rgba(2, 132, 199, 0.2);
+}
+
+.phone-screen {
+  background: #06080D;
+  border-radius: 28px;
+  padding: 16px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  color: #fff;
+  font-family: var(--font-main);
+}
+
+.phone-header-mock {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 8px;
+}
+
+.phone-badge {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--color-brand-cyan);
+  letter-spacing: 0.05em;
+}
+
+.phone-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #00E599;
+  box-shadow: 0 0 8px #00E599;
+}
+
+.phone-card-mock {
+  background: rgba(18, 22, 34, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.phone-card-title {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #A0AEC0;
+}
+
+.phone-code-box {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px dashed rgba(0, 240, 255, 0.4);
+  border-radius: 8px;
+  padding: 8px;
+  text-align: center;
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: 6px;
+  color: var(--color-brand-cyan);
+}
+
+.phone-btn-mock {
+  background: var(--accent-gradient);
+  border-radius: 8px;
+  padding: 6px;
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #06080D;
+}
+
+.phone-input-mock {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 0.72rem;
+  color: #718096;
+}
+
+@media (max-width: 992px) {
+  .app-vip-card {
+    grid-template-columns: 1fr;
+    gap: 36px;
+    padding: 36px 24px;
+  }
+  .app-vip-mockup {
+    order: -1;
+  }
+  .app-vip-title {
+    font-size: 1.7rem;
+  }
+  .app-vip-benefits-grid {
+    grid-template-columns: 1fr;
+  }
+  .btn-app-download {
+    width: 100%;
+  }
+}

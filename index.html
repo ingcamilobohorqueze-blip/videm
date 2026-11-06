@@ -77,6 +77,7 @@
       .nav-menu-links { display: none; position: absolute; top: 68px; left: 0; right: 0; background: var(--bg-surface); border-bottom: 1px solid var(--nav-border); box-shadow: var(--shadow-lg); padding: 1.15rem 1.25rem 1.4rem; flex-direction: column; align-items: stretch; gap: 0.65rem; z-index: 250; }
       .nav-menu-links.is-open { display: flex; }
       .nav-menu-links .nav-text-link { padding: 0.8rem 1rem; border-radius: 10px; background: var(--pill-bg); border: 1px solid var(--pill-border); color: var(--text-primary); }
+      .nav-menu-links .nav-app-link { justify-content: center; padding: 0.85rem 1rem; border-radius: 10px; }
       .nav-menu-links .btn-nav-cta { justify-content: center; padding: 0.9rem 1.2rem; background: var(--accent-gradient); color: #FFFFFF; border: none; }
     }
   </style>
@@ -181,7 +182,11 @@
       <div class="nav-actions">
         <nav class="nav-menu-links" id="navMenuLinks" aria-label="Navegación Principal">
           <a href="#beneficios" class="nav-text-link">Beneficios</a>
+          <a href="#app-clientes" class="nav-text-link">App VIP</a>
           <a href="#faqs" class="nav-text-link">Preguntas Frecuentes</a>
+          <a href="/app" class="nav-app-link" title="App Web y Móvil para Clientes VIP">
+            <span>📲 App Clientes</span>
+          </a>
           <a href="#requisitos" class="btn-nav-cta" id="navCheckLink">
             <span>Verificar TV o TV Box</span>
           </a>
@@ -540,6 +545,96 @@
 
         </div>
 
+      </div>
+    </section>
+
+    <!-- SECTION 3.5: APP VIP CLIENT SHOWCASE & DOWNLOAD -->
+    <section class="section-app-vip" id="app-clientes">
+      <div class="container">
+        <div class="app-vip-card">
+          <div class="app-vip-glow" aria-hidden="true"></div>
+          
+          <div class="app-vip-content">
+            <div class="app-vip-badge">
+              <span class="pulse-dot-cyan"></span>
+              <span>✦ Exclusivo para Clientes VIDEM</span>
+            </div>
+            
+            <h2 class="app-vip-title">Tu Sala de Cine en tus Manos: App Móvil para Clientes</h2>
+            
+            <p class="app-vip-desc">
+              Controla tu experiencia cinematográfica directamente desde tu smartphone. Nuestra aplicación PWA se instala al instante en tu pantalla de inicio, sin tiendas pesadas y sin ocupar memoria.
+            </p>
+
+            <!-- Grilla de Beneficios Clave -->
+            <div class="app-vip-benefits-grid">
+              <div class="app-benefit-item">
+                <div class="app-benefit-icon">📺</div>
+                <div class="app-benefit-text">
+                  <strong>Enlace Smart TV en 1 Toque</strong>
+                  <span>Escribe el código en pantalla de tu televisor y activa tu sala 4K al instante.</span>
+                </div>
+              </div>
+
+              <div class="app-benefit-item">
+                <div class="app-benefit-icon">🎬</div>
+                <div class="app-benefit-text">
+                  <strong>Bóveda Concierge ("Pide tu Título")</strong>
+                  <span>¿No encuentras una película clásica o serie? Solicítala y se inyecta en 4K a tu sala.</span>
+                </div>
+              </div>
+
+              <div class="app-benefit-item">
+                <div class="app-benefit-icon">🔑</div>
+                <div class="app-benefit-text">
+                  <strong>Acceso Ágil con PIN de 4 Dígitos</strong>
+                  <span>Sin claves enredadas. Entra con tu móvil y tu PIN personal en 1 segundo.</span>
+                </div>
+              </div>
+
+              <div class="app-benefit-item">
+                <div class="app-benefit-icon">🛡️</div>
+                <div class="app-benefit-text">
+                  <strong>Membresía y Soporte Prioritario</strong>
+                  <span>Consulta tus días restantes, estado CDN y abre soporte directo por WhatsApp.</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Botones y Hints de Descarga -->
+            <div class="app-vip-actions">
+              <a href="/app" class="btn-app-download">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <rect x="5" y="2" width="14" height="20" rx="3" ry="3"></rect>
+                  <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                </svg>
+                <span>Descargar App para Clientes</span>
+              </a>
+              <span class="app-install-hint">📲 Compatible con iPhone (Safari: Compartir > Añadir a inicio), Android (Chrome: Instalar) y Smart TVs.</span>
+            </div>
+          </div>
+
+          <!-- Mockup Visual de la App -->
+          <div class="app-vip-mockup" aria-hidden="true">
+            <div class="phone-frame">
+              <div class="phone-screen">
+                <div class="phone-header-mock">
+                  <span class="phone-badge">VIDEM VIP</span>
+                  <span class="phone-status-dot"></span>
+                </div>
+                <div class="phone-card-mock">
+                  <div class="phone-card-title">Enlazar Smart TV</div>
+                  <div class="phone-code-box">A 7 9 K</div>
+                  <div class="phone-btn-mock">Vincular Pantalla</div>
+                </div>
+                <div class="phone-card-mock">
+                  <div class="phone-card-title">Bóveda Privada 4K</div>
+                  <div class="phone-input-mock">Buscar título o serie...</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 

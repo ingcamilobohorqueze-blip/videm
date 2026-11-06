@@ -84,7 +84,7 @@ module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).json({ success: false, error: 'Method not allowed' });
 
   try {
-    const { action = 'login', user, pass, pin, newPin, phone } = req.body || {};
+    const { action = 'login', user, pass, pin, newPin, phone, countryCode } = req.body || {};
     const cleanUser = String(user || '').trim().toLowerCase();
     const cleanInputPin = String(pin || pass || '').trim();
 
@@ -93,7 +93,13 @@ module.exports = async (req, res) => {
     // ==========================================
     if (action === 'activate' || action === 'set-pin') {
       const targetPin = String(newPin || pin || pass || '').trim();
-      const targetPhone = String(phone || '').replace(/\D/g, '').trim();
+      let rawPhone = String(phone || '').replace(/\D/g, '').trim();
+      const prefix = String(countryCode || '').replace(/\D/g, '').trim();
+      
+      let targetPhone = rawPhone;
+      if (prefix && !rawPhone.startsWith(prefix)) {
+        targetPhone = prefix + rawPhone;
+      }
 
       if (!cleanUser) {
         return res.status(400).json({ success: false, error: 'Ingresa tu usuario asignado o código VIP.' });
@@ -101,12 +107,15 @@ module.exports = async (req, res) => {
       if (!/^\d{4}$/.test(targetPin)) {
         return res.status(400).json({ success: false, error: 'El PIN debe ser exactamente de 4 dígitos numéricos (ej. 1234).' });
       }
+      if (targetPhone && targetPhone.length < 7) {
+        return res.status(400).json({ success: false, error: 'Ingresa un número telefónico móvil válido con código de país.' });
+      }
 
       // Buscar si coincide con KNOWN_CLIENTS
       const matched = KNOWN_CLIENTS.find(c =>
         c.user.toLowerCase() === cleanUser ||
         c.user.toLowerCase().startsWith(cleanUser) ||
-        c.phone === cleanUser.replace(/\D/g, '') ||
+        (targetPhone && (c.phone === targetPhone || c.phone.endsWith(targetPhone) || targetPhone.endsWith(c.phone))) ||
         (cleanUser.includes('9299') && c.id === 'john_bedoya') ||
         (cleanUser.includes('8294') && c.id === 'demo')
       );
@@ -117,7 +126,7 @@ module.exports = async (req, res) => {
 
         // Persistir en Supabase si tiene registro asociado
         if (matched.supabaseId) {
-          const notesUpdate = `Pase Mensual Flex. [PIN:${targetPin}] [WHATSAPP:${targetPhone || matched.phone}] Actualizado desde PWA`;
+          const notesUpdate = `Pase Mensual Flex. [PIN:${targetPin}] [WHATSAPP:+${targetPhone || matched.phone}] Actualizado desde PWA`;
           await patchSupabase(`/rest/v1/users?id=eq.${matched.supabaseId}`, {
             notes: notesUpdate
           });
@@ -152,11 +161,12 @@ module.exports = async (req, res) => {
     }
 
     // 1. Validar contra clientes reconocidos en memoria (ultra rápido)
+    const cleanDigits = cleanUser.replace(/\D/g, '');
     const matchedKnown = KNOWN_CLIENTS.find(c => {
       const matchUser = (
         c.user.toLowerCase() === cleanUser ||
         c.user.toLowerCase().replace('@videm.tv', '') === cleanUser.replace('@videm.tv', '') ||
-        c.phone === cleanUser.replace(/\D/g, '') ||
+        (cleanDigits && (c.phone === cleanDigits || (cleanDigits.length >= 7 && (c.phone.endsWith(cleanDigits) || cleanDigits.endsWith(c.phone))))) ||
         (cleanUser === 'john' && c.id === 'john_bedoya') ||
         (cleanUser === '9299' && c.id === 'john_bedoya') ||
         (cleanUser === '8294' && c.id === 'demo')

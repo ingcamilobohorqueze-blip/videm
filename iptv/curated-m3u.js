@@ -1,23 +1,27 @@
 /**
- * MOTOR CURADOR DE PARRILLA M3U - TREX IPTV (90 DÍAS)
+ * MOTOR CURADOR DE PARRILLA M3U & SERVIDOR EPG XML - TREX IPTV (90 DÍAS)
  * Lee directamente iptv/PARRILLA-CANALES.md como fuente de verdad:
  * - Incluye únicamente los canales marcados con [x] o [X]
- * - Soporta diales exactos (ej. 130, 601) y diales automáticos terminados en XX (ej. 3XX, 7XX)
- * - Incluye sección 24/7 (COPS en Español, Just For Laughs Gags, Impractical Jokers, etc.)
- * - Incluye sección 900 PPV Dinámica (filtra canales vacíos "- NO EVENT STREAMING -")
- * - Transporte HLS (.m3u8) anti-congelamiento + Logos Oficiales + Guía EDT/EPG Colombia/LatAm
+ * - Soporta ?epg=xml para entregar la Guía EPG descomprimida en XML puro (requerido por MyIPTV Player en Windows 11)
+ * - Compatible 100% con MyIPTV Player (Windows 11), TiviMate, Televizo y OTT Navigator
  */
 
 const fs = require('fs');
 const path = require('path');
 const http = require('http');
+const https = require('https');
+const zlib = require('zlib');
 const config = require('./config');
 
 const { host: TREX_HOST, port: TREX_PORT, username: TREX_USER, password: TREX_PASS } = config.credentials;
 
-let cachedM3UByFormat = {};
+let cachedM3UByKey = {};
 let lastFetchTime = 0;
 let lastMdMtime = 0;
+
+let cachedEpgXml = null;
+let lastEpgFetchTime = 0;
+const EPG_CACHE_TTL_MS = 2 * 60 * 60 * 1000; // 2 horas
 
 function fetchTrexStreams() {
   return new Promise((resolve, reject) => {
@@ -41,6 +45,29 @@ function fetchTrexStreams() {
     });
     req.on('error', reject);
     req.on('timeout', () => { req.destroy(); resolve([]); });
+  });
+}
+
+function fetchUncompressedColombiaEpg() {
+  return new Promise((resolve, reject) => {
+    const req = https.get(config.endpoints.epgColombiaUrl, { timeout: 20000 }, (res) => {
+      if (res.statusCode !== 200) {
+        return reject(new Error('EPG upstream status ' + res.statusCode));
+      }
+      const chunks = [];
+      res.on('data', c => chunks.push(c));
+      res.on('end', () => {
+        try {
+          const buffer = Buffer.concat(chunks);
+          const xml = zlib.gunzipSync(buffer).toString('utf8');
+          resolve(xml);
+        } catch (e) {
+          reject(e);
+        }
+      });
+    });
+    req.on('error', reject);
+    req.on('timeout', () => { req.destroy(); reject(new Error('Timeout descargando EPG')); });
   });
 }
 
@@ -85,7 +112,6 @@ function parseParrillaMarkdown() {
     const titleMatch = rest.match(/^\*\*([^*]+)\*\*/);
     const title = titleMatch ? titleMatch[1].trim() : rest.replace(/\*.*$/, '').trim();
 
-    // Resolver diales con XX automáticamente (ej. 3XX -> 341, 7XX -> 739)
     let dialNum = parseInt(rawDial, 10);
     if (/[xX]/.test(rawDial) || isNaN(dialNum)) {
       const prefixDigits = rawDial.replace(/[xX]+/g, '');
@@ -95,7 +121,6 @@ function parseParrillaMarkdown() {
     }
     usedDials.add(dialNum);
 
-    // Extraer IDs explícitos de TREX entre backticks `12345` si están documentados en la línea
     const idMatches = [];
     const idSectionMatch = rest.match(/IDs?\s+TREX:([^)]+)/i);
     if (idSectionMatch) {
@@ -142,7 +167,7 @@ function isLivePpvEvent(name) {
   );
 }
 
-function buildCleanM3U(streams, format = config.streamOptions.defaultFormat) {
+function buildCleanM3U(streams, format = config.streamOptions.defaultFormat, includeVlcOpts = false) {
   const epgUrls = config.endpoints.epgXmltv;
   let m3u = `#EXTM3U url-tvg="${epgUrls}" x-tvg-url="${epgUrls}" name="${config.subscription.playlistName}"\n\n`;
 
@@ -153,55 +178,52 @@ function buildCleanM3U(streams, format = config.streamOptions.defaultFormat) {
 
   const appendChannel = (stream, displayTitle, group, dial) => {
     const { epgId, logo } = resolveEpgAndLogo(stream, displayTitle);
-    const streamUrl = format === 'ts'
-      ? `http://${TREX_HOST}:${TREX_PORT}/${TREX_USER}/${TREX_PASS}/${stream.stream_id}.ts`
-      : `http://${TREX_HOST}:${TREX_PORT}/live/${TREX_USER}/${TREX_PASS}/${stream.stream_id}.m3u8`;
+    const streamUrl = format === 'hls'
+      ? `http://${TREX_HOST}:${TREX_PORT}/live/${TREX_USER}/${TREX_PASS}/${stream.stream_id}.m3u8`
+      : `http://${TREX_HOST}:${TREX_PORT}/${TREX_USER}/${TREX_PASS}/${stream.stream_id}.ts`;
 
     const chnoAttr = dial ? ` tvg-chno="${dial}"` : '';
     const label = dial ? `${dial} - ${displayTitle}` : displayTitle;
+    const tvgName = epgId || displayTitle;
 
-    m3u += `#EXTINF:-1${chnoAttr} tvg-id="${epgId}" tvg-name="${label}" tvg-logo="${logo}" group-title="${group}" reconnect="true",${label}\n`;
-    if (config.streamOptions.httpReconnect) {
-      m3u += `#EXTVLCOPT:http-reconnect=true\n`;
-    }
-    if (config.streamOptions.networkCachingMs) {
-      m3u += `#EXTVLCOPT:network-caching=${config.streamOptions.networkCachingMs}\n`;
+    m3u += `#EXTINF:-1${chnoAttr} tvg-id="${epgId}" tvg-name="${tvgName}" tvg-logo="${logo}" group-title="${group}",${label}\n`;
+    if (includeVlcOpts) {
+      if (config.streamOptions.httpReconnect) {
+        m3u += `#EXTVLCOPT:http-reconnect=true\n`;
+      }
+      if (config.streamOptions.networkCachingMs) {
+        m3u += `#EXTVLCOPT:network-caching=${config.streamOptions.networkCachingMs}\n`;
+      }
     }
     m3u += `${streamUrl}\n\n`;
   };
 
   for (const entry of entries) {
-    // Manejo especial para diales 901-904 (Eventos PPV Dinámicos)
     if (entry.dial >= 901 && entry.dial <= 904) {
       let ppvStreams = [];
       if (entry.dial === 901) {
-        // Disney+ / ESPN+ / Conmebol Fanatiz
         ppvStreams = streams.filter(s => ['2460', '2028', '2202'].includes(String(s.category_id)) && isLivePpvEvent(s.name)).slice(0, 15);
       } else if (entry.dial === 902) {
-        // Eventos DAZN (España & USA)
         ppvStreams = streams.filter(s => ['1520', '1521'].includes(String(s.category_id)) && isLivePpvEvent(s.name)).slice(0, 15);
       } else if (entry.dial === 903) {
-        // Eventos TUDN / ViX Deportes & PPV LatAm
         const fixedVix = [1369550, 1369549, 1369548, 1369547, 543974, 543975, 543976, 543977, 543978]
           .map(id => streamById.get(id))
           .filter(Boolean);
         const liveVix = streams.filter(s => String(s.category_id) === '2368' && isLivePpvEvent(s.name)).slice(0, 12);
         ppvStreams = [...liveVix, ...fixedVix];
       } else if (entry.dial === 904) {
-        // Otros PPV USA (UFC / Boxeo / Fite TV / MLS)
         const fite247 = streamById.get(437271) || streamById.get(1387198);
         const liveUsa = streams.filter(s => ['1592', '668', '2270'].includes(String(s.category_id)) && isLivePpvEvent(s.name)).slice(0, 15);
         ppvStreams = [...(fite247 ? [fite247] : []), ...liveUsa];
       }
 
-      ppvStreams.forEach((s, idx) => {
+      ppvStreams.forEach((s) => {
         const cleanEventName = (s.name || '').replace(/\|\s*8K EXCLUSIVE/gi, '').trim();
         appendChannel(s, cleanEventName, entry.group, entry.dial);
       });
       continue;
     }
 
-    // 1. Si el renglón tiene IDs explícitos de TREX
     if (entry.streamIds && entry.streamIds.length > 0) {
       const isMultiChannelLine = entry.dial === 602 || /[\/&]|(\b1\s+y\s+2\b)/i.test(entry.title);
       const idsToEmit = isMultiChannelLine ? entry.streamIds : [entry.streamIds[0]];
@@ -214,7 +236,7 @@ function buildCleanM3U(streams, format = config.streamOptions.defaultFormat) {
           if (entry.dial === 602) {
             displayTitle = `Win Sports+ HD (Señal Alterna ${idx + 1})`;
           } else {
-            const cleanRaw = (s.name || '').replace(/^(LAT|CO|MXC|ARG|US|VIX|PRIME|TV|YP)\|\s*/i, '').replace(/ᴿᴬᵂ/g, '').trim();
+            const cleanRaw = (s.name || '').replace(/^(LAT|CO|MXC|ARG|US|VIX|PRIME|TV|YP|CAR-AMP)\|\s*/i, '').replace(/ᴿᴬᵂ/g, '').trim();
             displayTitle = cleanRaw || `${entry.title} (${idx + 1})`;
           }
         }
@@ -223,7 +245,6 @@ function buildCleanM3U(streams, format = config.streamOptions.defaultFormat) {
       continue;
     }
 
-    // 2. Búsqueda automática en TREX para canales nuevos agregados con XX sin ID explícito
     const searchKey = entry.title
       .replace(/\(.*?\)/g, '')
       .replace(/\b(HD|FHD|4K|24\/7)\b/gi, '')
@@ -231,7 +252,7 @@ function buildCleanM3U(streams, format = config.streamOptions.defaultFormat) {
       .toUpperCase();
 
     if (searchKey.length >= 2) {
-      const preferredCats = new Set(['154', '166', '151', '2171', '152', '2338', '1667', '2186', '1611']);
+      const preferredCats = new Set(['154', '2171', '151', '166', '152', '2338', '1667', '2186', '1611']);
       const candidates = streams.filter(s => {
         const n = (s.name || '').toUpperCase();
         return n.includes(searchKey) && (preferredCats.has(String(s.category_id)) || /^(CO|LAT|MXC|ARG|VIX|US|PRIME)\|/i.test(n));
@@ -247,6 +268,34 @@ function buildCleanM3U(streams, format = config.streamOptions.defaultFormat) {
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
+
+  const reqUrl = (req && req.url) ? req.url : '';
+
+  // Endpoint EPG XML descomprimido para MyIPTV Player (Windows 11) y Smart TVs: /api/trex?epg=xml
+  if (reqUrl.includes('epg=xml') || reqUrl.includes('epg=1')) {
+    const sendXml = (status, xml) => {
+      res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+      res.setHeader('Cache-Control', 'public, max-age=3600');
+      if (res.status && res.send) return res.status(status).send(xml);
+      res.writeHead(status, { 'Content-Type': 'application/xml; charset=utf-8' });
+      res.end(xml);
+    };
+
+    const now = Date.now();
+    if (cachedEpgXml && (now - lastEpgFetchTime < EPG_CACHE_TTL_MS)) {
+      return sendXml(200, cachedEpgXml);
+    }
+
+    try {
+      cachedEpgXml = await fetchUncompressedColombiaEpg();
+      lastEpgFetchTime = now;
+      return sendXml(200, cachedEpgXml);
+    } catch (e) {
+      if (cachedEpgXml) return sendXml(200, cachedEpgXml);
+      return sendXml(500, '<?xml version="1.0" encoding="UTF-8"?><tv></tv>');
+    }
+  }
+
   res.setHeader('Content-Type', 'application/vnd.apple.mpegurl; charset=utf-8');
   res.setHeader('Cache-Control', 'public, max-age=1800');
 
@@ -256,8 +305,9 @@ module.exports = async (req, res) => {
     res.end(text);
   };
 
-  const reqUrl = (req && req.url) ? req.url : '';
-  const format = reqUrl.includes('output=ts') ? 'ts' : config.streamOptions.defaultFormat;
+  const format = reqUrl.includes('output=hls') ? 'hls' : (reqUrl.includes('output=ts') ? 'ts' : config.streamOptions.defaultFormat);
+  const includeVlcOpts = reqUrl.includes('vlcopt=1');
+  const cacheKey = `${format}_${includeVlcOpts ? 'vlc' : 'std'}`;
 
   let currentMdMtime = 0;
   try {
@@ -266,29 +316,31 @@ module.exports = async (req, res) => {
 
   const now = Date.now();
   if (
-    cachedM3UByFormat[format] &&
+    cachedM3UByKey[cacheKey] &&
     (now - lastFetchTime < config.cacheTtlMs) &&
     currentMdMtime === lastMdMtime
   ) {
-    return sendText(200, cachedM3UByFormat[format]);
+    return sendText(200, cachedM3UByKey[cacheKey]);
   }
 
   try {
     const streams = await fetchTrexStreams();
     if (!streams || streams.length === 0) {
-      if (cachedM3UByFormat[format]) return sendText(200, cachedM3UByFormat[format]);
+      if (cachedM3UByKey[cacheKey]) return sendText(200, cachedM3UByKey[cacheKey]);
       return sendText(500, '#EXTM3U\n# Error al conectar con el servidor TREX');
     }
 
-    cachedM3UByFormat = {
-      hls: buildCleanM3U(streams, 'hls'),
-      ts: buildCleanM3U(streams, 'ts')
+    cachedM3UByKey = {
+      ts_std: buildCleanM3U(streams, 'ts', false),
+      ts_vlc: buildCleanM3U(streams, 'ts', true),
+      hls_std: buildCleanM3U(streams, 'hls', false),
+      hls_vlc: buildCleanM3U(streams, 'hls', true)
     };
     lastFetchTime = now;
     lastMdMtime = currentMdMtime;
-    return sendText(200, cachedM3UByFormat[format]);
+    return sendText(200, cachedM3UByKey[cacheKey]);
   } catch (err) {
-    if (cachedM3UByFormat[format]) return sendText(200, cachedM3UByFormat[format]);
+    if (cachedM3UByKey[cacheKey]) return sendText(200, cachedM3UByKey[cacheKey]);
     return sendText(500, '#EXTM3U\n# Error: ' + err.message);
   }
 };

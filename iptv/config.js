@@ -28,17 +28,17 @@ module.exports = {
   endpoints: {
     curatedM3U: 'https://videm.tv/api/trex',
     xtreamServerUrl: 'http://line.prim01.com:80',
-    rawM3UPlus: 'http://line.prim01.com:80/get.php?username=493da0239d&password=69b4dd0ebc7f&type=m3u_plus&output=hls',
-    // Guía EDT / EPG ligera y verificada para Colombia + Latinoamérica (carga en <1s vs el XMLTV global de TREX)
-    epgXmltv: 'https://epgshare01.online/epgshare01/epg_ripper_CO1.xml.gz,https://epgshare01.online/epgshare01/epg_ripper_MX1.xml.gz,https://epgshare01.online/epgshare01/epg_ripper_AR1.xml.gz',
+    rawM3UPlus: 'http://line.prim01.com:80/get.php?username=493da0239d&password=69b4dd0ebc7f&type=m3u_plus&output=ts',
+    // Guía EDT / EPG descomprimida en XML puro (compatible 100% con MyIPTV Player en Windows 11 y Smart TVs)
+    epgXmltv: 'https://videm.tv/api/trex?epg=xml',
     epgColombiaUrl: 'https://epgshare01.online/epgshare01/epg_ripper_CO1.xml.gz',
     trexRawEpgXmltv: 'http://line.prim01.com:80/xmltv.php?username=493da0239d&password=69b4dd0ebc7f'
   },
 
   streamOptions: {
-    // 'hls' (.m3u8 segmentado cada 10s) evita congelamientos de socket TCP en partidos en vivo;
-    // se puede forzar 'ts' pasando ?output=ts en la URL M3U
-    defaultFormat: 'hls',
+    // 'ts' funciona directamente en MyIPTV Player (Windows 11) y Smart TVs sin fallar en redirecciones 302 relativas;
+    // se puede pedir 'hls' (.m3u8) pasando ?output=hls
+    defaultFormat: 'ts',
     networkCachingMs: 3000,
     httpReconnect: true
   },

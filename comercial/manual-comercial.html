@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VIDEM | Manual Comercial y Guía de Entrenamiento Ejecutivo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-main: #FFFFFF;
+      --bg-dark: #0B0E14;
+      --surface-dark: #121824;
+      --surface-light: #F8FAFC;
+      --surface-border: #E2E8F0;
+      --text-main: #0F172A;
+      --text-muted: #64748B;
+      --cyan: #00B4D8;
+      --cyan-dark: #0077B6;
+      --cyan-glow: #00F0FF;
+      --gold: #D97706;
+      --gold-light: #FEF3C7;
+      --green: #10B981;
+      --red: #EF4444;
+      --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-display: 'Space Grotesk', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-body);
+      color: var(--text-main);
+      background-color: var(--surface-light);
+      line-height: 1.6;
+      font-size: 13.5px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .document-container {
+      max-width: 900px;
+      margin: 20px auto;
+      background: var(--bg-main);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--surface-border);
+    }
+
+    /* COVER HEADER */
+    .doc-cover {
+      background: linear-gradient(135deg, #07090E 0%, #0D131F 50%, #081B2B 100%);
+      color: #FFFFFF;
+      padding: 50px 45px 40px;
+      position: relative;
+      border-bottom: 3px solid var(--cyan-glow);
+    }
+
+    .cover-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    .cover-logo {
+      height: 48px;
+      object-fit: contain;
+    }
+
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      background: rgba(0, 240, 255, 0.12);
+      color: var(--cyan-glow);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+    }
+
+    .doc-title {
+      font-family: var(--font-display);
+      font-size: 32px;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 10px;
+      letter-spacing: -0.5px;
+      background: linear-gradient(90deg, #FFFFFF 0%, #E2E8F0 60%, var(--cyan-glow) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .doc-subtitle {
+      font-size: 16px;
+      color: #94A3B8;
+      font-weight: 400;
+      max-width: 680px;
+      line-height: 1.5;
+    }
+
+    .cover-meta {
+      display: flex;
+      gap: 25px;
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 12px;
+      color: #94A3B8;
+    }
+
+    .cover-meta strong {
+      color: #FFFFFF;
+    }
+
+    /* BODY CONTENT */
+    .doc-content {
+      padding: 40px 45px;
+    }
+
+    /* MODULE SECTIONS */
+    .module-card {
+      margin-bottom: 35px;
+      page-break-inside: avoid;
+    }
+
+    .module-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #E2E8F0;
+    }
+
+    .module-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: #0B0E14;
+      color: var(--cyan-glow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .module-title {
+      font-family: var(--font-display);
+      font-size: 19px;
+      font-weight: 700;
+      color: #0F172A;
+      letter-spacing: -0.3px;
+    }
+
+    p {
+      margin-bottom: 12px;
+      color: #334155;
+    }
+
+    /* CALLOUT BOXES */
+    .callout {
+      background: #F1F5F9;
+      border-left: 4px solid #0284C7;
+      padding: 14px 18px;
+      border-radius: 0 8px 8px 0;
+      margin: 16px 0;
+      font-size: 13px;
+    }
+
+    .callout-pitch {
+      background: linear-gradient(135deg, #0B1320 0%, #111C2E 100%);
+      color: #F8FAFC;
+      border-left: 4px solid var(--cyan-glow);
+      padding: 18px 22px;
+      border-radius: 8px;
+      margin: 18px 0;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .callout-pitch strong {
+      color: var(--cyan-glow);
+    }
+
+    .callout-warning {
+      background: #FFFBEB;
+      border-left: 4px solid #F59E0B;
+      color: #92400E;
+    }
+
+    /* COMPARISON TABLE */
+    .comp-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 18px 0;
+      font-size: 12.5px;
+      background: #FFFFFF;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid #E2E8F0;
+    }
+
+    .comp-table th {
+      background: #0F172A;
+      color: #FFFFFF;
+      padding: 12px 14px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 12px;
+    }
+
+    .comp-table th.highlight-col {
+      background: #0369A1;
+      color: #FFFFFF;
+    }
+
+    .comp-table td {
+      padding: 11px 14px;
+      border-bottom: 1px solid #E2E8F0;
+      color: #334155;
+    }
+
+    .comp-table tr:nth-child(even) td {
+      background: #F8FAFC;
+    }
+
+    .comp-table td.highlight-cell {
+      background: rgba(0, 180, 216, 0.08);
+      font-weight: 700;
+      color: #0369A1;
+    }
+
+    /* FEATURE GRID */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin: 18px 0;
+    }
+
+    .feat-card {
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+      padding: 16px;
+      border-radius: 8px;
+    }
+
+    .feat-card h4 {
+      font-size: 14px;
+      font-weight: 700;
+      color: #0F172A;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .feat-card p {
+      font-size: 12.5px;
+      color: #64748B;
+      margin-bottom: 0;
+      line-height: 1.5;
+    }
+
+    /* FUNNEL STEPS */
+    .funnel-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 18px 0;
+    }
+
+    .funnel-step {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+      padding: 12px 16px;
+      border-radius: 8px;
+    }
+
+    .step-badge {
+      background: #0F172A;
+      color: var(--cyan-glow);
+      font-family: var(--font-display);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 6px;
+      white-space: nowrap;
+    }
+
+    .step-info h5 {
+      font-size: 13.5px;
+      color: #0F172A;
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+
+    .step-info p {
+      font-size: 12px;
+      color: #64748B;
+      margin-bottom: 0;
+    }
+
+    /* PRICING TABLES */
+    .pricing-split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin: 18px 0;
+    }
+
+    .pricing-box {
+      border: 1px solid #E2E8F0;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #FFFFFF;
+    }
+
+    .pricing-box-header {
+      padding: 10px 14px;
+      background: #0F172A;
+      color: #FFFFFF;
+      font-weight: 700;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .pricing-row {
+      padding: 10px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #F1F5F9;
+      font-size: 12px;
+    }
+
+    .pricing-row:last-child {
+      border-bottom: none;
+    }
+
+    .pricing-row strong {
+      color: #0F172A;
+    }
+
+    .pricing-row.vip-row {
+      background: #F0FDF4;
+      font-weight: 600;
+    }
+
+    /* OBJECTIONS CARDS */
+    .faq-item {
+      margin-bottom: 14px;
+      border: 1px solid #E2E8F0;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .faq-q {
+      background: #F8FAFC;
+      padding: 10px 16px;
+      font-weight: 700;
+      color: #0F172A;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid #E2E8F0;
+    }
+
+    .faq-a {
+      padding: 12px 16px;
+      font-size: 12.5px;
+      color: #334155;
+      line-height: 1.55;
+      background: #FFFFFF;
+    }
+
+    /* FOOTER */
+    .doc-footer {
+      background: #0F172A;
+      color: #94A3B8;
+      padding: 24px 45px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      border-top: 1px solid #1E293B;
+    }
+
+    .doc-footer a {
+      color: var(--cyan-glow);
+      text-decoration: none;
+    }
+
+    /* PRINT SPECIFIC STYLES */
+    @page {
+      size: letter;
+      margin: 8mm 12mm 8mm 12mm;
+    }
+
+    @media print {
+      body {
+        background: #FFFFFF;
+        font-size: 10.5pt;
+      }
+
+      .document-container {
+        box-shadow: none;
+        border: none;
+        margin: 0;
+        max-width: 100%;
+        border-radius: 0;
+      }
+
+      .doc-cover {
+        padding: 20px 24px 14px;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      .doc-content {
+        padding: 16px 20px 0;
+      }
+
+      .module-card {
+        page-break-inside: avoid;
+        margin-bottom: 14px;
+      }
+
+      .callout, .callout-pitch, .feat-card, .comp-table th, .comp-table td, .pricing-box-header, .pricing-row {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      .doc-footer {
+        margin-top: 10px;
+        padding: 14px 20px;
+        page-break-before: avoid;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="document-container">
+    
+    <!-- COVER HEADER -->
+    <header class="doc-cover">
+      <div class="cover-top">
+        <img src="../Logo Videm.png" alt="VIDEM" class="cover-logo" onerror="this.style.display='none'">
+        <div class="badge-pill">
+          <span>●</span>
+          <span>Manual Oficial de Operaciones & Ventas</span>
+        </div>
+      </div>
+      
+      <h1 class="doc-title">MANUAL COMERCIAL Y ENTRENAMIENTO VIDEM</h1>
+      <p class="doc-subtitle">Guía estratégica, propuesta de valor, manejo de objeciones y capacitación para presentaciones comerciales y conserjería VIP.</p>
+      
+      <div class="cover-meta">
+        <div><strong>Área:</strong> Comercial & Ventas</div>
+        <div><strong>Infraestructura:</strong> VIDEM 4K Remux Cinema</div>
+        <div><strong>Audiencia:</strong> Concierges, Asesores & Embajadores</div>
+        <div><strong>Portal Oficial:</strong> videm.tv</div>
+      </div>
+    </header>
+
+    <!-- CONTENT BODY -->
+    <main class="doc-content">
+
+      <!-- MÓDULO 1 -->
+      <section class="module-card">
+        <div class="module-header">
+          <div class="module-num">01</div>
+          <h2 class="module-title">La Visión y el Pitch de Elevador (30 Segundos)</h2>
+        </div>
+
+        <p><strong>El Dolor del Cliente en el Hogar:</strong> Las familias invierten sumas considerables en Smart TVs de gama alta (OLED, QLED, Mini LED de 55" a 85") y barras de sonido con Dolby Atmos. Sin embargo, las plataformas comerciales comprimen el video a solo <strong>8-15 Mbps</strong> para ahorrar ancho de banda, arruinando las escenas oscuras con pixeles grises, empastando colores y fragmentando los catálogos en 5 o 6 suscripciones costosas.</p>
+
+        <p><strong>La Solución VIDEM:</strong> Conectamos el televisor a una infraestructura privada de streaming bajo demanda por fibra óptica que entrega la calidad física original del disco Blu-ray 4K (Remux a 80 Mbps) con audio multicanal sin compresión, sin publicidad y unificado en una sola aplicación.</p>
+
+        <div class="callout-pitch">
+          <strong>🎤 EL PITCH DE ELEVADOR MAESTRO (Para decir con naturalidad):</strong><br>
+          <em>"¿Sabías que tu Smart TV está reproduciendo películas al 30% de su capacidad real? Las plataformas tradicionales comprimen la imagen para ahorrar datos. En VIDEM te conectamos a una red privada de servidores de alta velocidad para que veas estrenos de cine y series en 4K Remux puro a 80 Mbps, con sonido Dolby Atmos y todo en un solo lugar. Sin cables, sin visitas técnicas y activable en 30 segundos directamente en tu televisor."</em>
+        </div>
+      </section>
+
+      <!-- MÓDULO 2 -->
+      <section class="module-card">
+        <div class="module-header">
+          <div class="module-num">02</div>
+          <h2 class="module-title">¿Qué SÍ es y qué NO es VIDEM? (Diferenciadores)</h2>
+        </div>
+
+        <p>Es vital que el equipo comercial posicione a VIDEM en la categoría correcta. <strong>VIDEM NO es IPTV pirata ni MagisTV</strong>.</p>
+
+        <table class="comp-table">
+          <thead>
+            <tr>
+              <th>Característica</th>
+              <th>❌ IPTV Pirata / MagisTV</th>
+              <th>⚠️ Plataformas Comerciales</th>
+              <th class="highlight-col">💎 VIDEM VIP Streaming</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Calidad de Video</strong></td>
+              <td>2 - 4 Mbps (Borrosa, comprimida)</td>
+              <td>12 - 18 Mbps (Comprimida con pérdida)</td>
+              <td class="highlight-cell">60 - 90 Mbps (4K Remux Puro sin pérdidas)</td>
+            </tr>
+            <tr>
+              <td><strong>Escenas Oscuras</strong></td>
+              <td>Pixeles gigantes y macrobloques</td>
+              <td>Bandas de color y negros grisáceos</td>
+              <td class="highlight-cell">Negros puros OLED y contraste infinito</td>
+            </tr>
+            <tr>
+              <td><strong>Fidelidad de Audio</strong></td>
+              <td>Estéreo 2.0 enlatado</td>
+              <td>Dolby Digital Plus comprimido</td>
+              <td class="highlight-cell">Dolby Atmos / DTS-HD de sala de cine real</td>
+            </tr>
+            <tr>
+              <td><strong>Estabilidad</strong></td>
+              <td>Se congela en partidos y fines de semana</td>
+              <td>Estable pero con caídas de bitrate</td>
+              <td class="highlight-cell">100% Fluido (Fibra dedicada de alta velocidad)</td>
+            </tr>
+            <tr>
+              <td><strong>Disponibilidad</strong></td>
+              <td>Inseguro, APKs con riesgo de malware</td>
+              <td>Catálogo disperso en 5 o 6 apps</td>
+              <td class="highlight-cell">Catálogo universal unificado sin publicidad</td>
+            </tr>
+            <tr>
+              <td><strong>Instalación</strong></td>
+              <td>Decodificadores chinos externos</td>
+              <td>Múltiples cuentas y pagos</td>
+              <td class="highlight-cell">Código digital de 4 letras en 30 segundos</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+
+      <!-- MÓDULO 3 -->
+      <section class="module-card">
+        <div class="module-header">
+          <div class="module-num">03</div>
+          <h2 class="module-title">Pilares Técnicos Explicados en Lenguaje Humano</h2>
+        </div>
+
+        <div class="features-grid">
+          <div class="feat-card">
+            <h4>🎬 4K Remux Puro (Ultra Bitrate)</h4>
+            <p>Un archivo de streaming tradicional pesa 4 GB; en VIDEM la misma película pesa <strong>50 a 80 GB</strong>. Conserva cada gota, brizna de hierba, grano cinematográfico y poro de la piel tal como salió de la cámara del director.</p>
+          </div>
+          <div class="feat-card">
+            <h4>🔊 Audio de Sala de Cine (Dolby Atmos)</h4>
+            <p>Pistas de sonido de alta fidelidad sin comprimir (TrueHD / Atmos / DTS:X). Si el cliente tiene barra de sonido o Home Theater, los efectos viajan por el espacio y los diálogos se entienden con total nitidez.</p>
+          </div>
+          <div class="feat-card">
+            <h4>⚡ Cero Buffering y Servidores Privados</h4>
+            <p>La señal no viaja por redes compartidas. Conecta a centros de datos dedicados de fibra óptica en Europa y América, garantizando carga inmediata en segundos.</p>
+          </div>
+          <div class="feat-card">
+            <h4>📺 Instalación Limpia en 30 Segundos</h4>
+            <p>Sin aparatos estorbosos, sin cables cruzando la sala y sin visitas de extraños en casa. Se vincula con un código de 4 letras que muestra la app oficial en el TV.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- MÓDULO 4 -->
+      <section class="module-card">
+        <div class="module-header">
+          <div class="module-num">04</div>
+          <h2 class="module-title">Compatibilidad Universal y Requisitos Técnicos</h2>
+        </div>
+
+        <p>VIDEM funciona de forma nativa en prácticamente cualquier televisor del mercado:</p>
+        <ul style="padding-left: 20px; color: #334155; margin-bottom: 14px; font-size: 13px; line-height: 1.7;">
+          <li><strong>Samsung Smart TV:</strong> Modelos 2019 en adelante (Tizen OS).</li>
+          <li><strong>LG Smart TV:</strong> Modelos 2018 en adelante (webOS).</li>
+          <li><strong>Google TV / Android TV:</strong> Sony, TCL, Philips, Xiaomi, Hisense, etc.</li>
+          <li><strong>Dispositivos Externos:</strong> Fire TV Stick 4K, Chromecast con Google TV, Xiaomi Mi Box, Apple TV 4K.</li>
+          <li><strong>Requisitos de Red:</strong> Fibra óptica hogar de <strong>50 a 100 Mbps</strong>. (Recomendación VIP: cable de red LAN o WiFi 5 GHz).</li>
+        </ul>
+      </section>
+
+      <!-- MÓDULO 5 -->
+      <section class="module-card">
+        <div class="module-header">
+          <div class="module-num">05</div>
+          <h2 class="module-title">El Embudo de Venta Consultiva (Paso a Paso)</h2>
+        </div>
+
+        <div class="funnel-container">
+          <div class="funnel-step">
+            <span class="step-badge">PASO 1</span>
+            <div class="step-info">
+              <h5>El Diagnóstico de Curiosidad</h5>
+              <p>Preguntar qué marca de Smart TV tiene y si cuenta con barra de sonido. Identificar si nota pérdida de calidad en escenas oscuras.</p>
+            </div>
+          </div>
+          <div class="funnel-step">
+            <span class="step-badge">PASO 2</span>
+            <div class="step-info">
+              <h5>El Pase de Calibración VIP (La Demo 2H)</h5>
+              <p>No intentar convencer con palabras: obsequiar el Pase Gratuito de 2 Horas para que pruebe su propio televisor en vivo.</p>
+            </div>
+          </div>
+          <div class="funnel-step">
+            <span class="step-badge">PASO 3</span>
+            <div class="step-info">
+              <h5>Activación en 30 Segundos</h5>
+              <p>El cliente abre la app en el TV, te dicta el código de 4 letras y lo activas desde el Command Center sin pedirle contraseñas personales.</p>
+            </div>
+          </div>
+          <div class="funnel-step">
+            <span class="step-badge">PASO 4</span>
+            <div class="step-info">
+              <h5>La Experiencia WOW Inmediata</h5>
+              <p>Recomendarle probar 5 minutos con títulos de impacto visual y sonoro (ej: Top Gun: Maverick, Dune 2, Avatar o Alien: Covenant).</p>
+            </div>
+          </div>
+          <div class="funnel-step">
+            <span class="step-badge">PASO 5</span>
+            <div class="step-info">
+              <h5>Cierre Natural y Planes VIP</h5>
+              <p>Preguntar cómo sintió la sala y ofrecer el plan semestral (el más vendido) o anual con el máximo descuento.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- MÓDULO 6 -->
+      <section class="module-card">
+        <div class="module-header">
+          <div class="module-num">06</div>
+          <h2 class="module-title">Tarifas Oficiales y Medios de Pago</h2>
+        </div>
+
+        <div class="pricing-split">
+          <!-- COLOMBIA -->
+          <div class="pricing-box">
+            <div class="pricing-box-header">
+              <span>🇨🇴 COLOMBIA / LATAM (COP)</span>
+              <span>Línea +57</span>
+            </div>
+            <div class="pricing-row">
+              <span>Pase de Calibración VIP (Demo)</span>
+              <strong>$0 COP (Gratis 2h)</strong>
+            </div>
+            <div class="pricing-row">
+              <span>1 Mes Flex</span>
+              <strong>$55.000 COP</strong>
+            </div>
+            <div class="pricing-row vip-row">
+              <span>6 Meses VIP (El Más Vendido)</span>
+              <strong>$240.000 COP ($40k/mes)</strong>
+            </div>
+            <div class="pricing-row">
+              <span>12 Meses Anual Fundadores</span>
+              <strong>$440.000 COP ($36.6k/mes)</strong>
+            </div>
+            <div style="padding: 10px 14px; background: #F8FAFC; font-size: 11px; color: #64748B;">
+              💳 Bancolombia, Nequi, Daviplata, Mercado Pago (Tarjetas a cuotas / PSE).
+            </div>
+          </div>
+
+          <!-- ESPAÑA -->
+          <div class="pricing-box">
+            <div class="pricing-box-header">
+              <span>🇪🇸 ESPAÑA / EUROPA (EUR)</span>
+              <span>Línea +34</span>
+            </div>
+            <div class="pricing-row">
+              <span>Pase de Calibración VIP (Demo)</span>
+              <strong>0,00 € (Gratis 2h)</strong>
+            </div>
+            <div class="pricing-row">
+              <span>1 Mes Flex</span>
+              <strong>9,99 € / mes</strong>
+            </div>
+            <div class="pricing-row vip-row">
+              <span>6 Meses VIP (Recomendado)</span>
+              <strong>49,99 € (~8,33 €/mes)</strong>
+            </div>
+            <div class="pricing-row">
+              <span>12 Meses Anual VIP</span>
+              <strong>89,99 € (~7,50 €/mes)</strong>
+            </div>
+            <div style="padding: 10px 14px; background: #F8FAFC; font-size: 11px; color: #64748B;">
+              💳 Bizum (+34 746 05 77 76), Tarjetas, Revolut, Stripe internacional (videm.tv/es).
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- MÓDULO 7 -->
+      <section class="module-card">
+        <div class="module-header">
+          <div class="module-num">07</div>
+          <h2 class="module-title">Manejo de Objeciones Frecuentes (FAQ de Ventas)</h2>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q">❓ "Ya pago Netflix, Disney y Prime, ¿para qué pagar otro servicio?"</div>
+          <div class="faq-a">
+            <em>"Te comprendo perfectamente. El problema es que para tener todo lo que quieres ver terminas pagando más de $200.000 COP o 50 € al mes en plataformas dispersas donde además la imagen viene comprimida a solo 15 megas. Con VIDEM tienes todo el cine y series del mundo en una sola interfaz, sin publicidad y con la calidad real de un disco Blu-ray 4K a 80 megas. Pruébalo 2 horas gratis en tu sala y tú mismo decides si vale la pena."</em>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q">❓ "¿Esto es como MagisTV o IPTV que se congela en partidos y fines de semana?"</div>
+          <div class="faq-a">
+            <em>"¡Totalmente lo contrario! Esas son señales robadas y comprimidas a 2 megas que colapsan todo el tiempo. VIDEM no es IPTV. Es una infraestructura privada bajo demanda con servidores dedicados de fibra en Europa. Cada película viaja a velocidad completa sin caídas ni pixelado. Por eso te regalamos el pase para que compruebes la estabilidad con tus propios ojos."</em>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q">❓ "¿Tengo que meter cables, comprar decodificadores o recibir técnicos en casa?"</div>
+          <div class="faq-a">
+            <em>"Cero molestias. No necesitas aparatos extra ni visitas de extraños. Todo se ejecuta de forma digital en tu propio Smart TV mediante un código de 4 letras en 30 segundos."</em>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q">❓ "¿Tengo que dar contraseñas personales o datos de tarjeta para la prueba?"</div>
+          <div class="faq-a">
+            <em>"En lo absoluto. Cuidamos tu privacidad al 100%. Para el Pase de Calibración jamás te pediremos contraseñas personales ni datos bancarios. Solo el código que ves en la pantalla de tu TV y listo."</em>
+          </div>
+        </div>
+      </section>
+
+      <!-- MÓDULO 8 -->
+      <section class="module-card">
+        <div class="module-header">
+          <div class="module-num">08</div>
+          <h2 class="module-title">Reglas de Oro de Marca y Compliance</h2>
+        </div>
+
+        <div class="callout callout-warning">
+          <strong>⚠️ REGLAS ESTRICTAS DE COMUNICACIÓN (NUNCA ROMPER):</strong>
+          <ul style="padding-left: 18px; margin-top: 6px; line-height: 1.6;">
+            <li><strong>PROHIBIDO mencionar nombres de plataformas competidoras:</strong> En piezas públicas o redes, hablar siempre de <em>"las plataformas tradicionales"</em> o <em>"el streaming convencional"</em>.</li>
+            <li><strong>PROHIBIDO revelar detalles de backend:</strong> Nunca mencionar Real-Debrid, Torrents, Torrentio ni scrapers. Hablar siempre de <em>"CDN privada de fibra óptica"</em> y <em>"servidores dedicados europeos de alta velocidad"</em>.</li>
+            <li><strong>Trato cálido y tuteo elegante:</strong> Tratar siempre de "tú" con respeto y empatía (nunca "usted" ni "estimado/a").</li>
+          </ul>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="doc-footer">
+      <div>© 2026 VIDEM Inc. • Confidencial - Uso Interno Comercial y Entrenamiento</div>
+      <div>Portal Oficial: <a href="https://videm.tv" target="_blank">videm.tv</a></div>
+    </footer>
+
+  </div>
+
+</body>
+</html>

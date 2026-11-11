@@ -77,9 +77,9 @@ if (isSpain) {
   • 6 Meses VIP (Recomendado): 49,99 € (sale a ~8,33 €/mes).
   • 12 Meses Anual VIP (Máximo Ahorro): 89,99 € / año (~7,50 €/mes, ahorras más de 150 € al año frente a plataformas de streaming).
 - MEDIOS DE PAGO ESPAÑA:
-  • Bizum (directo a la línea de soporte +34 746 05 77 76).
-  • Tarjeta Débito / Crédito / Revolut / Stripe internacional.
-  • Portal oficial España: https://videm.tv/es
+  • Pago en línea con Tarjeta Débito / Crédito, Apple Pay o Google Pay (enlace oficial seguro https://videm.tv/es).
+  • Pasarela Internacional Stripe / Revolut.
+  • (Nota: Para seguridad y cumplimiento fiscal, todos los cobros en España se canalizan exclusivamente por pasarela web oficial).
 - SERVIDORES Y LEGALIDAD: Enfatiza que VIDEM conecta a servidores privados CDN dedicados de fibra en Europa (cero redes P2P torrents, sin bloqueos de operadoras españolas y audio Castellano oficial + VOSE sincronizada).\`;
 } else {
   regionalPrompt = \`🇨🇴 MODO COLOMBIA / LATAM ACTIVO:

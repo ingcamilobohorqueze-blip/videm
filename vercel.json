@@ -79,6 +79,14 @@
       "destination": "/es.html"
     },
     {
+      "source": "/admin",
+      "destination": "/admin.html"
+    },
+    {
+      "source": "/activar",
+      "destination": "/activar.html"
+    },
+    {
       "source": "/app",
       "destination": "/app.html"
     },

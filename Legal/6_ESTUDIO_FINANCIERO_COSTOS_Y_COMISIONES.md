@@ -3,7 +3,7 @@
 
 ---
 
-## 🎯 1. FILOSOFÍA DEL MODELO: EL "COLCHÓN INVISIBLE" DE LEVANNA DC
+## 🎯 1. FILOSOFÍA DEL MODELO: RESPALDO TÉCNICO Y REDUNDANCIA CLOUD
 
 Para que una startech sea financieramente sólida y no sufra por fluctuaciones cambiarias, devoluciones o imprevistos técnicos, **nunca se debe presentar a un socio comercial o comisionista el costo bruto del proveedor técnico como el costo total**.
 
@@ -15,7 +15,7 @@ Se establece un **Costo Técnico Operativo Declarado** que ya incorpora:
 1. **Costo de Licenciamiento e Infraestructura CDN:** El costo base del enlace.
 2. **Buffer de Tipo de Cambio (EUR/USD/COP):** Protege contra la devaluación.
 3. **Reserva Técnica de Failover & Soporte:** Fondo para reemplazo de tokens o soporte técnico de servidores.
-4. **Colchón Invisible para LevannaDC:** Margen retenido en origen que absorbe imprevistos y garantiza rentabilidad para la matriz antes de repartir comisiones.
+4. **Respaldo Técnico y Redundancia:** Provisión técnica retenida en origen que absorbe imprevistos y garantiza estabilidad operativa para la matriz antes de liquidar comisiones.
 
 ---
 
@@ -26,15 +26,15 @@ Se establece un **Costo Técnico Operativo Declarado** que ya incorpora:
 | Concepto Financiero | 1 Mes Flex | 6 Meses VIP (Estrella) | 12 Meses Anual VIP |
 | :--- | :---: | :---: | :---: |
 | **Precio de Venta al Público (PVP)** | **9,99 €** | **49,99 €** | **89,99 €** |
-| Costo Real Token CDN (Proveedor) | 4,00 € | 16,00 € | 32,00 € |
-| **Colchón Invisible Levanna (Reserva)** | **+1,50 €** | **+6,00 €** | **+10,00 €** |
+| Costo Servidor Base CDN (Proveedor) | 4,00 € | 16,00 € | 32,00 € |
+| **Respaldo Técnico & Redundancia** | **+1,50 €** | **+6,00 €** | **+10,00 €** |
 | **Costo Técnico Declarado al Socio** | **5,50 €** | **22,00 €** | **42,00 €** |
 | Comisión Pasarela Stripe (~2.5% + 0,25 €) + Facturación | 0,50 € | 2,00 € | 3,50 € |
 | **Costo Operativo Total Asignado** | **6,00 €** | **24,00 €** | **45,50 €** |
 | **MARGEN DISTRIBUIBLE NETO** | **3,99 €** | **25,99 €** | **44,49 €** |
 | 👤 **Comisión Socio España (Cuñado ~55%-60%)** | **2,40 €** | **14,50 €** | **25,00 €** |
-| 🏛️ **Utilidad Visible Levanna (40%-45%)** | **1,59 €** | **11,49 €** | **19,49 €** |
-| 💎 **UTILIDAD REAL TOTAL LEVANNA (Visible + Colchón)** | **3,09 € (31%)** | **17,49 € (35%)** | **29,49 € (33%)** |
+| 🏛️ **Utilidad Operativa Levanna (40%-45%)** | **1,59 €** | **11,49 €** | **19,49 €** |
+| 💎 **TOTAL LEVANNA (Operativa + Respaldo)** | **3,09 € (31%)** | **17,49 € (35%)** | **29,49 € (33%)** |
 
 ---
 
@@ -45,15 +45,15 @@ Se establece un **Costo Técnico Operativo Declarado** que ya incorpora:
 | Concepto Financiero | 1 Mes Flex | 6 Meses VIP (El Más Vendido) | 12 Meses Anual Fundadores |
 | :--- | :---: | :---: | :---: |
 | **Precio de Venta al Público (PVP)** | **$55.000 COP** | **$240.000 COP** | **$440.000 COP** |
-| Costo Real Token CDN (~$4.600/EUR) | $18.500 COP | $74.000 COP | $148.000 COP |
-| **Colchón Invisible Levanna (Reserva)** | **+$6.500 COP** | **+$26.000 COP** | **+$42.000 COP** |
+| Costo Servidor Base CDN (~$4.600/EUR) | $18.500 COP | $74.000 COP | $148.000 COP |
+| **Respaldo Técnico & Redundancia** | **+$6.500 COP** | **+$26.000 COP** | **+$42.000 COP** |
 | **Costo Técnico Declarado** | **$25.000 COP** | **$100.000 COP** | **$190.000 COP** |
 | Pasarela Mercado Pago / PSE (~3.5%) + Facturatech | $2.500 COP | $9.000 COP | $16.000 COP |
 | **Costo Operativo Total Asignado** | **$27.500 COP** | **$109.000 COP** | **$206.000 COP** |
 | **MARGEN DISTRIBUIBLE NETO** | **$27.500 COP** | **$131.000 COP** | **$234.000 COP** |
 | 👤 **Comisión Asesor / Comercial (~50%)** | **$14.000 COP** | **$65.000 COP** | **$115.000 COP** |
-| 🏛️ **Utilidad Visible Levanna (~50%)** | **$13.500 COP** | **$66.000 COP** | **$119.000 COP** |
-| 💎 **UTILIDAD REAL TOTAL LEVANNA (Visible + Colchón)** | **$20.000 COP (36%)** | **$92.000 COP (38%)** | **$161.000 COP (37%)** |
+| 🏛️ **Utilidad Operativa Levanna (~50%)** | **$13.500 COP** | **$66.000 COP** | **$119.000 COP** |
+| 💎 **TOTAL LEVANNA (Operativa + Respaldo)** | **$20.000 COP (36%)** | **$92.000 COP (38%)** | **$161.000 COP (37%)** |
 
 ---
 

@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VIDEM | Estudio Financiero de Costos, Comisiones y Utilidades</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #07090E;
+      --text: #0F172A;
+      --text-muted: #64748B;
+      --cyan: #00B4D8;
+      --cyan-glow: #00F0FF;
+      --gold: #D97706;
+      --green: #10B981;
+      --font-body: 'Plus Jakarta Sans', sans-serif;
+      --font-display: 'Space Grotesk', sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-body);
+      color: var(--text);
+      background-color: #F8FAFC;
+      line-height: 1.55;
+      font-size: 12.5px;
+    }
+
+    .doc-container {
+      max-width: 900px;
+      margin: 20px auto;
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.06);
+    }
+
+    .doc-header {
+      background: linear-gradient(135deg, #07090E 0%, #0D131F 50%, #081B2B 100%);
+      color: #FFFFFF;
+      padding: 35px 40px 25px;
+      border-bottom: 3px solid var(--cyan-glow);
+    }
+
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .logo-img { height: 40px; }
+
+    .badge {
+      background: rgba(0, 240, 255, 0.12);
+      color: var(--cyan-glow);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    .title {
+      font-family: var(--font-display);
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      background: linear-gradient(90deg, #FFFFFF 0%, #E2E8F0 60%, var(--cyan-glow) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
+      font-size: 13.5px;
+      color: #94A3B8;
+      max-width: 700px;
+    }
+
+    .meta-bar {
+      display: flex;
+      gap: 20px;
+      margin-top: 20px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      font-size: 11.5px;
+      color: #94A3B8;
+    }
+
+    .meta-bar strong { color: #FFF; }
+
+    .doc-body { padding: 30px 40px; }
+
+    .section {
+      margin-bottom: 24px;
+      page-break-inside: avoid;
+    }
+
+    .sec-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+      padding-bottom: 6px;
+      border-bottom: 2px solid #E2E8F0;
+    }
+
+    .sec-num {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      background: #0F172A;
+      color: var(--cyan-glow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .sec-title {
+      font-family: var(--font-display);
+      font-size: 16px;
+      font-weight: 700;
+      color: #0F172A;
+    }
+
+    /* TABLES */
+    .finance-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0;
+      font-size: 12px;
+      border: 1px solid #E2E8F0;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .finance-table th {
+      background: #0F172A;
+      color: #FFF;
+      padding: 10px 12px;
+      font-weight: 600;
+      text-align: left;
+    }
+
+    .finance-table td {
+      padding: 9px 12px;
+      border-bottom: 1px solid #E2E8F0;
+      color: #334155;
+    }
+
+    .finance-table tr:nth-child(even) td { background: #F8FAFC; }
+
+    .td-highlight {
+      background: rgba(16, 185, 129, 0.08) !important;
+      color: #047857 !important;
+      font-weight: 700;
+    }
+
+    .td-gold {
+      background: rgba(245, 158, 11, 0.08) !important;
+      color: #B45309 !important;
+      font-weight: 700;
+    }
+
+    .callout {
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin: 12px 0;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .callout-gold {
+      background: #FFFBEB;
+      border-left: 4px solid var(--gold);
+      color: #92400E;
+    }
+
+    .callout-info {
+      background: #F0F9FF;
+      border-left: 4px solid #0284C7;
+      color: #0369A1;
+    }
+
+    /* SCENARIOS GRID */
+    .scenarios-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin: 12px 0;
+    }
+
+    .scen-card {
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+      border-radius: 8px;
+      padding: 14px;
+      border-top: 3px solid #0F172A;
+    }
+
+    .scen-card.highlight {
+      border-top-color: var(--cyan);
+      background: #F0FDF4;
+    }
+
+    .scen-card h4 {
+      font-size: 13px;
+      margin-bottom: 6px;
+      color: #0F172A;
+    }
+
+    .scen-card .num {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 700;
+      margin: 4px 0;
+      color: #047857;
+    }
+
+    .doc-footer {
+      background: #0F172A;
+      color: #94A3B8;
+      padding: 16px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+    }
+
+    @page {
+      size: letter;
+      margin: 8mm 10mm 8mm 10mm;
+    }
+
+    @media print {
+      body { background: #FFF; font-size: 10pt; }
+      .doc-container { box-shadow: none; border: none; margin: 0; max-width: 100%; border-radius: 0; }
+      .doc-header { padding: 20px 24px 14px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .doc-body { padding: 14px 20px 0; }
+      .section { page-break-inside: avoid; margin-bottom: 14px; }
+      .finance-table th, .finance-table td, .callout-gold, .callout-info, .scen-card { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .doc-footer { margin-top: 10px; padding: 12px 20px; page-break-before: avoid; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="doc-container">
+
+    <header class="doc-header">
+      <div class="header-top">
+        <img src="../Logo Videm.png" alt="VIDEM" class="logo-img" onerror="this.style.display='none'">
+        <div class="badge">Estructura Financiera & Comisiones 2026</div>
+      </div>
+      <h1 class="title">MODELO FINANCIERO: UNIT ECONOMICS & COMISIONES</h1>
+      <p class="subtitle">Estructura de costos directos, costos fijos (overhead), absorción de imprevistos y reparto comercial España - Colombia.</p>
+      
+      <div class="meta-bar">
+        <div><strong>Empresa Matriz:</strong> LEVANNA DC S.A.S.</div>
+        <div><strong>Unidad Operativa:</strong> VIDEM Tech Concierge</div>
+        <div><strong>Monedas:</strong> EUR (€) y COP ($)</div>
+        <div><strong>Portal:</strong> videm.tv</div>
+      </div>
+    </header>
+
+    <main class="doc-body">
+
+      <!-- SECCIÓN 1 -->
+      <section class="section">
+        <div class="sec-header">
+          <div class="sec-num">01</div>
+          <h2 class="sec-title">La Estrategia del "Colchón de Reserva Invisible"</h2>
+        </div>
+        <p>Para proteger a la empresa matriz de contingencias operativas (fluctuaciones en el tipo de cambio EUR/COP, reemisión de enlaces técnicos caídos, tarifas bancarias ocultas y devoluciones), <strong>el costo técnico asignado a cada plan incorpora un colchón de seguridad retenido en origen</strong>.</p>
+        
+        <div class="callout callout-gold">
+          <strong>🛡️ Principio de Asignación de Margen:</strong><br>
+          Al socio comercial en España se le presenta el <em>Costo Técnico Declarado</em> como costo base. Al restar este costo y la pasarela del PVP, se obtiene el <strong>Margen Distribuible Neto</strong>, del cual <strong>el socio percibe entre el 55% y el 60%</strong> en comisiones directas. LevannaDC retiene el 40%-45% visible MÁS el colchón invisible, asegurando una rentabilidad global real superior al <strong>32% - 38% del PVP</strong>.
+        </div>
+      </section>
+
+      <!-- SECCIÓN 2 -->
+      <section class="section">
+        <div class="sec-header">
+          <div class="sec-num">02</div>
+          <h2 class="sec-title">Matriz Unit Economics: España (EUR €)</h2>
+        </div>
+
+        <table class="finance-table">
+          <thead>
+            <tr>
+              <th>Plan</th>
+              <th>PVP</th>
+              <th>Costo Proveedor</th>
+              <th>Colchón Levanna</th>
+              <th>Pasarela Stripe</th>
+              <th class="td-highlight">Comisión Socio (55%)</th>
+              <th class="td-gold">Utilidad Real Levanna</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>1 Mes Flex</strong></td>
+              <td>9,99 €</td>
+              <td>4,00 €</td>
+              <td>+1,50 €</td>
+              <td>0,50 €</td>
+              <td class="td-highlight">2,40 €</td>
+              <td class="td-gold">3,09 € (31%)</td>
+            </tr>
+            <tr>
+              <td><strong>6 Meses VIP (Estrella)</strong></td>
+              <td>49,99 €</td>
+              <td>16,00 €</td>
+              <td>+6,00 €</td>
+              <td>2,00 €</td>
+              <td class="td-highlight">14,50 €</td>
+              <td class="td-gold">17,49 € (35%)</td>
+            </tr>
+            <tr>
+              <td><strong>12 Meses Anual VIP</strong></td>
+              <td>89,99 €</td>
+              <td>32,00 €</td>
+              <td>+10,00 €</td>
+              <td>3,50 €</td>
+              <td class="td-highlight">25,00 €</td>
+              <td class="td-gold">29,49 € (33%)</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- SECCIÓN 3 -->
+      <section class="section">
+        <div class="sec-header">
+          <div class="sec-num">03</div>
+          <h2 class="sec-title">Matriz Unit Economics: Colombia (COP $)</h2>
+        </div>
+
+        <table class="finance-table">
+          <thead>
+            <tr>
+              <th>Plan</th>
+              <th>PVP</th>
+              <th>Costo Enlace CDN</th>
+              <th>Colchón Levanna</th>
+              <th>Pasarela / Folios</th>
+              <th class="td-highlight">Comisión Asesor (50%)</th>
+              <th class="td-gold">Utilidad Real Levanna</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>1 Mes Flex</strong></td>
+              <td>$55.000</td>
+              <td>$18.500</td>
+              <td>+$6.500</td>
+              <td>$2.500</td>
+              <td class="td-highlight">$14.000</td>
+              <td class="td-gold">$20.000 (36%)</td>
+            </tr>
+            <tr>
+              <td><strong>6 Meses VIP</strong></td>
+              <td>$240.000</td>
+              <td>$74.000</td>
+              <td>+$26.000</td>
+              <td>$9.000</td>
+              <td class="td-highlight">$65.000</td>
+              <td class="td-gold">$92.000 (38%)</td>
+            </tr>
+            <tr>
+              <td><strong>12 Meses Anual</strong></td>
+              <td>$440.000</td>
+              <td>$148.000</td>
+              <td>+$42.000</td>
+              <td>$16.000</td>
+              <td class="td-highlight">$115.000</td>
+              <td class="td-gold">$161.000 (37%)</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- SECCIÓN 4 -->
+      <section class="section">
+        <div class="sec-header">
+          <div class="sec-num">04</div>
+          <h2 class="sec-title">Costos Fijos Operativos Mensuales (Overhead)</h2>
+        </div>
+
+        <p>Los costos fijos de la infraestructura y el soporte corporativo son absorbidos por LevannaDC:</p>
+
+        <ul style="padding-left: 18px; font-size: 12px; color: #334155; margin-bottom: 12px; line-height: 1.6;">
+          <li><strong>Honorarios Contables (DIAN / Facturación):</strong> ~$350.000 COP / mes (~75 €/mes).</li>
+          <li><strong>Automatización & Flujos (n8n Cloud / VPS):</strong> ~$90.000 COP / mes (~20 €/mes).</li>
+          <li><strong>Instancia WhatsApp & APIs (Evolution API):</strong> ~$65.000 COP / mes (~14 €/mes).</li>
+          <li><strong>Hosting & Dominio (Vercel Pro + videm.tv):</strong> ~$80.000 COP / mes (~18 €/mes).</li>
+          <li><strong>Folios Facturación Electrónica (Facturatech):</strong> ~$25.000 COP / mes (~5 €/mes).</li>
+          <li><strong>TOTAL COSTOS FIJOS GLOBALES:</strong> <strong>~$610.000 COP / mes (~132 €/mes)</strong>.</li>
+        </ul>
+
+        <div class="callout callout-info">
+          🎯 <strong>Punto de Equilibrio:</strong> Se necesitan únicamente <strong>7 a 8 ventas semestrales al mes en total</strong> (Colombia o España) para pagar el 100% de la infraestructura y costos fijos de la empresa.
+        </div>
+      </section>
+
+      <!-- SECCIÓN 5 -->
+      <section class="section">
+        <div class="sec-header">
+          <div class="sec-num">05</div>
+          <h2 class="sec-title">Proyección de Ganancias en España</h2>
+        </div>
+
+        <div class="scenarios-grid">
+          <div class="scen-card">
+            <h4>Arranque (10 ventas/mes)</h4>
+            <p style="font-size: 11.5px; color: #64748B;">Plan Semestral VIP</p>
+            <div class="num">145 € / mes</div>
+            <p style="font-size: 11px;">Comisión Cuñado</p>
+            <div style="font-weight: 700; color: #B45309; margin-top: 4px;">175 € Levanna</div>
+          </div>
+
+          <div class="scen-card highlight">
+            <h4>Constante (25 ventas/mes)</h4>
+            <p style="font-size: 11.5px; color: #64748B;">~1 venta por día hábil</p>
+            <div class="num">362 € / mes</div>
+            <p style="font-size: 11px;">Comisión Cuñado</p>
+            <div style="font-weight: 700; color: #B45309; margin-top: 4px;">437 € Levanna</div>
+          </div>
+
+          <div class="scen-card">
+            <h4>Escala (60 ventas/mes)</h4>
+            <p style="font-size: 11.5px; color: #64748B;">~2 ventas diarias</p>
+            <div class="num">870 € / mes</div>
+            <p style="font-size: 11px;">Comisión Cuñado</p>
+            <div style="font-weight: 700; color: #B45309; margin-top: 4px;">1.049 € Levanna</div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="doc-footer">
+      <div>© 2026 LEVANNA DC S.A.S. • Marca Operativa VIDEM • Confidencial - Uso Interno</div>
+      <div>Portal Oficial: <a href="https://videm.tv" target="_blank" style="color: var(--cyan-glow); text-decoration: none;">videm.tv</a></div>
+    </footer>
+
+  </div>
+
+</body>
+</html>

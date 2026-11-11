@@ -94,3 +94,4 @@ Estos costos son cubiertos por la empresa matriz (LevannaDC) a partir de su util
 * **Ingresos Brutos:** 2.999,40 €
 * 👤 **Comisión Cuñado:** **870,00 € / mes** (Ingreso equivalente a media jornada en España).
 * 🏛️ **Ganancia Real LevannaDC:** **1.049,40 € / mes** (~$4.800.000 COP limpios mensuales).
+

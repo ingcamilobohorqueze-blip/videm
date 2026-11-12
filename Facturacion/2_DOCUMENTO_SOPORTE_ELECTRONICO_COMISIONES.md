@@ -33,8 +33,9 @@ Cuando tu empresa (LevannaDC) le paga comisiones a una persona natural que **no 
 3. **Fecha de Operación:** Día de la liquidación de comisiones (quincenal o mensual).
 4. **Divisa:** `EUR` (Euros) o `COP` (según se pacte la liquidación).
 5. **Concepto / Ítem:**
+   * **Esquema del Ítem:** Estándar de adopción del contribuyente.
+   * **Código Propio:** `COMIS-SOCIO-ES` (o `COMIS-ASESOR-CO`).
    * **Nombre:** `Servicios de intermediación comercial y prospección en territorio español`.
-   * **Código UNSPSC:** `80141600` *(Actividades de ventas y mercadeo / intermediación comercial)* o Código Propio `COMIS-SOCIO-ES`.
    * **Unidad de Medida:** `94` (Servicio / Unidad).
    * **Cantidad:** `1` (o el número de planes intermediados en el periodo).
    * **Valor Unitario:** El total de comisiones acumuladas del mes (ejemplo: 55 ventas de 6 meses = $797,50 €$).
@@ -68,3 +69,4 @@ Para asesores o promotores comerciales dentro del país:
   1. Durante el mes, n8n o la hoja de cálculo acumula las comisiones devengadas por el socio.
   2. El día 30 del mes, se genera **UN SOLO Documento Soporte Electrónico consolidado** por el total de comisiones del mes.
   3. Se realiza la transferencia de comisiones (vía Wise / SWIFT / tarjeta) y el soporte queda radicado y validado ante la DIAN.
+

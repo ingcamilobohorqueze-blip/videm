@@ -5,10 +5,10 @@
 
 ## 🎯 1. REGLA DE ORO DE CONFIGURACIÓN
 
-1. **NO USAR GTIN ni Partida Arancelaria:**
-   * **GTIN:** Exclusivo de bienes físicos de retail (código de barras).
-   * **Partida Arancelaria:** Exclusivo de aduanas de comercio exterior físico (mercancías con DEX).
-   * Para VIDEM se utiliza **UNSPSC (`81111812`)** o **Código Interno del Contribuyente**.
+1. **Esquema Oficial del Ítem: `Estándar de adopción del contribuyente` (Código DIAN `010`)**
+   * **Por qué:** Permite digitar libremente tus propios códigos limpios (`VIDEM-VIP-06`, etc.) sin depender de los diccionarios traducidos de la DIAN ni atascarse buscando términos en inglés como "streaming".
+   * **Validez legal:** Es un estándar formal 100% aprobado por la DIAN en las resoluciones vigentes de facturación electrónica.
+   * **NO USAR GTIN ni Partida Arancelaria:** El GTIN es solo para productos físicos de supermercado/retail (código de barras) y la partida arancelaria es solo para aduanas físicas de mercancías (DEX).
 2. **Unidad de Medida Única (`94 - Servicio / Unidad`):**
    * Vender planes semestrales y anuales como **1 paquete cerrado** evita los desajustes de centavos en la DIAN producidos por divisiones decimales ($49,99 \div 6 = 8,33166...$).
 
@@ -16,14 +16,13 @@
 
 ## 🇪🇸 2. CATÁLOGO DE ÍTEMS: EXPORTACIÓN ESPAÑA (EUR €)
 
-Estos ítems se crean en el módulo **Catálogo > Productos / Servicios** de Facturatech:
+Estos ítems se crean en el módulo **Catálogo > Productos / Servicios > Nuevo** de Facturatech:
 
 | Campo en Facturatech | Plan 1 Mes Flex | Plan 6 Meses VIP (Estrella) | Plan 12 Meses Anual VIP |
 | :--- | :--- | :--- | :--- |
-| **Código Interno** | `VIDEM-FLEX-01` | `VIDEM-VIP-06` | `VIDEM-VIP-12` |
+| **Esquema del Ítem** | **Estándar de adopción del contribuyente** | **Estándar de adopción del contribuyente** | **Estándar de adopción del contribuyente** |
+| **Código del Ítem** | `VIDEM-FLEX-01` | `VIDEM-VIP-06` | `VIDEM-VIP-12` |
 | **Nombre del Ítem** | Servicio Streaming Concierge VIP (1 Mes) | Suscripción Servicio Streaming Concierge (6 Meses) | Suscripción Servicio Streaming Concierge (12 Meses) |
-| **Esquema del Ítem** | UNSPSC *(o Código Propio)* | UNSPSC *(o Código Propio)* | UNSPSC *(o Código Propio)* |
-| **Código UNSPSC** | `81111812` | `81111812` | `81111812` |
 | **Unidad de Medida** | `94` (Unidad / Servicio) | `94` (Unidad / Servicio) | `94` (Unidad / Servicio) |
 | **Cantidad** | `1` | `1` | `1` |
 | **Precio Unitario** | **9,99 €** | **49,99 €** | **89,99 €** |
@@ -45,9 +44,9 @@ Estos ítems se crean en el módulo **Catálogo > Productos / Servicios** de Fac
 
 | Campo en Facturatech | Plan 1 Mes Flex | Plan 6 Meses VIP | Plan 12 Meses Fundadores |
 | :--- | :--- | :--- | :--- |
-| **Código Interno** | `VIDEM-CO-01` | `VIDEM-CO-06` | `VIDEM-CO-12` |
+| **Esquema del Ítem** | **Estándar de adopción del contribuyente** | **Estándar de adopción del contribuyente** | **Estándar de adopción del contribuyente** |
+| **Código del Ítem** | `VIDEM-CO-01` | `VIDEM-CO-06` | `VIDEM-CO-12` |
 | **Nombre del Ítem** | Asistencia Streaming Concierge (1 Mes) | Asistencia Streaming Concierge VIP (6 Meses) | Asistencia Streaming Concierge Anual (12 Meses) |
-| **Código UNSPSC** | `81111812` | `81111812` | `81111812` |
 | **Unidad de Medida** | `94` (Unidad / Servicio) | `94` (Unidad / Servicio) | `94` (Unidad / Servicio) |
 | **Precio Unitario (COP)**| **$55.000 COP** | **$240.000 COP** | **$440.000 COP** |
 | **Régimen No Responsable (LevannaDC)** | Excluido / No gravado | Excluido / No gravado | Excluido / No gravado |
@@ -86,3 +85,4 @@ Para no perder ventas pidiéndole formularios engorrosos al cliente, así se con
 4. **Tasa Representativa del Mercado (TRM):** La tasa oficial certificada del día.
 5. **Forma de Pago:** De contado (`1`) / Medio de pago: `Tarjeta crédito/débito` (`48`) o `Transferencia bancaria` (`42`).
 6. **Validación:** Guardar y transmitir a la DIAN. Facturatech genera el CUFE y despacha el correo al cliente de forma 100% desatendida.
+

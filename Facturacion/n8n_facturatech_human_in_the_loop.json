@@ -1,0 +1,175 @@
+{
+  "name": "VIDEM - Facturación Electrónica Facturatech (Human-in-the-Loop)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "videm-billing-trigger",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "node-billing-inbound",
+      "name": "Webhook Pago Exitoso (Stripe / MP / Bot)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        120,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// NORMALIZACIÓN TRIBUTARIA DIAN / FACTURATECH\nconst body = $input.item.json.body || $input.item.json;\n\n// 1. Extraer datos del cliente\nconst rawName = (body.customerName || body.clientName || body.name || \"Cliente Final\").trim();\nconst rawEmail = (body.customerEmail || body.email || \"facturacion@videm.tv\").trim().toLowerCase();\nconst rawCountry = (body.country || body.pais || \"ES\").toUpperCase().trim();\nconst rawDoc = (body.documentId || body.dni || body.cedula || \"\").trim();\nconst rawPhone = (body.phone || body.whatsapp || \"\").trim();\n\n// 2. Extraer datos de la compra\nconst rawPlan = (body.plan || body.planName || \"6 Meses VIP\").toLowerCase();\nconst isSpain = rawCountry === \"ES\" || rawCountry === \"ESPAÑA\" || rawCountry === \"ESP\";\n\nlet planCode = \"\";\nlet planTitle = \"\";\nlet unitPrice = 0;\nlet currency = \"\";\nlet taxRate = 0;\nlet taxExemptionNote = \"\";\nlet docType = \"\";\nlet docNumber = \"\";\n\n// Configuración específica de cada país\nif (isSpain) {\n  currency = \"EUR\";\n  docType = \"42\"; // Documento de identificación extranjero (DNI / NIE)\n  docNumber = rawDoc || (\"CLI-\" + Math.floor(100000 + Math.random() * 900000));\n  taxRate = 0; // Exento de IVA\n  taxExemptionNote = \"Exportación de servicios exenta de IVA - Art. 481 literal c del Estatuto Tributario.\";\n\n  if (rawPlan.includes(\"12\") || rawPlan.includes(\"anual\")) {\n    planCode = \"VIDEM-VIP-12\";\n    planTitle = \"Suscripción Servicio Streaming Concierge (12 Meses)\";\n    unitPrice = 89.99;\n  } else if (rawPlan.includes(\"1\") || rawPlan.includes(\"flex\") || rawPlan.includes(\"mes\")) {\n    planCode = \"VIDEM-FLEX-01\";\n    planTitle = \"Servicio Streaming Concierge VIP (1 Mes)\";\n    unitPrice = 9.99;\n  } else {\n    // Plan Estrella por defecto\n    planCode = \"VIDEM-VIP-06\";\n    planTitle = \"Suscripción Servicio Streaming Concierge (6 Meses)\";\n    unitPrice = 49.99;\n  }\n} else {\n  // Colombia\n  currency = \"COP\";\n  docType = rawDoc ? \"13\" : \"13\"; // Cédula de ciudadanía\n  docNumber = rawDoc || \"222222222222\"; // Consumidor Final DIAN estándar\n  taxRate = 0; // Régimen No Responsable (LevannaDC)\n  taxExemptionNote = \"Operación efectuada por persona natural no responsable de IVA.\";\n\n  if (rawPlan.includes(\"12\") || rawPlan.includes(\"anual\")) {\n    planCode = \"VIDEM-CO-12\";\n    planTitle = \"Asistencia Streaming Concierge Anual (12 Meses)\";\n    unitPrice = 440000;\n  } else if (rawPlan.includes(\"1\") || rawPlan.includes(\"flex\")) {\n    planCode = \"VIDEM-CO-01\";\n    planTitle = \"Asistencia Streaming Concierge (1 Mes)\";\n    unitPrice = 55000;\n  } else {\n    planCode = \"VIDEM-CO-06\";\n    planTitle = \"Asistencia Streaming Concierge VIP (6 Meses)\";\n    unitPrice = 240000;\n  }\n}\n\n// Payload estructurado para Facturatech\nconst facturatechPayload = {\n  tipoDocumento: \"01\", // Factura Electrónica de Venta\n  tipoOperacion: isSpain ? \"02\" : \"10\", // 02: Exportación | 10: Venta Estándar\n  divisa: currency,\n  cliente: {\n    nombre: rawName,\n    email: rawEmail,\n    pais: isSpain ? \"ES\" : \"CO\",\n    tipoDocumento: docType,\n    numeroDocumento: docNumber,\n    telefono: rawPhone,\n    responsabilidadFiscal: \"R-99-PN\" // No responsable / Persona Natural\n  },\n  items: [\n    {\n      codigoInterno: planCode,\n      unspsc: \"81111812\", // Servicios de streaming y transmisión en la nube\n      nombre: planTitle,\n      unidadMedida: \"94\", // Servicio / Unidad (evita decimales)\n      cantidad: 1,\n      precioUnitario: unitPrice,\n      impuestoIva: taxRate,\n      notaLegal: taxExemptionNote\n    }\n  ],\n  metadata: {\n    origenPago: body.gateway || \"Stripe/MercadoPago\",\n    referenciaPago: body.paymentId || body.reference || (\"TX-\" + Date.now())\n  }\n};\n\n// Texto formateado para el mensaje con botones al administrador\nconst approvalMessage = [\n  \"🧾 *VIDEM BILLING | NUEVA VENTA DETECTADA*\",\n  \"\",\n  \"👤 *Cliente:* \" + rawName,\n  \"📧 *Email:* \" + rawEmail,\n  \"🌍 *Destino:* \" + (isSpain ? \"🇪🇸 España (Exportación de Servicio - IVA 0%)\" : \"🇨🇴 Colombia (Nacional)\"),\n  \"🆔 *Documento:* \" + docNumber + \" (Tipo \" + docType + \")\",\n  \"📦 *Plan:* \" + planTitle,\n  \"💰 *Monto a Facturar:* \" + unitPrice + \" \" + currency,\n  \"🔢 *Ref Pago:* \" + facturatechPayload.metadata.referenciaPago,\n  \"\",\n  \"¿Deseas autorizar la transmisión electrónica a la DIAN a través de Facturatech?\"\n].join(\"\\n\");\n\nreturn {\n  facturatechPayload,\n  approvalMessage,\n  clientEmail: rawEmail,\n  clientName: rawName,\n  unitPrice,\n  currency,\n  isSpain\n};"
+      },
+      "id": "node-code-prep",
+      "name": "Estructurar Payload Facturatech",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        360,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "TU_TELEGRAM_CHAT_ID",
+        "text": "={{ $json.approvalMessage }}",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": [
+                {
+                  "text": "✅ Emitir en Facturatech",
+                  "additionalFields": {
+                    "callback_data": "={{ 'EMITIR_FACTURA_' + $json.facturatechPayload.metadata.referenciaPago }}"
+                  }
+                },
+                {
+                  "text": "⏭️ Facturar al Cierre de Mes",
+                  "additionalFields": {
+                    "callback_data": "={{ 'POSPONER_FACTURA_' + $json.facturatechPayload.metadata.referenciaPago }}"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "id": "node-telegram-approval",
+      "name": "Alerta Human-in-the-Loop (Telegram / WhatsApp)",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        600,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "videm-facturatech-callback",
+        "options": {}
+      },
+      "id": "node-callback-in",
+      "name": "Callback Aprobación Humana",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        120,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.facturatech.co/v1/facturas",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer TU_TOKEN_DE_FACTURATECH"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.body.facturatechPayload }}",
+        "options": {}
+      },
+      "id": "node-api-facturatech",
+      "name": "Transmitir a Facturatech (API)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        360,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "TU_TELEGRAM_CHAT_ID",
+        "text": "=🎉 *FACTURA ELECTRÓNICA DIAN TRANSMITIDA CON ÉXITO*\n\n📄 *No. Factura:* {{ $json.numeroFactura || 'FE-PENDIENTE' }}\n🔑 *CUFE:* `{{ $json.cufe || 'Verificado' }}`\n📧 *Enviado al correo:* {{ $('Estructurar Payload Facturatech').item.json.clientEmail }}\n🔗 *Ver PDF en Facturatech:* {{ $json.pdfUrl || 'Disponible en panel Facturatech' }}"
+      },
+      "id": "node-success-alert",
+      "name": "Notificación Éxito Emisión",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        600,
+        560
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook Pago Exitoso (Stripe / MP / Bot)": {
+      "main": [
+        [
+          {
+            "node": "Estructurar Payload Facturatech",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Estructurar Payload Facturatech": {
+      "main": [
+        [
+          {
+            "node": "Alerta Human-in-the-Loop (Telegram / WhatsApp)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Callback Aprobación Humana": {
+      "main": [
+        [
+          {
+            "node": "Transmitir a Facturatech (API)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transmitir a Facturatech (API)": {
+      "main": [
+        [
+          {
+            "node": "Notificación Éxito Emisión",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

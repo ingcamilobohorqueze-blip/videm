@@ -17,6 +17,7 @@ node_modules/
 .DS_Store
 Thumbs.db
 desktop.ini
+~$*
 
 # IDE & Editor files
 .vscode/

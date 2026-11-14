@@ -1,0 +1,172 @@
+{
+  "name": "VIDEM - Generador de CSV para Carga Masiva Facturatech",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "videm-registrar-venta-factura",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "node-webhook-sales",
+      "name": "Webhook Venta Exitosa (Stripe / MP / Bot)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        120,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// MAPEO EXACTO AL LAYOUT DE FACTURATECH (comprobantes_layout.xlsx)\nconst body = $input.item.json.body || $input.item.json;\n\n// 1. Datos del Cliente\nconst rawName = (body.customerName || body.clientName || body.name || \"Cliente Consumidor Final\").trim();\nconst rawEmail = (body.customerEmail || body.email || \"\").trim().toLowerCase();\nconst rawCountry = (body.country || body.pais || \"ES\").toUpperCase().trim();\nconst rawDoc = (body.documentId || body.dni || body.cedula || \"\").trim();\nconst rawSeller = (body.sellerCode || body.vendedor || \"SOCIO-ES-01\").trim();\nconst isSpain = rawCountry === \"ES\" || rawCountry === \"ESPAÑA\" || rawCountry === \"ESP\";\n\n// 2. Fechas de la Suscripción (Formato YYYY-MM-DD)\nconst now = new Date();\nconst formatDate = (d) => d.toISOString().split(\"T\")[0];\nconst fechaInicio = formatDate(now);\nconst fechaVencimiento = fechaInicio; // Contado vence de inmediato\n\nconst rawPlan = (body.plan || body.planName || \"6 Meses VIP\").toLowerCase();\nlet duracionDias = 180;\nlet planCode = \"\";\nlet planTitle = \"\";\nlet precioUnitario = 0;\nlet tipoFactura = isSpain ? 2 : 1; // 1: Venta Nacional | 2: Exportación\nlet moneda = isSpain ? \"EUR\" : \"COP\";\nlet trm = body.trm || 4450; // TRM oficial del día si es exterior\n\nif (isSpain) {\n  if (rawPlan.includes(\"12\") || rawPlan.includes(\"anual\")) {\n    duracionDias = 365;\n    planCode = \"VIDEM-VIP-12\";\n    planTitle = \"Suscripción Servicio Streaming Concierge (12 Meses)\";\n    precioUnitario = 89.99;\n  } else if (rawPlan.includes(\"1\") || rawPlan.includes(\"flex\")) {\n    duracionDias = 30;\n    planCode = \"VIDEM-FLEX-01\";\n    planTitle = \"Servicio Streaming Concierge VIP (1 Mes)\";\n    precioUnitario = 9.99;\n  } else {\n    duracionDias = 180;\n    planCode = \"VIDEM-VIP-06\";\n    planTitle = \"Suscripción Servicio Streaming Concierge (6 Meses)\";\n    precioUnitario = 49.99;\n  }\n} else {\n  // Colombia\n  if (rawPlan.includes(\"12\") || rawPlan.includes(\"anual\")) {\n    duracionDias = 365;\n    planCode = \"VIDEM-CO-12\";\n    planTitle = \"Asistencia Streaming Concierge Anual (12 Meses)\";\n    precioUnitario = 440000;\n  } else if (rawPlan.includes(\"1\") || rawPlan.includes(\"flex\")) {\n    duracionDias = 30;\n    planCode = \"VIDEM-CO-01\";\n    planTitle = \"Asistencia Streaming Concierge (1 Mes)\";\n    precioUnitario = 55000;\n  } else {\n    duracionDias = 180;\n    planCode = \"VIDEM-CO-06\";\n    planTitle = \"Asistencia Streaming Concierge VIP (6 Meses)\";\n    precioUnitario = 240000;\n  }\n}\n\nconst fechaFinObj = new Date(now.getTime() + (duracionDias * 24 * 60 * 60 * 1000));\nconst fechaFin = formatDate(fechaFinObj);\n\n// 3. Documento Adquiriente\nlet nitAdquiriente = rawDoc;\nif (!nitAdquiriente) {\n  nitAdquiriente = isSpain ? (\"CLI-ES-\" + Math.floor(10000 + Math.random() * 90000)) : \"222222222222\";\n}\n\n// 4. Mapeo a las Columnas Exactas de comprobantes_layout.xlsx (Fila 4)\nconst layoutRow = {\n  \"*NIT ADQUIRIENTE\": nitAdquiriente,\n  \"FECHA DE PAGO IMPUESTOS\": \"\",\n  \"*TIPO DE OPERACIÓN\": 10, // Estándar\n  \"*TIPO DE COMPROBANTE\": 1, // Factura Electrónica\n  \"*TIPO DE FACTURA\": tipoFactura, // 1 = Nacional | 2 = Exportación\n  \"FECHA INICIO PERIODO FACTURADO\": fechaInicio,\n  \"FECHA FIN PERIODO FACTURADO\": fechaFin,\n  \"*FECHA VENCIMIENTO\": fechaVencimiento,\n  \"NOTAS\": isSpain ? \"Exportación de servicios exenta de IVA - Art. 481 literal c E.T.\" : \"Operación de servicios tecnológicos en la nube excluida de IVA.\",\n  \"*METODO DE PAGO\": 1, // Contado\n  \"*MEDIO DE PAGO\": 48, // 48: Tarjeta Crédito | 47: Transferencia\n  \"FECHA DE PAGO\": fechaInicio,\n  \"*CANTIDAD\": 1,\n  \"CODIGO\": planCode,\n  \"PRODUCTO O SERVICIO\": planTitle,\n  \"UNIDAD DE MEDIDA\": \"94\", // Servicio / Unidad\n  \"INFORMACIÓN ADICIONAL\": \"Cliente: \" + rawName + \" | Email: \" + rawEmail,\n  \"PRECIO UNITARIO\": precioUnitario,\n  \"*CODIGO DEL ESTANDAR\": \"010\", // Estándar de adopción del contribuyente\n  \"*CODIGO DEL PRODUCTO\": planCode,\n  \"NÚMERO DE ELEMENTOS EN UN EMPAQUE\": 1,\n  \"*ES CARGO (SI,NO)\": \"NO\",\n  \"VALOR BASE PARA CÁLCULO\": \"\",\n  \"PORCENTAJE DESCUENTO / CARGO\": \"\",\n  \"*VALOR DESCUENTO/CARGO\": 0,\n  \"DESCRIPCIÓN\": \"\",\n  \"CODIGO IMPUESTO\": \"01\", // IVA\n  \"BASE IMPONIBLE\": precioUnitario,\n  \"TARIFA\": 0,\n  \"UNIDAD DE MEDIDA BASE\": \"\",\n  \"VALOR DEL TIRBUTO POR UNIDAD\": \"\",\n  \"*IMPORTE IMPUESTO\": 0,\n  \"MARCA\": \"VIDEM\",\n  \"MODELO\": \"\",\n  \"VALOR COMERCIAL\": precioUnitario,\n  \"CODIGO DEL VENDEDOR\": rawSeller,\n  \"SUBCODIGO DE VENDEDOR\": \"\",\n  \"NIT DEL MANDANTE\": \"\",\n  \"DÍGITO VERIFICADOR MANDANTE\": \"\",\n  \"IDENTIFICADOR\": \"\",\n  \"CARACTERÍSTICA\": \"\",\n  \"DESCRIPCIÓN / VALOR\": \"\",\n  \"TIPO DE CONCEPTO DE RECAUDO\": \"\",\n  \"MONEDA DESTINO\": moneda,\n  \"TIPO DE CAMBIO\": isSpain ? trm : \"\",\n  \"FECHA DE TIPO DE CAMBIO\": isSpain ? fechaInicio : \"\"\n};\n\nconst summaryText = [\n  \"🧾 *NUEVA FILA DE FACTURACIÓN GENERADA (LOTE)*\",\n  \"\",\n  \"👤 *Cliente:* \" + rawName + \" (\" + (isSpain ? \"🇪🇸 España\" : \"🇨🇴 Colombia\") + \")\",\n  \"🆔 *Doc/NIT:* \" + nitAdquiriente,\n  \"📦 *Plan:* \" + planTitle,\n  \"💰 *Valor:* \" + precioUnitario + \" \" + moneda,\n  \"📅 *Vigencia:* Del \" + fechaInicio + \" al \" + fechaFin,\n  \"👤 *Vendedor:* \" + rawSeller,\n  \"\",\n  \"✅ Fila agregada a la plantilla de importación masiva de Facturatech.\"\n].join(\"\\n\");\n\nreturn {\n  layoutRow,\n  summaryText,\n  rawName,\n  rawEmail,\n  planTitle,\n  precioUnitario,\n  moneda\n};"
+      },
+      "id": "node-code-mapper",
+      "name": "Mapear a Columnas Facturatech",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        360,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "sheetId": "ID_DE_TU_GOOGLE_SHEET_FACTURAS",
+        "range": "Layout!A:AT",
+        "options": {
+          "valueInputMode": "USER_ENTERED"
+        }
+      },
+      "id": "node-gsheet-append",
+      "name": "Escribir en Google Sheets (Plantilla)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        600,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "TU_TELEGRAM_CHAT_ID",
+        "text": "={{ $json.summaryText }}"
+      },
+      "id": "node-telegram-alert",
+      "name": "Notificar Venta a Camilo",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        820,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "descargar-facturas-facturatech-csv",
+        "options": {}
+      },
+      "id": "node-download-csv",
+      "name": "Webhook Descarga CSV para Subir",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        120,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// DEVUELVE EL CSV FORMATEADO EN UTF-8 LISTO PARA IMPORTAR EN FACTURATECH\n// Lee los items acumulados de la base de datos o Google Sheets\nconst items = $input.all();\nif (!items || items.length === 0) {\n  return {\n    headers: { \"Content-Type\": \"text/plain; charset=utf-8\" },\n    body: \"No hay facturas pendientes en el lote actual.\"\n  };\n}\n\nconst headers = Object.keys(items[0].json.layoutRow || items[0].json);\nconst rows = items.map(item => {\n  const row = item.json.layoutRow || item.json;\n  return headers.map(h => {\n    const val = (row[h] !== undefined && row[h] !== null) ? String(row[h]) : \"\";\n    return '\"' + val.replace(/\"/g, '\"\"') + '\"';\n  }).join(\",\");\n});\n\nconst csvContent = [headers.map(h => '\"' + h + '\"').join(\",\"), ...rows].join(\"\\r\\n\");\n\nreturn {\n  headers: {\n    \"Content-Type\": \"text/csv; charset=utf-8\",\n    \"Content-Disposition\": \"attachment; filename=facturatech_lote_\" + new Date().toISOString().split(\"T\")[0] + \".csv\"\n  },\n  body: csvContent\n};"
+      },
+      "id": "node-format-csv",
+      "name": "Formatear CSV UTF-8",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        360,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "custom",
+        "responseCode": 200,
+        "responseHeaders": {
+          "entries": [
+            {
+              "name": "Content-Type",
+              "value": "text/csv; charset=utf-8"
+            },
+            {
+              "name": "Content-Disposition",
+              "value": "attachment; filename=\"lote_facturatech.csv\""
+            }
+          ]
+        },
+        "responseBody": "={{ $json.body }}"
+      },
+      "id": "node-send-csv",
+      "name": "Descargar Archivo CSV en 1 Clic",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        600,
+        500
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook Venta Exitosa (Stripe / MP / Bot)": {
+      "main": [
+        [
+          {
+            "node": "Mapear a Columnas Facturatech",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mapear a Columnas Facturatech": {
+      "main": [
+        [
+          {
+            "node": "Escribir en Google Sheets (Plantilla)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Notificar Venta a Camilo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook Descarga CSV para Subir": {
+      "main": [
+        [
+          {
+            "node": "Formatear CSV UTF-8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formatear CSV UTF-8": {
+      "main": [
+        [
+          {
+            "node": "Descargar Archivo CSV en 1 Clic",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

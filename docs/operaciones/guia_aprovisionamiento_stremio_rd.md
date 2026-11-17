@@ -32,6 +32,11 @@ Cada perfil de cliente en **VIDEM** se configura bajo los siguientes parámetros
 ### E. Subtítulos
 * **OpenSubtitles v3 + Subsource:** Idioma predeterminado: Español (Neutro/Latinoamérica).
 
+### F. Parámetros del Motor de Reproducción (Audio / Video)
+* **Motor Predeterminado (Android TV / Fire TV):** **`ExoPlayer (EXO)`** obligatorio.
+  * *Motivo operativo:* ExoPlayer gestiona la decodificación por hardware nativo de pistas **Dolby Digital (AC3)**, **E-AC3** y **Dolby Atmos/Vision**, evitando los bloqueos y silencios de software que presenta VLC en contenedores MKV de Smart TVs modernos.
+* **Paso de audio (Audio Passthrough):** `Desactivado (Off)` por defecto para altavoces de TV integrados.
+
 ---
 
 ## 2. El Proceso de Entrega Llave en Mano (Zero-Friction Login)

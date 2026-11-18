@@ -58,51 +58,167 @@ module.exports = {
     '1334': 'SPORTS EVENTS'
   },
 
-  // Señales TDT 1080p Directas (Cabecera Nacional Colombia - No consumen conexión de TREX)
+  // Señales Directas de Colombia (co.m3u: TDT + Deportes + Cine + Series - No consumen conexión de TREX)
   tdtDirectByDial: {
+    // 1. Nacionales y Regionales
     130: [
-      { title: 'RCN Televisión 1080p (TDT Directo)', url: 'http://138.121.15.230:9002/RCN/index.m3u8' },
-      { title: 'RCN Televisión 1080p (TDT Alterno)', url: 'http://38.134.250.110:8000/play/a00i/index.m3u8' }
+      { title: 'RCN Televisión 1080p (Directo CO)', url: 'http://138.121.15.230:9002/RCN/index.m3u8' },
+      { title: 'RCN Televisión 1080p (Alterno CO)', url: 'http://38.134.250.110:8000/play/a00i/index.m3u8' },
+      { title: 'RCN HD2 Deportes/Eventos (Directo CO)', url: 'http://181.78.14.26:4000/play/a07m/index.m3u8' }
     ],
     132: [
-      { title: 'Caracol Televisión 1080p (TDT Directo)', url: 'http://138.121.15.230:9002/CARACOL/index.m3u8' }
+      { title: 'Caracol Televisión 1080p (Directo CO)', url: 'http://138.121.15.230:9002/CARACOL/index.m3u8' },
+      { title: 'Caracol TV 1080p (Alterno CO)', url: 'http://38.190.100.202:8000/play/a09v/index.m3u8' },
+      { title: 'Caracol HD2 Deportes/Eventos (Directo CO)', url: 'http://181.78.14.26:4000/play/a00d/index.m3u8' }
     ],
     133: [
-      { title: 'CityTV Bogotá 1080p (TDT Directo)', url: 'http://138.121.15.230:9002/CITY-TV/index.m3u8' }
+      { title: 'CityTV Bogotá 1080p (Directo CO)', url: 'http://138.121.15.230:9002/CITY-TV/index.m3u8' }
     ],
     134: [
-      { title: 'Caracol Internacional 1080p (TDT Directo)', url: 'http://45.5.117.57:8200/play/a0e9/index.m3u8' }
+      { title: 'Caracol Internacional 1080p (Directo CO)', url: 'http://45.5.117.57:8200/play/a0e9/index.m3u8' }
+    ],
+    135: [
+      { title: 'RCN Nuestra Tele Internacional 1080p (Directo CO)', url: 'http://45.173.231.22:8000/play/a0cr/index.m3u8' }
     ],
     136: [
-      { title: 'Canal 1 1080p (TDT Directo)', url: 'http://138.121.15.230:9002/CANAL-UNO/index.m3u8' },
-      { title: 'Canal 1 1080p (TDT Alterno)', url: 'http://190.109.2.92:8000/play/a010/index.m3u8' }
+      { title: 'Canal 1 1080p (Directo CO)', url: 'http://138.121.15.230:9002/CANAL-UNO/index.m3u8' },
+      { title: 'Canal 1 1080p (Alterno CO)', url: 'http://190.109.2.92:8000/play/a010/index.m3u8' }
     ],
     137: [
-      { title: 'Señal Colombia 1080p (TDT Directo)', url: 'http://138.121.15.230:9002/SENAL-COLOMBIA/index.m3u8' }
+      { title: 'Señal Colombia 1080p (Directo CO)', url: 'http://138.121.15.230:9002/SENAL-COLOMBIA/index.m3u8' }
     ],
     140: [
-      { title: 'Teleantioquia 1080p (TDT Directo)', url: 'http://138.121.15.230:9002/TELEANTIOQUIA/index.m3u8' }
+      { title: 'Teleantioquia 1080p (Directo CO)', url: 'http://138.121.15.230:9002/TELEANTIOQUIA/index.m3u8' }
     ],
     141: [
-      { title: 'Telepacífico 1080p (TDT Directo)', url: 'http://138.121.15.230:9002/TELEPACIFICO/index.m3u8' }
+      { title: 'Telepacífico 1080p (Directo CO)', url: 'http://138.121.15.230:9002/TELEPACIFICO/index.m3u8' }
     ],
     142: [
-      { title: 'Telecaribe 1080p (TDT Directo)', url: 'http://138.121.15.230:9002/TELECARIBE/index.m3u8' }
+      { title: 'Telecaribe 1080p (Directo CO)', url: 'http://138.121.15.230:9002/TELECARIBE/index.m3u8' }
     ],
     143: [
-      { title: 'Canal Capital 1080p (TDT Directo)', url: 'http://138.121.15.230:9002/CANAL-CAPITAL/index.m3u8' }
+      { title: 'Canal Capital 1080p (Directo CO)', url: 'http://138.121.15.230:9002/CANAL-CAPITAL/index.m3u8' }
     ],
     145: [
-      { title: 'NTN24 1080p (Directo)', url: 'https://stream1.bitred.cl/ntn24/index.m3u8' }
+      { title: 'NTN24 1080p (Directo CO)', url: 'https://stream1.bitred.cl/ntn24/index.m3u8' }
     ],
     147: [
-      { title: 'CableNoticias 1080p (TDT Directo)', url: 'http://181.78.211.244:8005/play/a09u/index.m3u8' }
+      { title: 'CableNoticias 1080p (Directo CO)', url: 'http://181.78.211.244:8005/play/a09u/index.m3u8' }
     ],
     148: [
-      { title: 'Canal Trece 1080p (TDT Directo)', url: 'http://190.60.46.228:8888/play/a030/index.m3u8' }
+      { title: 'Canal Trece 1080p (Directo CO)', url: 'http://190.60.46.228:8888/play/a030/index.m3u8' }
     ],
     149: [
-      { title: 'Telecafé 1080p (TDT Directo)', url: 'http://138.121.15.230:9002/TELECAFE/index.m3u8' }
+      { title: 'Telecafé 1080p (Directo CO)', url: 'http://138.121.15.230:9002/TELECAFE/index.m3u8' }
+    ],
+
+    // 2. Deportes (ESPN 1-7, Win+, Win Sports, DSports de co.m3u)
+    601: [
+      { title: 'Win+ Fútbol 1080p (Directo CO)', url: 'http://181.78.12.119:16123/play/ch19/index.m3u8' }
+    ],
+    633: [
+      { title: 'Win Sports 1080p (Directo CO)', url: 'http://138.121.15.230:9002/WIN-SPORT/index.m3u8' }
+    ],
+    610: [
+      { title: 'DSPORTS 1080p (Directo CO)', url: 'http://38.187.7.252:8000/play/a03d/index.m3u8' }
+    ],
+    621: [
+      { title: 'ESPN Colombia 1080p (Directo CO)', url: 'http://181.78.211.244:8005/play/a08q/index.m3u8' }
+    ],
+    622: [
+      { title: 'ESPN 2 Colombia 1080p (Directo CO)', url: 'http://190.61.47.54:8000/play/a005/index.m3u8' }
+    ],
+    623: [
+      { title: 'ESPN 3 Sur 1080p (Directo CO)', url: 'https://barinaslive1.boldmss.com/ESPN_3/ESPN_3.isml/ESPN_3.m3u8' }
+    ],
+    624: [
+      { title: 'ESPN 4 Sur 1080p (Directo CO)', url: 'https://barinaslive1.boldmss.com/ESPN_4/ESPN_4.isml/ESPN_4.m3u8' },
+      { title: 'ESPN 5 Sur 1080p (Directo CO)', url: 'https://barinaslive1.boldmss.com/ESPN_5/ESPN_5.isml/ESPN_5.m3u8' },
+      { title: 'ESPN 6 Sur 1080p (Directo CO)', url: 'https://barinaslive1.boldmss.com/ESPN_6/ESPN_6.isml/ESPN_6.m3u8' },
+      { title: 'ESPN 7 Sur 1080p (Directo CO)', url: 'https://barinaslive1.boldmss.com/ESPN_7/ESPN_7.isml/ESPN_7.m3u8' }
+    ],
+
+    // 3. Series y Películas de co.m3u
+    202: [
+      { title: 'Star Channel Colombia 1080p (Directo CO)', url: 'http://190.61.47.54:8000/play/a035/index.m3u8' }
+    ],
+    206: [
+      { title: 'Warner Channel Colombia 1080p (Directo CO)', url: 'http://38.134.250.110:8000/play/a029/index.m3u8' }
+    ],
+    207: [
+      { title: 'A&E 1080p (Directo CO)', url: 'http://138.121.15.230:9002/A&E/index.m3u8' }
+    ],
+    214: [
+      { title: 'AXN Andes 1080p (Directo CO)', url: 'http://181.78.8.199:8000/play/a0cu/index.m3u8' }
+    ],
+    217: [
+      { title: 'FX 1080p (Directo CO)', url: 'http://15.204.246.24:8080/FXHD/index.m3u8' }
+    ],
+    218: [
+      { title: 'Universal TV Colombia 1080p (Directo CO)', url: 'http://38.134.250.110:8000/play/a006/index.m3u8' }
+    ],
+    502: [
+      { title: 'TNT Colombia 1080p (Directo CO)', url: 'http://181.78.211.244:8005/play/a09g/index.m3u8' }
+    ],
+    503: [
+      { title: 'TNT Series 1080p (Directo CO)', url: 'http://168.196.127.137:6001/play/a095/index.m3u8' }
+    ],
+    507: [
+      { title: 'Cinecanal 1080p (Directo CO)', url: 'http://15.204.246.24:8080/CinecanalHD/index.m3u8' }
+    ],
+    508: [
+      { title: 'Studio Universal Colombia 1080p (Directo CO)', url: 'http://45.171.64.30:2000/play/a04o/index.m3u8' }
+    ],
+    518: [
+      { title: 'Space 1080p (Directo CO)', url: 'http://45.171.64.30:6060/play/a04n/index.m3u8' }
+    ],
+
+    // 4. Documentales, Variedades, Infantiles y Música de co.m3u
+    732: [
+      { title: 'Discovery Channel 1080p (Directo CO)', url: 'http://45.171.64.30:6060/play/a032/index.m3u8' }
+    ],
+    738: [
+      { title: 'Discovery Science Colombia/Perú (Directo CO)', url: 'http://45.134.141.161:2200/ARG/Discovery_Science_HD/index.m3u8' }
+    ],
+    740: [
+      { title: 'TLC 1080p (Directo CO)', url: 'http://38.134.250.110:8000/play/a00n/index.m3u8' }
+    ],
+    742: [
+      { title: 'History 1080p (Directo CO)', url: 'http://15.204.246.24:8080/HistoryHD/index.m3u8' }
+    ],
+    215: [
+      { title: 'Comedy Central 1080p (Directo CO)', url: 'http://190.93.224.42/COMEDY-CENTRAL/index.m3u8' }
+    ],
+    222: [
+      { title: 'E! Colombia 1080p (Directo CO)', url: 'http://38.134.250.110:8000/play/a00x/index.m3u8' }
+    ],
+    228: [
+      { title: 'RCN Novelas 1080p (Directo CO)', url: 'https://cdnlive.klicgo.net/rcnnovelas/live/playlist.m3u8' },
+      { title: 'TNT Novelas Colombia 1080p (Directo CO)', url: 'http://190.61.47.54:8000/play/a02f/index.m3u8' }
+    ],
+    304: [
+      { title: 'Cartoon Network 1080p (Directo CO)', url: 'http://45.173.12.70:8000/play/a0fj' }
+    ],
+    308: [
+      { title: 'Nickelodeon 1080p (Directo CO)', url: 'http://181.78.79.131:8000/play/a0qm' }
+    ],
+    309: [
+      { title: 'Nick Jr. 1080p (Directo CO)', url: 'https://streaming.onnethn.com/NICK_JR/playlist.m3u8' }
+    ],
+    314: [
+      { title: 'Disney Channel 1080p (Directo CO)', url: 'http://15.204.246.24:8080/DisneyHD/index.m3u8' }
+    ],
+    315: [
+      { title: 'Disney Jr. 1080p (Directo CO)', url: 'http://190.14.10.19:16000/play/a02d/index.m3u8' }
+    ],
+    330: [
+      { title: 'Discovery Kids Colombia 1080p (Directo CO)', url: 'http://38.134.250.110:8000/play/a003/index.m3u8' }
+    ],
+    335: [
+      { title: 'Tooncast (Directo CO)', url: 'http://190.61.42.218:9000/play/a06i/index.m3u8' }
+    ],
+    264: [
+      { title: 'MTV 1080p (Directo CO)', url: 'http://15.204.246.24:8080/MTVHD/index.m3u8' }
     ]
   },
 

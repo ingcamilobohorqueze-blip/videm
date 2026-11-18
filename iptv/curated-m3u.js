@@ -59,7 +59,73 @@ function fetchUncompressedColombiaEpg() {
       res.on('end', () => {
         try {
           const buffer = Buffer.concat(chunks);
-          const xml = zlib.gunzipSync(buffer).toString('utf8');
+          let xml = zlib.gunzipSync(buffer).toString('utf8');
+
+          // Duplicar mapeos de IDs para que el mismo XML sirva TANTO para videm.tv/api/trex COMO para iptv-org/countries/co.m3u
+          const aliasMap = {
+            'Win.Sports+.co': ['WinPlusFutbol.co@SD'],
+            'Win.Sports.co': ['WinSports.co@SD'],
+            'Caracol.co': ['CaracolTV.co@SD', 'CaracolHD2.co@SD'],
+            'RCN.co': ['CanalRCN.co@SD', 'RCNHD2.co@SD'],
+            'Canal.1.co': ['Canal1.co@SD'],
+            'City.TV.co': ['CitytvBogota.co@SD'],
+            'Señal.Colombia.co': ['SenalColombia.co@SD'],
+            'Canal.Capital.co': ['CanalCapital.co@SD'],
+            'Canal.Trece.co': ['Trece.co@SD'],
+            'Canal.TRO.co': ['CanalTRO.co@SD'],
+            'Teleantioquia.co': ['Teleantioquia.co@SD'],
+            'TELEMEDELLIN.co': ['Telemedellin.co@SD'],
+            'Telepacifico.co': ['Telepacifico.co@SD'],
+            'Telecaribe.co': ['Telecaribe.co@SD'],
+            'Telecafé.co': ['Telecafe.co@SD'],
+            'CableNoticias.co': ['Cablenoticias.co@SD'],
+            'NTN24.co': ['NTN24.co@SD'],
+            'ESPN.co': ['ESPNLatinAmerica.us@Colombia'],
+            'ESPN.2.co': ['ESPN2LatinAmerica.us@Colombia'],
+            'ESPN.3.co': ['ESPN3LatinAmerica.us@South'],
+            'ESPN.4.co': ['ESPN4LatinAmerica.us@South'],
+            'ESPN.5.co': ['ESPN5LatinAmerica.us@South'],
+            'ESPN.6.HD.co': ['ESPN6LatinAmerica.us@SD'],
+            'ESPN.7.HD.co': ['ESPN7LatinAmerica.us@SD'],
+            'STAR.CHANNEL.co': ['StarChannel.co@SD'],
+            'Warner.Channel.co': ['WarnerChannel.us@Colombia'],
+            'A&amp;E.co': ['AELatinAmerica.us@Panregional'],
+            'AXN.co': ['AXNLatinAmerica.us@Andes'],
+            'Universal.TV.co': ['UniversalTVLatinAmerica.us@Colombia'],
+            'Studio.Universal.co': ['StudioUniversalLatinAmerica.us@Colombia'],
+            'TNT.co': ['TNTLatinAmerica.us@Colombia'],
+            'TNT.Series.co': ['TNTSeriesLatinAmerica.us@Panregional'],
+            'TNT.Novelas.co': ['TNTNovelas.us@Colombia', 'TNTNovelas.us@ColombiaHD'],
+            'RCN.Novelas.co': ['RCNNovelas.co@SD'],
+            'Cinecanal.co': ['Cinecanal.us@Panregional'],
+            'Space.co': ['Space.ar@Panregional'],
+            'Discovery.Channel.co': ['DiscoveryChannelLatinAmerica.us@Panregional'],
+            'History.Channel.co': ['HistoryLatinAmerica.us@Panregional'],
+            'TLC.co': ['TLCLatinAmerica.us@Panregional'],
+            'Comedy.Central.co': ['ComedyCentralLatinAmerica.us@Panregional'],
+            'E!.Entertainment.TV.co': ['ELatinAmerica.us@Colombia'],
+            'Disney.Channel.co': ['DisneyChannelLatinAmerica.ar@Panregional', 'DisneyChannelLatinAmerica.ar@Center'],
+            'DISNEY.JUNIOR.co': ['DisneyJrLatinAmerica.ar@North', 'DisneyJrLatinAmerica.ar@NorthHD'],
+            'Cartoon.Network.co': ['CartoonNetworkLatinAmerica.us@NorthAtlantic'],
+            'Discovery.Kids.co': ['DiscoveryKidsLatinAmerica.us@Colombia'],
+            'Nick.co': ['NickelodeonLatinAmerica.us@Panregional'],
+            'Nick.Jr.co': ['NickJrLatinAmerica.us@Panregional']
+          };
+
+          for (const [srcId, aliases] of Object.entries(aliasMap)) {
+            const chRegex = new RegExp(`<channel id="${srcId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}">([\\s\\S]*?)<\\/channel>`);
+            const chMatch = xml.match(chRegex);
+            if (chMatch) {
+              const extraChannels = aliases.map(a => `<channel id="${a}">${chMatch[1]}</channel>`).join('');
+              xml = xml.replace(chMatch[0], chMatch[0] + extraChannels);
+            }
+            const progRegex = new RegExp(`<programme ([^>]*?)channel="${srcId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"([\\s\\S]*?)<\\/programme>`, 'g');
+            xml = xml.replace(progRegex, (full, before, after) => {
+              const clones = aliases.map(a => `<programme ${before}channel="${a}"${after}</programme>`).join('');
+              return full + clones;
+            });
+          }
+
           resolve(xml);
         } catch (e) {
           reject(e);

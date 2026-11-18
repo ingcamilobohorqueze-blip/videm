@@ -176,11 +176,11 @@ function buildCleanM3U(streams, format = config.streamOptions.defaultFormat, inc
 
   const entries = parseParrillaMarkdown();
 
-  const appendChannel = (stream, displayTitle, group, dial) => {
-    const { epgId, logo } = resolveEpgAndLogo(stream, displayTitle);
-    const streamUrl = format === 'hls'
+  const appendChannel = (stream, displayTitle, group, dial, customDirectUrl = null) => {
+    const { epgId, logo } = resolveEpgAndLogo(stream || {}, displayTitle);
+    const streamUrl = customDirectUrl || (format === 'hls'
       ? `http://${TREX_HOST}:${TREX_PORT}/live/${TREX_USER}/${TREX_PASS}/${stream.stream_id}.m3u8`
-      : `http://${TREX_HOST}:${TREX_PORT}/${TREX_USER}/${TREX_PASS}/${stream.stream_id}.ts`;
+      : `http://${TREX_HOST}:${TREX_PORT}/${TREX_USER}/${TREX_PASS}/${stream.stream_id}.ts`);
 
     const chnoAttr = dial ? ` tvg-chno="${dial}"` : '';
     const label = dial ? `${dial} - ${displayTitle}` : displayTitle;
@@ -199,6 +199,13 @@ function buildCleanM3U(streams, format = config.streamOptions.defaultFormat, inc
   };
 
   for (const entry of entries) {
+    // 0. Si el dial tiene señal TDT 1080p Directa de Colombia, inyectarla primero como Señal Principal
+    const tdtDirectList = config.tdtDirectByDial && config.tdtDirectByDial[entry.dial];
+    if (tdtDirectList && tdtDirectList.length > 0) {
+      tdtDirectList.forEach(tdt => {
+        appendChannel({ name: entry.title }, tdt.title, entry.group, entry.dial, tdt.url);
+      });
+    }
     if (entry.dial >= 901 && entry.dial <= 904) {
       let ppvStreams = [];
       if (entry.dial === 901) {
@@ -231,7 +238,9 @@ function buildCleanM3U(streams, format = config.streamOptions.defaultFormat, inc
       idsToEmit.forEach((id, idx) => {
         const s = streamById.get(id);
         if (!s) return;
-        let displayTitle = entry.title;
+        let displayTitle = (tdtDirectList && tdtDirectList.length > 0)
+          ? `${entry.title} (Respaldo TREX)`
+          : entry.title;
         if (idsToEmit.length > 1) {
           if (entry.dial === 602) {
             displayTitle = `Win Sports+ HD (Señal Alterna ${idx + 1})`;

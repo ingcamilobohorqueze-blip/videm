@@ -58,6 +58,54 @@ module.exports = {
     '1334': 'SPORTS EVENTS'
   },
 
+  // Señales TDT 1080p Directas (Cabecera Nacional Colombia - No consumen conexión de TREX)
+  tdtDirectByDial: {
+    130: [
+      { title: 'RCN Televisión 1080p (TDT Directo)', url: 'http://138.121.15.230:9002/RCN/index.m3u8' },
+      { title: 'RCN Televisión 1080p (TDT Alterno)', url: 'http://38.134.250.110:8000/play/a00i/index.m3u8' }
+    ],
+    132: [
+      { title: 'Caracol Televisión 1080p (TDT Directo)', url: 'http://138.121.15.230:9002/CARACOL/index.m3u8' }
+    ],
+    133: [
+      { title: 'CityTV Bogotá 1080p (TDT Directo)', url: 'http://138.121.15.230:9002/CITY-TV/index.m3u8' }
+    ],
+    134: [
+      { title: 'Caracol Internacional 1080p (TDT Directo)', url: 'http://45.5.117.57:8200/play/a0e9/index.m3u8' }
+    ],
+    136: [
+      { title: 'Canal 1 1080p (TDT Directo)', url: 'http://138.121.15.230:9002/CANAL-UNO/index.m3u8' },
+      { title: 'Canal 1 1080p (TDT Alterno)', url: 'http://190.109.2.92:8000/play/a010/index.m3u8' }
+    ],
+    137: [
+      { title: 'Señal Colombia 1080p (TDT Directo)', url: 'http://138.121.15.230:9002/SENAL-COLOMBIA/index.m3u8' }
+    ],
+    140: [
+      { title: 'Teleantioquia 1080p (TDT Directo)', url: 'http://138.121.15.230:9002/TELEANTIOQUIA/index.m3u8' }
+    ],
+    141: [
+      { title: 'Telepacífico 1080p (TDT Directo)', url: 'http://138.121.15.230:9002/TELEPACIFICO/index.m3u8' }
+    ],
+    142: [
+      { title: 'Telecaribe 1080p (TDT Directo)', url: 'http://138.121.15.230:9002/TELECARIBE/index.m3u8' }
+    ],
+    143: [
+      { title: 'Canal Capital 1080p (TDT Directo)', url: 'http://138.121.15.230:9002/CANAL-CAPITAL/index.m3u8' }
+    ],
+    145: [
+      { title: 'NTN24 1080p (Directo)', url: 'https://stream1.bitred.cl/ntn24/index.m3u8' }
+    ],
+    147: [
+      { title: 'CableNoticias 1080p (TDT Directo)', url: 'http://181.78.211.244:8005/play/a09u/index.m3u8' }
+    ],
+    148: [
+      { title: 'Canal Trece 1080p (TDT Directo)', url: 'http://190.60.46.228:8888/play/a030/index.m3u8' }
+    ],
+    149: [
+      { title: 'Telecafé 1080p (TDT Directo)', url: 'http://138.121.15.230:9002/TELECAFE/index.m3u8' }
+    ]
+  },
+
   // Logos oficiales verificados (CDN Telefónica/Movistar Colombia GVP) y mapeo EDT/EPG
   // Corrige picons erróneos de TREX (ej. ID 145416 Win Sports+ que traía el logo francés de Infosport+)
   channelCatalog: [

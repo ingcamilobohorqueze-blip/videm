@@ -1,0 +1,127 @@
+{
+  "name": "IPTV - Monitor & Auto-Healer de Canales (TREX + Colombia)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 6
+            }
+          ]
+        }
+      },
+      "id": "schedule-iptv-check",
+      "name": "Cada 6 Horas",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [220, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://videm.tv/api/trex?audit=json&refresh=1",
+        "options": {
+          "timeout": 45000
+        }
+      },
+      "id": "http-audit-iptv",
+      "name": "Auditar y Auto-Curar Lista M3U",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "cond-healed",
+              "leftValue": "={{ $json.healedCount }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "if-channels-healed",
+      "name": "¿Hubo Canales Auto-Reparados?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [700, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://evolution-api-production-8353.up.railway.app/message/sendText/VidemProd",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "levanna-wa-key-2024"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ number: '573015568904', text: '📺 *Auto-Healer IPTV Activo*\\n\\nSe actualizaron automáticamente ' + $json.healedCount + ' señales en la parrilla de TV:\\n' + ($json.healedChannels || []).join('\\n') }) }}"
+      },
+      "id": "wa-notify-healed",
+      "name": "Notificar Auto-Reparación por WhatsApp",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [960, 220]
+    }
+  ],
+  "connections": {
+    "Cada 6 Horas": {
+      "main": [
+        [
+          {
+            "node": "Auditar y Auto-Curar Lista M3U",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Auditar y Auto-Curar Lista M3U": {
+      "main": [
+        [
+          {
+            "node": "¿Hubo Canales Auto-Reparados?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Hubo Canales Auto-Reparados?": {
+      "main": [
+        [
+          {
+            "node": "Notificar Auto-Reparación por WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

@@ -23,6 +23,41 @@ let cachedEpgXml = null;
 let lastEpgFetchTime = 0;
 const EPG_CACHE_TTL_MS = 2 * 60 * 60 * 1000; // 2 horas
 
+// Mapa en memoria de auto-reparación (cuando un ID primario cae a black.ts, promueve el ID vivo)
+let healedIdOverrides = {};
+
+function checkTrexStreamAlive(id) {
+  return new Promise((resolve) => {
+    const req = http.get({
+      host: TREX_HOST,
+      port: TREX_PORT,
+      path: `/${TREX_USER}/${TREX_PASS}/${id}.ts`,
+      headers: { 'User-Agent': config.userAgent },
+      timeout: 3000
+    }, (res) => {
+      const loc = res.headers.location || '';
+      res.destroy();
+      resolve(res.statusCode === 302 && loc.length > 0 && !loc.includes('black.ts'));
+    });
+    req.on('error', () => resolve(false));
+    req.on('timeout', () => { req.destroy(); resolve(false); });
+  });
+}
+
+function fetchCoM3U() {
+  return new Promise((resolve, reject) => {
+    https.get('https://iptv-org.github.io/iptv/countries/co.m3u', { timeout: 15000 }, (res) => {
+      let data = '';
+      res.on('data', c => data += c);
+      res.on('end', () => {
+        const epgUrl = config.endpoints.epgXmltv;
+        const body = data.replace(/^#EXTM3U[^\r\n]*/i, `#EXTM3U url-tvg="${epgUrl}" x-tvg-url="${epgUrl}" name="TDT & Cable Colombia (Respaldo Independiente)"`);
+        resolve(body);
+      });
+    }).on('error', reject);
+  });
+}
+
 function fetchTrexStreams() {
   return new Promise((resolve, reject) => {
     const apiPath = `/player_api.php?username=${TREX_USER}&password=${TREX_PASS}&action=get_live_streams`;
@@ -298,8 +333,13 @@ function buildCleanM3U(streams, format = config.streamOptions.defaultFormat, inc
     }
 
     if (entry.streamIds && entry.streamIds.length > 0) {
-      const isMultiChannelLine = entry.dial === 602 || /[\/&]|(\b1\s+y\s+2\b)/i.test(entry.title);
-      const idsToEmit = isMultiChannelLine ? entry.streamIds : [entry.streamIds[0]];
+      const isMultiChannelLine =
+        entry.dial === 602 ||
+        (entry.dial >= 621 && entry.dial <= 625) ||
+        /[\/&]|(\b1\s+y\s+2\b)/i.test(entry.title);
+
+      const primaryId = healedIdOverrides[entry.dial] || entry.streamIds[0];
+      const idsToEmit = isMultiChannelLine ? entry.streamIds : [primaryId];
 
       idsToEmit.forEach((id, idx) => {
         const s = streamById.get(id);
@@ -311,8 +351,8 @@ function buildCleanM3U(streams, format = config.streamOptions.defaultFormat, inc
           if (entry.dial === 602) {
             displayTitle = `Win Sports+ HD (Señal Alterna ${idx + 1})`;
           } else {
-            const cleanRaw = (s.name || '').replace(/^(LAT|CO|MXC|ARG|US|VIX|PRIME|TV|YP|CAR-AMP)\|\s*/i, '').replace(/ᴿᴬᵂ/g, '').trim();
-            displayTitle = cleanRaw || `${entry.title} (${idx + 1})`;
+            const cleanRaw = (s.name || '').replace(/^(LAT|CO|MXC|ARG|US|VIX|PRIME|TV|YP|CAR-AMP|CL)\|\s*/i, '').replace(/ᴿᴬᵂ/g, '').trim();
+            displayTitle = `${entry.title} [${cleanRaw || idx + 1}]`;
           }
         }
         appendChannel(s, displayTitle, entry.group, entry.dial);
@@ -345,6 +385,89 @@ module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
 
   const reqUrl = (req && req.url) ? req.url : '';
+
+  // 1. Endpoint Lista Independiente Colombia (co.m3u con cabecera EPG inyectada): /api/trex?lista=co
+  if (reqUrl.includes('lista=co')) {
+    try {
+      const coM3u = await fetchCoM3U();
+      res.setHeader('Content-Type', 'application/vnd.apple.mpegurl; charset=utf-8');
+      if (res.status && res.send) return res.status(200).send(coM3u);
+      res.writeHead(200, { 'Content-Type': 'application/vnd.apple.mpegurl; charset=utf-8' });
+      return res.end(coM3u);
+    } catch (e) {
+      res.writeHead(500, { 'Content-Type': 'text/plain; charset=utf-8' });
+      return res.end('#EXTM3U\n# Error cargando co.m3u: ' + e.message);
+    }
+  }
+
+  // 2. Endpoint Auto-Healer & Auditoría JSON para n8n: /api/trex?audit=json
+  if (reqUrl.includes('audit=json')) {
+    try {
+      const streams = await fetchTrexStreams();
+      const entries = parseParrillaMarkdown();
+      let liveCount = 0;
+      let healedCount = 0;
+      const healedChannels = [];
+
+      for (const entry of entries) {
+        if (!entry.streamIds || entry.streamIds.length === 0) continue;
+        const primaryId = healedIdOverrides[entry.dial] || entry.streamIds[0];
+        const ok = await checkTrexStreamAlive(primaryId);
+        if (ok) {
+          liveCount++;
+          continue;
+        }
+        // Buscar respaldo vivo entre los IDs de la línea o por nombre en el catálogo TREX
+        let replacementId = null;
+        for (const candId of entry.streamIds.slice(1)) {
+          if (await checkTrexStreamAlive(candId)) {
+            replacementId = candId;
+            break;
+          }
+        }
+        if (!replacementId && streams.length > 0) {
+          const baseKey = entry.title.replace(/\(.*?\)/g, '').replace(/\b(HD|FHD|4K|COLOMBIA|SUR|ANDINO)\b/gi, '').trim().toUpperCase();
+          if (baseKey.length >= 3) {
+            const cands = streams.filter(s => (s.name || '').toUpperCase().includes(baseKey) && ['154', '2171', '151', '152', '2409', '2243'].includes(String(s.category_id))).slice(0, 4);
+            for (const c of cands) {
+              if (await checkTrexStreamAlive(c.stream_id)) {
+                replacementId = Number(c.stream_id);
+                break;
+              }
+            }
+          }
+        }
+        if (replacementId) {
+          healedIdOverrides[entry.dial] = replacementId;
+          healedCount++;
+          healedChannels.push(`Dial ${entry.dial} (${entry.title}): ${primaryId} -> ${replacementId}`);
+        }
+      }
+
+      if (healedCount > 0 || reqUrl.includes('refresh=1')) {
+        cachedM3UByKey = {};
+        lastFetchTime = 0;
+      }
+
+      const payload = JSON.stringify({
+        success: true,
+        timestamp: new Date().toISOString(),
+        totalChecked: entries.length,
+        liveCount,
+        healedCount,
+        healedChannels,
+        activeOverrides: healedIdOverrides
+      }, null, 2);
+
+      res.setHeader('Content-Type', 'application/json; charset=utf-8');
+      if (res.status && res.send) return res.status(200).send(payload);
+      res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+      return res.end(payload);
+    } catch (e) {
+      res.writeHead(500, { 'Content-Type': 'application/json; charset=utf-8' });
+      return res.end(JSON.stringify({ success: false, error: e.message }));
+    }
+  }
 
   // Endpoint EPG XML descomprimido para MyIPTV Player (Windows 11) y Smart TVs: /api/trex?epg=xml
   if (reqUrl.includes('epg=xml') || reqUrl.includes('epg=1')) {

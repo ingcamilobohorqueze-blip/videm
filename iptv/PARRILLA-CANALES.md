@@ -45,11 +45,11 @@
 - [x] **610** — **DSPORTS 1 HD (DirecTV Sports Colombia)** *(ID TREX: `656326`)*
 - [x] **612** — **DSPORTS 2 HD (DirecTV Sports 2)** *(ID TREX: `656327`)*
 - [x] **613** — **DSPORTS+ HD / ESPN Premium Sur** *(IDs TREX: `1358601`, `1358602`)*
-- [x] **621** — **ESPN HD (Colombia / Sur)** *(ID TREX: `1358605`)*
-- [x] **622** — **ESPN 2 HD (Colombia / Sur)** *(ID TREX: `779427`)*
-- [x] **623** — **ESPN 3 HD (Colombia / Sur)** *(ID TREX: `1358603`)*
-- [x] **624** — **ESPN 4 HD** *(ID TREX: `1917644`)*
-- [x] **625** — **ESPN Deportes HD** *(ID TREX: `75284`)*
+- [x] **621** — **ESPN HD (Colombia / Sur / Andino)** *(IDs TREX: `1917647`, `1358605`)*
+- [x] **622** — **ESPN 2 HD (Colombia / Sur / Andino)** *(IDs TREX: `1917646`, `1358604`, `1870414`)*
+- [x] **623** — **ESPN 3 HD (Colombia / Sur / Andino)** *(IDs TREX: `1870132`, `1917645`, `1358603`)*
+- [x] **624** — **ESPN 4 HD (Colombia / Sur / Andino)** *(IDs TREX: `1870845`, `1917644`)*
+- [x] **625** — **ESPN Extra HD & ESPN Deportes HD** *(IDs TREX: `1358602`, `75284`)*
 - [x] **604** — **Fox Sports 1 Colombia HD** *(ID TREX: `75312`)*
 - [x] **605** — **Fox Sports 2 HD** *(ID TREX: `25509`)*
 - [x] **609** — **Fox Sports 3 HD** *(ID TREX: `552846`)*

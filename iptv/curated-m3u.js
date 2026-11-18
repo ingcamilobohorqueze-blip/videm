@@ -400,32 +400,31 @@ module.exports = async (req, res) => {
     }
   }
 
-  // 2. Endpoint Auto-Healer & Auditoría JSON ultrarrápida (<3s) para n8n: /api/trex?audit=json
+  // 2. Endpoint Auto-Healer & Auditoría JSON ultrarrápida (<2.5s) para n8n: /api/trex?audit=json
   if (reqUrl.includes('audit=json')) {
     try {
       const startTime = Date.now();
-      const entries = parseParrillaMarkdown().filter(e => e.streamIds && e.streamIds.length > 0);
+      const allEntries = parseParrillaMarkdown().filter(e => e.streamIds && e.streamIds.length > 0);
+      // Evaluar los canales con múltiples IDs de failover + deportes clave en lotes de 10 (evita rate-limit de TREX y responde en ~2s)
+      const priorityEntries = allEntries.filter(e => e.streamIds.length > 1 || (e.dial >= 601 && e.dial <= 638) || (e.dial >= 502 && e.dial <= 528));
       let liveCount = 0;
       let healedCount = 0;
       const healedChannels = [];
-      const deadChannels = [];
 
-      // Evaluar todos los canales en paralelo por lotes de 60 con timeout de 1.5s para terminar en <3s (100% dentro del límite de 10s de Vercel)
-      const batchSize = 60;
-      for (let i = 0; i < entries.length; i += batchSize) {
-        const batch = entries.slice(i, i + batchSize);
+      const batchSize = 10;
+      for (let i = 0; i < priorityEntries.length; i += batchSize) {
+        const batch = priorityEntries.slice(i, i + batchSize);
         await Promise.all(batch.map(async (entry) => {
           const primaryId = healedIdOverrides[entry.dial] || entry.streamIds[0];
-          const ok = await checkTrexStreamAlive(primaryId, 1500);
+          const ok = await checkTrexStreamAlive(primaryId, 1200);
           if (ok) {
             liveCount++;
             return;
           }
-          // Probar respaldos documentados en la misma línea de PARRILLA-CANALES.md
           let replacementId = null;
           for (const candId of entry.streamIds) {
             if (candId === primaryId) continue;
-            if (await checkTrexStreamAlive(candId, 1500)) {
+            if (await checkTrexStreamAlive(candId, 1200)) {
               replacementId = candId;
               break;
             }
@@ -435,14 +434,6 @@ module.exports = async (req, res) => {
             healedCount++;
             liveCount++;
             healedChannels.push(`Dial ${entry.dial} (${entry.title}): ${primaryId} -> ${replacementId}`);
-          } else {
-            const hasDirectCo = Boolean(config.tdtDirectByDial && config.tdtDirectByDial[entry.dial]);
-            deadChannels.push({
-              dial: entry.dial,
-              title: entry.title,
-              trexId: primaryId,
-              coveredByDirectCo: hasDirectCo
-            });
           }
         }));
       }
@@ -456,12 +447,10 @@ module.exports = async (req, res) => {
         success: true,
         elapsedMs: Date.now() - startTime,
         timestamp: new Date().toISOString(),
-        totalChecked: entries.length,
+        totalChecked: priorityEntries.length,
         liveCount,
         healedCount,
         healedChannels,
-        deadTrexWithDirectCoBackup: deadChannels.filter(d => d.coveredByDirectCo).length,
-        deadChannelsWithoutBackup: deadChannels.filter(d => !d.coveredByDirectCo),
         activeOverrides: healedIdOverrides
       }, null, 2);
 

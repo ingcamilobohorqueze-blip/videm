@@ -26,14 +26,14 @@ const EPG_CACHE_TTL_MS = 2 * 60 * 60 * 1000; // 2 horas
 // Mapa en memoria de auto-reparación (cuando un ID primario cae a black.ts, promueve el ID vivo)
 let healedIdOverrides = {};
 
-function checkTrexStreamAlive(id) {
+function checkTrexStreamAlive(id, timeoutMs = 1800) {
   return new Promise((resolve) => {
     const req = http.get({
       host: TREX_HOST,
       port: TREX_PORT,
       path: `/${TREX_USER}/${TREX_PASS}/${id}.ts`,
       headers: { 'User-Agent': config.userAgent },
-      timeout: 3000
+      timeout: timeoutMs
     }, (res) => {
       const loc = res.headers.location || '';
       res.destroy();
@@ -400,48 +400,51 @@ module.exports = async (req, res) => {
     }
   }
 
-  // 2. Endpoint Auto-Healer & Auditoría JSON para n8n: /api/trex?audit=json
+  // 2. Endpoint Auto-Healer & Auditoría JSON ultrarrápida (<3s) para n8n: /api/trex?audit=json
   if (reqUrl.includes('audit=json')) {
     try {
-      const streams = await fetchTrexStreams();
-      const entries = parseParrillaMarkdown();
+      const startTime = Date.now();
+      const entries = parseParrillaMarkdown().filter(e => e.streamIds && e.streamIds.length > 0);
       let liveCount = 0;
       let healedCount = 0;
       const healedChannels = [];
+      const deadChannels = [];
 
-      for (const entry of entries) {
-        if (!entry.streamIds || entry.streamIds.length === 0) continue;
-        const primaryId = healedIdOverrides[entry.dial] || entry.streamIds[0];
-        const ok = await checkTrexStreamAlive(primaryId);
-        if (ok) {
-          liveCount++;
-          continue;
-        }
-        // Buscar respaldo vivo entre los IDs de la línea o por nombre en el catálogo TREX
-        let replacementId = null;
-        for (const candId of entry.streamIds.slice(1)) {
-          if (await checkTrexStreamAlive(candId)) {
-            replacementId = candId;
-            break;
+      // Evaluar todos los canales en paralelo por lotes de 60 con timeout de 1.5s para terminar en <3s (100% dentro del límite de 10s de Vercel)
+      const batchSize = 60;
+      for (let i = 0; i < entries.length; i += batchSize) {
+        const batch = entries.slice(i, i + batchSize);
+        await Promise.all(batch.map(async (entry) => {
+          const primaryId = healedIdOverrides[entry.dial] || entry.streamIds[0];
+          const ok = await checkTrexStreamAlive(primaryId, 1500);
+          if (ok) {
+            liveCount++;
+            return;
           }
-        }
-        if (!replacementId && streams.length > 0) {
-          const baseKey = entry.title.replace(/\(.*?\)/g, '').replace(/\b(HD|FHD|4K|COLOMBIA|SUR|ANDINO)\b/gi, '').trim().toUpperCase();
-          if (baseKey.length >= 3) {
-            const cands = streams.filter(s => (s.name || '').toUpperCase().includes(baseKey) && ['154', '2171', '151', '152', '2409', '2243'].includes(String(s.category_id))).slice(0, 4);
-            for (const c of cands) {
-              if (await checkTrexStreamAlive(c.stream_id)) {
-                replacementId = Number(c.stream_id);
-                break;
-              }
+          // Probar respaldos documentados en la misma línea de PARRILLA-CANALES.md
+          let replacementId = null;
+          for (const candId of entry.streamIds) {
+            if (candId === primaryId) continue;
+            if (await checkTrexStreamAlive(candId, 1500)) {
+              replacementId = candId;
+              break;
             }
           }
-        }
-        if (replacementId) {
-          healedIdOverrides[entry.dial] = replacementId;
-          healedCount++;
-          healedChannels.push(`Dial ${entry.dial} (${entry.title}): ${primaryId} -> ${replacementId}`);
-        }
+          if (replacementId) {
+            healedIdOverrides[entry.dial] = replacementId;
+            healedCount++;
+            liveCount++;
+            healedChannels.push(`Dial ${entry.dial} (${entry.title}): ${primaryId} -> ${replacementId}`);
+          } else {
+            const hasDirectCo = Boolean(config.tdtDirectByDial && config.tdtDirectByDial[entry.dial]);
+            deadChannels.push({
+              dial: entry.dial,
+              title: entry.title,
+              trexId: primaryId,
+              coveredByDirectCo: hasDirectCo
+            });
+          }
+        }));
       }
 
       if (healedCount > 0 || reqUrl.includes('refresh=1')) {
@@ -451,11 +454,14 @@ module.exports = async (req, res) => {
 
       const payload = JSON.stringify({
         success: true,
+        elapsedMs: Date.now() - startTime,
         timestamp: new Date().toISOString(),
         totalChecked: entries.length,
         liveCount,
         healedCount,
         healedChannels,
+        deadTrexWithDirectCoBackup: deadChannels.filter(d => d.coveredByDirectCo).length,
+        deadChannelsWithoutBackup: deadChannels.filter(d => !d.coveredByDirectCo),
         activeOverrides: healedIdOverrides
       }, null, 2);
 

@@ -9,9 +9,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@700;800;900&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-dark: #07090E;
+      --bg-dark: #06080D;
       --bg-card: #0D111A;
-      --bg-card-border: rgba(0, 240, 255, 0.18);
+      --bg-card-border: rgba(0, 240, 255, 0.22);
       --accent-cyan: #00F0FF;
       --accent-blue: #0070BA;
       --accent-purple: #7C3AED;
@@ -36,7 +36,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 24px 16px 60px;
+      padding: 20px 16px 50px;
     }
 
     /* CONTROL PANEL SUPERIOR (No se imprime) */
@@ -46,19 +46,19 @@
       background: rgba(13, 17, 26, 0.95);
       border: 1px solid rgba(0, 240, 255, 0.25);
       border-radius: 16px;
-      padding: 16px 24px;
+      padding: 14px 22px;
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
-      gap: 16px;
-      margin-bottom: 30px;
+      gap: 14px;
+      margin-bottom: 24px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
       backdrop-filter: blur(12px);
     }
 
     .toolbar-title {
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: 800;
       color: var(--accent-cyan);
       display: flex;
@@ -68,7 +68,7 @@
 
     .btn-group {
       display: flex;
-      gap: 8px;
+      gap: 6px;
       background: #07090E;
       padding: 4px;
       border-radius: 10px;
@@ -80,8 +80,8 @@
       border: none;
       color: var(--text-muted);
       font-weight: 700;
-      font-size: 0.85rem;
-      padding: 8px 16px;
+      font-size: 0.82rem;
+      padding: 7px 14px;
       border-radius: 8px;
       cursor: pointer;
       transition: all 0.2s;
@@ -98,8 +98,8 @@
       color: #FFF;
       border: none;
       font-weight: 800;
-      font-size: 0.88rem;
-      padding: 10px 20px;
+      font-size: 0.85rem;
+      padding: 9px 18px;
       border-radius: 10px;
       cursor: pointer;
       display: flex;
@@ -117,15 +117,15 @@
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 36px;
+      gap: 32px;
       width: 100%;
-      max-width: 1100px;
+      max-width: 1060px;
     }
 
     /* FORMATO IMPRENTA A5 / MEDIA CARTA (Aspecto ~1:1.414) */
     .flyer-page {
       width: 440px;
-      height: 622px; /* Ratio exacto A5 / Media Carta */
+      height: 622px; /* Proporción exacta A5 / Media Carta */
       background: var(--bg-dark);
       border-radius: 12px;
       overflow: hidden;
@@ -137,46 +137,18 @@
     }
 
     /* ═══════════════════════════════════════════════
-       CARA 1: ANVERSO (FRONT COVER - CINEMATOGRÁFICO)
+       CARA 1: ANVERSO (FRONT COVER - VISUAL & LIMPIO)
        ═══════════════════════════════════════════════ */
     .front-cover {
-      background: #05070B;
+      background: #06080D;
       position: relative;
-      padding: 24px 24px 20px;
+      padding: 20px 22px 16px;
       justify-content: space-between;
-    }
-
-    /* Fondo fotográfico con gradiente overlay */
-    .front-bg-photo {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-image: url('../assets/images/videm-flyer-hero.jpg');
-      background-size: cover;
-      background-position: center 20%;
-      opacity: 0.42;
-      z-index: 1;
-    }
-
-    .front-bg-gradient {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(180deg, 
-        rgba(5, 7, 11, 0.96) 0%, 
-        rgba(5, 7, 11, 0.35) 30%, 
-        rgba(5, 7, 11, 0.85) 65%, 
-        rgba(5, 7, 11, 0.99) 100%);
-      z-index: 2;
     }
 
     .front-content {
       position: relative;
-      z-index: 3;
+      z-index: 2;
       display: flex;
       flex-direction: column;
       height: 100%;
@@ -188,8 +160,8 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 1px solid rgba(0, 240, 255, 0.15);
-      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(0, 240, 255, 0.16);
+      padding-bottom: 10px;
     }
 
     .brand-lockup {
@@ -199,51 +171,51 @@
     }
 
     .brand-icon {
-      width: 34px;
-      height: 34px;
+      width: 32px;
+      height: 32px;
       object-fit: contain;
     }
 
     .brand-wordmark-img {
       height: 22px;
       object-fit: contain;
-      filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.5));
+      filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.45));
     }
 
     .front-badge-edition {
-      font-size: 0.72rem;
+      font-size: 0.7rem;
       font-weight: 800;
       color: var(--accent-cyan);
       background: rgba(0, 240, 255, 0.12);
-      border: 1px solid rgba(0, 240, 255, 0.3);
-      padding: 4px 10px;
+      border: 1px solid rgba(0, 240, 255, 0.32);
+      padding: 3px 10px;
       border-radius: 999px;
       text-transform: uppercase;
       letter-spacing: 0.06em;
     }
 
-    /* Titular Principal Hero */
+    /* Titular Principal */
     .front-hero-text {
-      margin-top: 10px;
+      margin-top: 6px;
     }
 
     .front-tagline {
-      font-size: 0.76rem;
+      font-size: 0.7rem;
       font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 0.1em;
       color: #00E676;
       display: flex;
       align-items: center;
-      gap: 6px;
-      margin-bottom: 6px;
+      gap: 5px;
+      margin-bottom: 4px;
     }
 
     .front-title {
       font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.65rem;
+      font-size: 1.5rem;
       font-weight: 900;
-      line-height: 1.18;
+      line-height: 1.15;
       color: #FFF;
       letter-spacing: -0.02em;
     }
@@ -255,143 +227,253 @@
     }
 
     .front-subtitle {
-      font-size: 0.85rem;
-      color: #CBD5E1;
-      line-height: 1.4;
-      margin-top: 6px;
+      font-size: 0.78rem;
+      color: #94A3B8;
+      line-height: 1.35;
+      margin-top: 4px;
     }
 
-    /* Grilla de 4 Pilares */
-    .front-pillars-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin: 12px 0;
+    /* ── VENTANA HERO VISUAL (PROTAGONISTA DEL TELEVISOR & CATÁLOGO) ── */
+    .front-hero-visual-frame {
+      position: relative;
+      width: 100%;
+      height: 200px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid rgba(0, 240, 255, 0.4);
+      box-shadow: 0 12px 30px -8px rgba(0, 0, 0, 0.9), 0 0 20px rgba(0, 240, 255, 0.2);
+      margin: 8px 0;
+      background: #020305;
     }
 
-    .pillar-card {
-      background: rgba(13, 17, 26, 0.75);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 10px;
-      padding: 8px 10px;
-      backdrop-filter: blur(8px);
+    .front-hero-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
     }
 
-    .pillar-icon-row {
+    .hero-screen-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(4, 6, 12, 0.88);
+      border: 1px solid rgba(0, 240, 255, 0.45);
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.65rem;
+      font-weight: 800;
+      color: #00F0FF;
       display: flex;
       align-items: center;
       gap: 6px;
-      margin-bottom: 2px;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
     }
 
-    .pillar-icon-row span.icon {
-      font-size: 1rem;
+    .pulse-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #00E676;
+      box-shadow: 0 0 8px #00E676;
     }
 
-    .pillar-title {
-      font-size: 0.78rem;
-      font-weight: 800;
-      color: #FFF;
+    /* ── BARRA DE 4 SELLOS TECNOLÓGICOS (BADGES / PILLS SIN TEXTO PESADO) ── */
+    .front-badges-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      margin: 4px 0 8px;
     }
 
-    .pillar-desc {
-      font-size: 0.68rem;
-      color: var(--text-muted);
-      line-height: 1.3;
+    .spec-pill {
+      background: rgba(13, 17, 26, 0.88);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 6px 4px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 2px;
+      transition: border-color 0.2s;
     }
 
-    /* Caja de Oferta / Demo Gratis con QR */
-    .front-cta-box {
-      background: linear-gradient(135deg, rgba(0, 240, 255, 0.15) 0%, rgba(124, 58, 237, 0.15) 100%);
-      border: 1.5px solid var(--accent-cyan);
-      border-radius: 12px;
-      padding: 10px 14px;
+    .spec-icon-box {
+      height: 22px;
       display: flex;
       align-items: center;
-      gap: 14px;
+      justify-content: center;
+    }
+
+    .badge-4k {
+      background: linear-gradient(135deg, #00F0FF 0%, #0070BA 100%);
+      color: #040608;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.68rem;
+      font-weight: 900;
+      padding: 2px 6px;
+      border-radius: 4px;
+      letter-spacing: -0.02em;
+      line-height: 1;
+    }
+
+    .badge-dolby {
+      background: #FFFFFF;
+      color: #000000;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.60rem;
+      font-weight: 900;
+      padding: 2px 5px;
+      border-radius: 4px;
+      letter-spacing: 0.04em;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .badge-flag {
+      font-size: 1.15rem;
+      line-height: 1;
+    }
+
+    .badge-time {
+      color: #00E676;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.70rem;
+      font-weight: 900;
+      background: rgba(0, 230, 118, 0.14);
+      border: 1px solid rgba(0, 230, 118, 0.35);
+      padding: 2px 6px;
+      border-radius: 4px;
+      line-height: 1;
+    }
+
+    .spec-label {
+      font-size: 0.66rem;
+      font-weight: 800;
+      color: #FFFFFF;
+      line-height: 1.15;
+      margin-top: 2px;
+    }
+
+    .spec-sub {
+      font-size: 0.56rem;
+      color: var(--text-muted);
+      line-height: 1.1;
+    }
+
+    /* ── CAJA INFERIOR: CÓDIGO QR DIRECTO A LA WEB OFICIAL ── */
+    .front-cta-box {
+      background: linear-gradient(135deg, rgba(0, 240, 255, 0.14) 0%, rgba(124, 58, 237, 0.16) 100%);
+      border: 1.5px solid var(--accent-cyan);
+      border-radius: 12px;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
       box-shadow: 0 8px 24px -6px rgba(0, 240, 255, 0.35);
     }
 
     .cta-qr-wrap {
       width: 72px;
       height: 72px;
-      background: #FFF;
+      background: #FFFFFF;
       border-radius: 8px;
       padding: 4px;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
     }
 
     .cta-qr-img {
       width: 100%;
       height: 100%;
       object-fit: contain;
+      display: block;
     }
 
     .cta-text-wrap {
       flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
 
     .cta-badge-live {
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
       background: #E50914;
       color: #FFF;
-      font-size: 0.62rem;
+      font-size: 0.60rem;
       font-weight: 900;
       text-transform: uppercase;
       letter-spacing: 0.08em;
       padding: 2px 6px;
       border-radius: 4px;
-      margin-bottom: 4px;
+      margin-bottom: 3px;
+      width: fit-content;
     }
 
     .cta-heading {
-      font-size: 0.95rem;
+      font-size: 0.92rem;
       font-weight: 900;
       color: #FFF;
-      line-height: 1.2;
+      line-height: 1.15;
     }
 
     .cta-subtext {
-      font-size: 0.72rem;
-      color: #E2E8F0;
-      line-height: 1.3;
-      margin-top: 3px;
+      font-size: 0.68rem;
+      color: #CBD5E1;
+      line-height: 1.25;
+      margin-top: 2px;
     }
 
-    .cta-phone {
-      font-family: 'Space Grotesk', monospace;
-      font-size: 0.85rem;
-      font-weight: 800;
+    .cta-web-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(0, 240, 255, 0.16);
+      border: 1px solid rgba(0, 240, 255, 0.4);
       color: var(--accent-cyan);
-      margin-top: 3px;
-      display: block;
+      font-family: 'Space Grotesk', monospace;
+      font-size: 0.78rem;
+      font-weight: 800;
+      padding: 3px 9px;
+      border-radius: 6px;
+      margin-top: 4px;
+      width: fit-content;
     }
 
-    /* Footer frontal */
+    /* Footer Frontal */
     .front-footer {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
-      padding-top: 8px;
-      font-size: 0.68rem;
+      font-size: 0.65rem;
       color: var(--text-dim);
+      border-top: 1px solid rgba(255, 255, 255, 0.07);
+      padding-top: 6px;
+      margin-top: 2px;
     }
-
     .front-footer strong {
-      color: var(--accent-cyan);
+      color: var(--text-muted);
     }
 
 
     /* ═══════════════════════════════════════════════
-       CARA 2: REVERSO (BACK COVER - TARIFAS Y BLINDAJE)
+       CARA 2: REVERSO (BACK COVER - TARIFAS & LLAVE EN MANO)
        ═══════════════════════════════════════════════ */
     .back-cover {
       background: #080B12;
-      padding: 22px 22px 18px;
+      position: relative;
+      padding: 18px 20px 14px;
       justify-content: space-between;
     }
 
@@ -399,283 +481,299 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 8px;
     }
 
     .back-title {
+      font-family: 'Space Grotesk', sans-serif;
       font-size: 0.95rem;
-      font-weight: 900;
+      font-weight: 800;
       color: #FFF;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
+      letter-spacing: -0.01em;
     }
 
     .back-edition-pill {
-      font-size: 0.68rem;
-      font-weight: 700;
-      color: var(--text-muted);
+      font-size: 0.65rem;
+      font-weight: 800;
+      color: #00E676;
+      background: rgba(0, 230, 118, 0.1);
+      border: 1px solid rgba(0, 230, 118, 0.3);
+      padding: 3px 8px;
+      border-radius: 999px;
     }
 
     /* Comparativa Dolor vs Solución */
     .vs-strip {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin: 10px 0;
+      gap: 8px;
+      margin: 8px 0;
     }
 
     .vs-box {
       border-radius: 8px;
       padding: 8px 10px;
-      font-size: 0.72rem;
+      font-size: 0.70rem;
       line-height: 1.35;
     }
 
     .vs-box.bad {
       background: rgba(229, 9, 20, 0.08);
-      border: 1px solid rgba(229, 9, 20, 0.3);
-      color: #FECACA;
+      border: 1px solid rgba(229, 9, 20, 0.25);
+      color: #FCA5A5;
     }
-
     .vs-box.bad h5 {
-      color: #F87171;
-      font-size: 0.78rem;
+      color: #EF4444;
+      font-size: 0.74rem;
       font-weight: 800;
-      margin-bottom: 4px;
+      margin-bottom: 3px;
       display: flex;
       align-items: center;
       gap: 4px;
     }
 
     .vs-box.good {
-      background: rgba(0, 230, 118, 0.08);
-      border: 1px solid rgba(0, 230, 118, 0.35);
-      color: #DCFCE7;
+      background: rgba(0, 240, 255, 0.08);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      color: #BAE6FD;
     }
-
     .vs-box.good h5 {
-      color: #4ADE80;
-      font-size: 0.78rem;
+      color: var(--accent-cyan);
+      font-size: 0.74rem;
       font-weight: 800;
-      margin-bottom: 4px;
+      margin-bottom: 3px;
       display: flex;
       align-items: center;
       gap: 4px;
     }
 
-    /* Tabla de 3 Planes */
+    /* Tarifas */
     .back-plans-row {
       display: grid;
-      grid-template-columns: 1fr 1.15fr 1fr;
-      gap: 8px;
-      margin: 8px 0;
-      align-items: stretch;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      margin: 4px 0 8px;
     }
 
     .plan-card {
-      background: rgba(13, 17, 26, 0.9);
+      background: var(--bg-card);
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 10px;
       padding: 10px 8px;
-      text-align: center;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      text-align: center;
       position: relative;
     }
 
     .plan-card.featured {
-      border: 1.5px solid var(--accent-cyan);
       background: linear-gradient(180deg, rgba(0, 240, 255, 0.12) 0%, rgba(13, 17, 26, 0.95) 100%);
-      box-shadow: 0 8px 20px -8px rgba(0, 240, 255, 0.4);
+      border: 1.5px solid var(--accent-cyan);
+      box-shadow: 0 6px 20px -4px rgba(0, 240, 255, 0.35);
+      transform: scale(1.02);
+      z-index: 2;
     }
 
     .plan-featured-tag {
       position: absolute;
-      top: -8px;
+      top: -9px;
       left: 50%;
       transform: translateX(-50%);
-      background: var(--accent-cyan);
-      color: #040608;
+      background: #E50914;
+      color: #FFF;
       font-size: 0.58rem;
       font-weight: 900;
-      padding: 2px 8px;
-      border-radius: 999px;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      padding: 2px 7px;
+      border-radius: 999px;
       white-space: nowrap;
+      letter-spacing: 0.05em;
     }
 
     .plan-title {
-      font-size: 0.76rem;
+      font-size: 0.74rem;
       font-weight: 800;
       color: #FFF;
-      margin-bottom: 2px;
+      margin-bottom: 3px;
     }
 
     .plan-price-num {
       font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.35rem;
+      font-size: 1.3rem;
       font-weight: 900;
-      color: #FFF;
+      color: var(--accent-cyan);
       line-height: 1.1;
-      margin: 4px 0 2px;
     }
 
     .plan-card.featured .plan-price-num {
-      color: var(--accent-cyan);
+      color: #FFF;
+      text-shadow: 0 0 12px rgba(0, 240, 255, 0.6);
     }
 
     .plan-period {
-      font-size: 0.65rem;
+      font-size: 0.62rem;
       color: var(--text-muted);
+      margin-top: 2px;
+      font-weight: 600;
     }
 
     .plan-subdetail {
-      font-size: 0.62rem;
+      font-size: 0.60rem;
       color: #00E676;
       font-weight: 700;
       margin-top: 4px;
+      padding-top: 4px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
     }
 
     /* 3 Pasos de Activación */
     .steps-section {
-      background: rgba(13, 17, 26, 0.6);
-      border: 1px solid rgba(255, 255, 255, 0.06);
+      background: rgba(13, 17, 26, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.07);
       border-radius: 10px;
-      padding: 10px 12px;
-      margin: 8px 0;
+      padding: 8px 12px;
+      margin: 4px 0 8px;
     }
 
     .steps-heading {
-      font-size: 0.74rem;
+      font-size: 0.72rem;
       font-weight: 800;
-      color: var(--accent-cyan);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 6px;
+      color: #FFF;
       display: flex;
       align-items: center;
       gap: 6px;
+      margin-bottom: 6px;
     }
 
     .steps-list {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-columns: repeat(3, 1fr);
       gap: 8px;
     }
 
     .step-item {
       display: flex;
-      flex-direction: column;
-      gap: 2px;
+      align-items: flex-start;
+      gap: 6px;
     }
 
     .step-num {
       width: 18px;
       height: 18px;
-      background: var(--accent-cyan);
-      color: #040608;
+      background: rgba(0, 240, 255, 0.15);
+      border: 1px solid var(--accent-cyan);
+      color: var(--accent-cyan);
       border-radius: 50%;
+      font-family: 'Space Grotesk', sans-serif;
       font-size: 0.68rem;
       font-weight: 900;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 2px;
+      flex-shrink: 0;
     }
 
     .step-text {
-      font-size: 0.66rem;
+      font-size: 0.64rem;
       color: #CBD5E1;
-      line-height: 1.3;
+      line-height: 1.25;
+    }
+    .step-text strong {
+      color: #FFF;
     }
 
-    /* Barra de Métodos de Pago y Garantía */
+    /* Franja Inferior Reverso */
     .back-bottom-strip {
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      border-top: 1px solid rgba(0, 240, 255, 0.15);
       padding-top: 8px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 10px;
+      gap: 12px;
     }
 
     .pay-methods-text {
-      font-size: 0.64rem;
+      font-size: 0.62rem;
       color: var(--text-muted);
-      line-height: 1.3;
-    }
-
-    .pay-methods-text strong {
-      color: #FFF;
+      line-height: 1.35;
+      flex: 1;
     }
 
     .back-qr-micro {
       display: flex;
       align-items: center;
       gap: 8px;
-      background: rgba(0, 240, 255, 0.08);
-      border: 1px solid rgba(0, 240, 255, 0.25);
-      border-radius: 8px;
+      background: rgba(13, 17, 26, 0.95);
+      border: 1px solid rgba(0, 240, 255, 0.3);
       padding: 4px 8px;
+      border-radius: 8px;
     }
 
     .back-qr-micro img {
-      width: 38px;
-      height: 38px;
+      width: 44px;
+      height: 44px;
       background: #FFF;
       border-radius: 4px;
       padding: 2px;
+      object-fit: contain;
     }
 
     .back-qr-micro-text {
-      font-size: 0.62rem;
-      line-height: 1.25;
-      color: #FFF;
+      font-size: 0.60rem;
+      color: #CBD5E1;
+      line-height: 1.2;
     }
-
     .back-qr-micro-text strong {
       color: var(--accent-cyan);
       display: block;
-      font-size: 0.7rem;
+      font-size: 0.65rem;
     }
 
-    /* ESTILOS DE IMPRESIÓN (PRINT READY 300 DPI) */
+    /* ═══════════════════════════════════════════════
+       REGLAS DE IMPRESIÓN (300 DPI A5 / MEDIA CARTA)
+       ═══════════════════════════════════════════════ */
     @media print {
       body {
-        background: #FFF !important;
+        background: transparent !important;
         padding: 0 !important;
+        margin: 0 !important;
       }
+
       .toolbar {
         display: none !important;
       }
+
       .flyers-stage {
         gap: 0 !important;
+        max-width: 100% !important;
       }
+
       .flyer-page {
+        width: 148mm !important;
+        height: 210mm !important; /* Estándar A5 */
         box-shadow: none !important;
+        border: none !important;
         border-radius: 0 !important;
         page-break-after: always;
-        width: 100% !important;
-        height: 100vh !important;
-        max-width: none !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
       }
     }
   </style>
 </head>
 <body>
 
-  <!-- BARRA DE CONTROL INTERACTIVA -->
+  <!-- BARRA DE HERRAMIENTAS Y CONTROL (NO SE IMPRIME) -->
   <div class="toolbar">
     <div class="toolbar-title">
-      <span>🎨</span>
-      <span>Generador de Flyers Publicitarios VIDEM</span>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+      <span>VIDEM • Centro de Impresión Publicitaria</span>
     </div>
 
-    <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-      <!-- Selector País -->
+    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+      <!-- Selector País / Moneda -->
       <div class="btn-group">
         <button type="button" class="btn-toggle active" id="btnES" onclick="setEdition('es')">🇪🇸 Edición España (€)</button>
         <button type="button" class="btn-toggle" id="btnCO" onclick="setEdition('co')">🇨🇴 Edición Colombia (COP)</button>
@@ -702,9 +800,7 @@
          CARA FRONTAL (ANVERSO)
          ═══════════════════════════════════════════════ -->
     <div class="flyer-page front-cover" id="pageFront">
-      <div class="front-bg-photo"></div>
-      <div class="front-bg-gradient"></div>
-
+      
       <div class="front-content">
         
         <!-- Header con nuevo Imagotipo Prismático -->
@@ -726,62 +822,80 @@
             Todo el Cine y Series en <span class="cyan-span">1 Sola App</span> en tu Smart TV.
           </h1>
           <p class="front-subtitle" id="frontHeroSubtitle">
-            Películas y series en <strong>4K Remux real sin compresión</strong>, con audio en <strong>Castellano oficial</strong> y <strong>VOSE</strong>. Sin suscripciones fragmentadas ni cobros sorpresa.
+            Películas y series en <strong>4K Remux real sin compresión</strong>. Cero suscripciones fragmentadas ni cobros sorpresa.
           </p>
         </div>
 
-        <!-- 4 Pilares de Calidad Superior -->
-        <div class="front-pillars-grid">
-          <div class="pillar-card">
-            <div class="pillar-icon-row">
-              <span class="icon">💎</span>
-              <span class="pillar-title">4K Remux Puro</span>
-            </div>
-            <div class="pillar-desc">Bitrate de hasta 80 Mbps. Calidad Blu-ray real sin pixelado ni caídas.</div>
-          </div>
-
-          <div class="pillar-card">
-            <div class="pillar-icon-row">
-              <span class="icon">🔊</span>
-              <span class="pillar-title">Dolby Atmos & Vision</span>
-            </div>
-            <div class="pillar-desc">Audio espacial cinematográfico y rango dinámico con negros profundos.</div>
-          </div>
-
-          <div class="pillar-card">
-            <div class="pillar-icon-row">
-              <span class="icon">🎬</span>
-              <span class="pillar-title" id="pillarCuraduriaTitle">Castellano & VOSE</span>
-            </div>
-            <div class="pillar-desc" id="pillarCuraduriaDesc">Doblaje oficial de estudio y subtítulos sincronizados al milisegundo.</div>
-          </div>
-
-          <div class="pillar-card">
-            <div class="pillar-icon-row">
-              <span class="icon">⚡</span>
-              <span class="pillar-title">Llave en Mano (2 min)</span>
-            </div>
-            <div class="pillar-desc">Cero cables ni visitas técnicas. Sincronización remota instantánea.</div>
+        <!-- VENTANA HERO VISUAL (PANTALLA CON CATÁLOGO COMPLETO & LOGO VIDEM) -->
+        <div class="front-hero-visual-frame">
+          <img src="../assets/images/videm-flyer-hero.jpg" alt="Videm Smart TV Cine en Casa" class="front-hero-img">
+          <div class="hero-screen-badge">
+            <span class="pulse-dot"></span>
+            <span>Catálogo Infinito 4K • En Vivo</span>
           </div>
         </div>
 
-        <!-- Caja de Prueba Gratuita con QR -->
+        <!-- BARRA DE 4 SELLOS TECNOLÓGICOS (BADGES / PILLS SIN TEXTO PESADO) -->
+        <div class="front-badges-grid">
+          
+          <!-- Badge 1: 4K UHD Remux -->
+          <div class="spec-pill">
+            <div class="spec-icon-box">
+              <span class="badge-4k">4K UHD</span>
+            </div>
+            <div class="spec-label">Remux Puro</div>
+            <div class="spec-sub">Hasta 80 Mbps</div>
+          </div>
+
+          <!-- Badge 2: Dolby Atmos & Vision -->
+          <div class="spec-pill">
+            <div class="spec-icon-box">
+              <span class="badge-dolby">
+                <svg width="12" height="10" viewBox="0 0 20 14" fill="#000"><path d="M0 0h5.5c3 0 4.5 2 4.5 7s-1.5 7-4.5 7H0V0zm3 2.5v9h2.2c1.8 0 2.5-1.5 2.5-4.5s-.7-4.5-2.5-4.5H3zm17-2.5h-5.5c-3 0-4.5 2-4.5 7s1.5 7 4.5 7H20V0zm-3 2.5v9h-2.2c-1.8 0-2.5-1.5-2.5-4.5s.7-4.5 2.5-4.5H17z"/></svg>
+                DOLBY
+              </span>
+            </div>
+            <div class="spec-label">Atmos & Vision</div>
+            <div class="spec-sub">Sonido Sala de Cine</div>
+          </div>
+
+          <!-- Badge 3: Bandera e Idioma -->
+          <div class="spec-pill" id="specLangPill">
+            <div class="spec-icon-box">
+              <span class="badge-flag" id="specFlagIcon">🇪🇸</span>
+            </div>
+            <div class="spec-label" id="specLangTitle">Castellano & VOSE</div>
+            <div class="spec-sub" id="specLangSub">Doblaje Oficial</div>
+          </div>
+
+          <!-- Badge 4: Facilidad / Tiempo -->
+          <div class="spec-pill">
+            <div class="spec-icon-box">
+              <span class="badge-time">⚡ 2 min</span>
+            </div>
+            <div class="spec-label">Llave en Mano</div>
+            <div class="spec-sub">Cero Cables ni Visitas</div>
+          </div>
+
+        </div>
+
+        <!-- CAJA INFERIOR: CÓDIGO QR DIRECTO A LA WEB OFICIAL -->
         <div class="front-cta-box">
           <div class="cta-qr-wrap">
-            <img src="../assets/images/whatsapp_qr.png" alt="Código QR WhatsApp" class="cta-qr-img">
+            <img src="../assets/images/qr-videm-es.svg" alt="Código QR Web VIDEM" class="cta-qr-img" id="frontQrImg">
           </div>
           <div class="cta-text-wrap">
-            <span class="cta-badge-live">✦ Cortesía de Bienvenida</span>
-            <div class="cta-heading">Pruébalo GRATIS 2 Horas</div>
-            <div class="cta-subtext">Te enlazamos tu pantalla al instante sin tarjetas ni permanencias.</div>
-            <span class="cta-phone" id="frontPhoneText">WhatsApp: +34 746 05 77 76</span>
+            <span class="cta-badge-live">🌐 EXPLORA EL CATÁLOGO COMPLETO</span>
+            <div class="cta-heading">Escanea y Conoce VIDEM</div>
+            <div class="cta-subtext">Demos en video, compatibilidad y resuelve tus dudas en directo:</div>
+            <div class="cta-web-pill" id="frontWebLinkPill">videm.tv/es.html</div>
           </div>
         </div>
 
         <!-- Footer Frontal -->
         <div class="front-footer">
-          <span>Compatible con: <strong>Samsung • LG • Android TV • Fire TV • Apple TV</strong></span>
-          <span>Web: <strong id="frontWebText">videm.tv/es.html</strong></span>
+          <span>Compatible: <strong>Samsung • LG • Android TV • Fire TV • Apple TV</strong></span>
+          <span>Web Oficial: <strong id="frontWebText">videm.tv/es.html</strong></span>
         </div>
 
       </div>
@@ -796,7 +910,7 @@
       <!-- Header Reverso -->
       <div class="back-header">
         <div class="brand-lockup">
-          <img src="../assets/images/logo-videm.png" alt="Videm" style="width: 26px; height: 26px;">
+          <img src="../assets/images/logo-videm.png" alt="Videm" style="width: 24px; height: 24px;">
           <span class="back-title">Planes & Comparativa Real</span>
         </div>
         <span class="back-edition-pill" id="backEditionPill">Transparencia Total • Cero Permanencia</span>
@@ -884,7 +998,7 @@
         </div>
 
         <div class="back-qr-micro">
-          <img src="../assets/images/whatsapp_qr.png" alt="QR Contacto">
+          <img src="../assets/images/qr-wa-es.png" alt="QR Contacto WhatsApp" id="backQrImg">
           <div class="back-qr-micro-text">
             <strong>Pide tu Demo:</strong>
             <span id="backPhoneSmall">+34 746 05 77 76</span>
@@ -901,11 +1015,13 @@
   <script>
     const dataEditions = {
       es: {
-        badge: "🇪🇸 Edición España & Europa",
-        subtitle: "Películas y series en <strong>4K Remux real sin compresión</strong>, con audio en <strong>Castellano oficial</strong> y <strong>VOSE</strong>. Sin suscripciones fragmentadas ni cobros sorpresa.",
-        pillarCuraduriaTitle: "Castellano & VOSE",
-        pillarCuraduriaDesc: "Doblaje oficial de estudio y subtítulos sincronizados al milisegundo.",
-        phone: "WhatsApp: +34 746 05 77 76",
+        badge: "🇪🇸 Edición España",
+        subtitle: "Películas y series en <strong>4K Remux real sin compresión</strong>. Cero suscripciones fragmentadas ni cobros sorpresa.",
+        flag: "🇪🇸",
+        langTitle: "Castellano & VOSE",
+        langSub: "Doblaje Oficial",
+        qrFront: "../assets/images/qr-videm-es.svg",
+        qrBack: "../assets/images/qr-wa-es.png",
         phoneRaw: "+34 746 05 77 76",
         web: "videm.tv/es.html",
         vsBad: "Netflix + Prime + HBO + Disney = <strong>&gt; 60 € / mes (&gt; 700 € / año)</strong>. Video comprimido a solo 12-16 Mbps. Cobros automáticos sorpresa cada 30 días.",
@@ -920,10 +1036,12 @@
       },
       co: {
         badge: "🇨🇴 Edición Colombia",
-        subtitle: "Películas y series en <strong>4K Remux real sin compresión</strong>, con audio en <strong>Español Latino</strong> y <strong>VOSE</strong>. Conectado directo a servidores de fibra óptica dedicados.",
-        pillarCuraduriaTitle: "Español Latino & VOSE",
-        pillarCuraduriaDesc: "Doblaje latino oficial y subtítulos neutros sincronizados sin desfase.",
-        phone: "WhatsApp: +57 301 556 8904",
+        subtitle: "Películas y series en <strong>4K Remux real sin compresión</strong>. Servidores de fibra óptica directa. Cero cobros sorpresa.",
+        flag: "🇨🇴",
+        langTitle: "Español Latino & VOSE",
+        langSub: "Doblaje Oficial",
+        qrFront: "../assets/images/qr-videm-co.svg",
+        qrBack: "../assets/images/qr-wa-co.png",
         phoneRaw: "+57 301 556 8904",
         web: "videm.tv",
         vsBad: "¿Cuánto pagas al mes? Netflix + Prime + HBO + Disney = <strong>&gt; $140.000 COP / mes (&gt; $1.680.000 / año)</strong>. Video comprimido a solo 12 Mbps. Cobros sorpresa en tarjeta.",
@@ -945,11 +1063,18 @@
       const d = dataEditions[code];
       document.getElementById('frontEditionBadge').innerText = d.badge;
       document.getElementById('frontHeroSubtitle').innerHTML = d.subtitle;
-      document.getElementById('pillarCuraduriaTitle').innerText = d.pillarCuraduriaTitle;
-      document.getElementById('pillarCuraduriaDesc').innerText = d.pillarCuraduriaDesc;
-      document.getElementById('frontPhoneText').innerText = d.phone;
+
+      // Sellos de idioma y banderas
+      document.getElementById('specFlagIcon').innerText = d.flag;
+      document.getElementById('specLangTitle').innerText = d.langTitle;
+      document.getElementById('specLangSub').innerText = d.langSub;
+
+      // Código QR Web Frontal
+      document.getElementById('frontQrImg').src = d.qrFront;
+      document.getElementById('frontWebLinkPill').innerText = d.web;
       document.getElementById('frontWebText').innerText = d.web;
 
+      // Reverso
       document.getElementById('vsBadText').innerHTML = d.vsBad;
       document.getElementById('vsGoodText').innerHTML = d.vsGood;
 
@@ -963,6 +1088,7 @@
       document.getElementById('backPaymentMethods').innerHTML = d.payments;
       document.getElementById('backPhoneSmall').innerText = d.phoneRaw;
       document.getElementById('backWebSmall').innerText = d.web;
+      document.getElementById('backQrImg').src = d.qrBack;
     }
 
     function setView(view) {

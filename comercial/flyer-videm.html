@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VIDEM | Flyer Publicitario Oficial (España & Colombia)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #07090E;
+      --bg-card: #0D111A;
+      --bg-card-border: rgba(0, 240, 255, 0.18);
+      --accent-cyan: #00F0FF;
+      --accent-blue: #0070BA;
+      --accent-purple: #7C3AED;
+      --accent-red: #E50914;
+      --accent-green: #00E676;
+      --text-white: #FFFFFF;
+      --text-muted: #94A3B8;
+      --text-dim: #64748B;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #040608;
+      color: #E2E8F0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px 60px;
+    }
+
+    /* CONTROL PANEL SUPERIOR (No se imprime) */
+    .toolbar {
+      width: 100%;
+      max-width: 960px;
+      background: rgba(13, 17, 26, 0.95);
+      border: 1px solid rgba(0, 240, 255, 0.25);
+      border-radius: 16px;
+      padding: 16px 24px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 30px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(12px);
+    }
+
+    .toolbar-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--accent-cyan);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 8px;
+      background: #07090E;
+      padding: 4px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .btn-toggle {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-weight: 700;
+      font-size: 0.85rem;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-toggle.active {
+      background: linear-gradient(135deg, #00F0FF 0%, #0070BA 100%);
+      color: #040608;
+      box-shadow: 0 2px 10px rgba(0, 240, 255, 0.4);
+    }
+
+    .btn-print {
+      background: #E50914;
+      color: #FFF;
+      border: none;
+      font-weight: 800;
+      font-size: 0.88rem;
+      padding: 10px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-print:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(229, 9, 20, 0.4);
+    }
+
+    /* CONTENEDOR FLYER */
+    .flyers-stage {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 36px;
+      width: 100%;
+      max-width: 1100px;
+    }
+
+    /* FORMATO IMPRENTA A5 / MEDIA CARTA (Aspecto ~1:1.414) */
+    .flyer-page {
+      width: 440px;
+      height: 622px; /* Ratio exacto A5 / Media Carta */
+      background: var(--bg-dark);
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(255, 255, 255, 0.08);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+
+    /* ═══════════════════════════════════════════════
+       CARA 1: ANVERSO (FRONT COVER - CINEMATOGRÁFICO)
+       ═══════════════════════════════════════════════ */
+    .front-cover {
+      background: #05070B;
+      position: relative;
+      padding: 24px 24px 20px;
+      justify-content: space-between;
+    }
+
+    /* Fondo fotográfico con gradiente overlay */
+    .front-bg-photo {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('../assets/images/videm-flyer-hero.jpg');
+      background-size: cover;
+      background-position: center 20%;
+      opacity: 0.42;
+      z-index: 1;
+    }
+
+    .front-bg-gradient {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, 
+        rgba(5, 7, 11, 0.96) 0%, 
+        rgba(5, 7, 11, 0.35) 30%, 
+        rgba(5, 7, 11, 0.85) 65%, 
+        rgba(5, 7, 11, 0.99) 100%);
+      z-index: 2;
+    }
+
+    .front-content {
+      position: relative;
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      justify-content: space-between;
+    }
+
+    /* Header del Flyer */
+    .front-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(0, 240, 255, 0.15);
+      padding-bottom: 12px;
+    }
+
+    .brand-lockup {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-icon {
+      width: 34px;
+      height: 34px;
+      object-fit: contain;
+    }
+
+    .brand-wordmark-img {
+      height: 22px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.5));
+    }
+
+    .front-badge-edition {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--accent-cyan);
+      background: rgba(0, 240, 255, 0.12);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      padding: 4px 10px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    /* Titular Principal Hero */
+    .front-hero-text {
+      margin-top: 10px;
+    }
+
+    .front-tagline {
+      font-size: 0.76rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #00E676;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+
+    .front-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.65rem;
+      font-weight: 900;
+      line-height: 1.18;
+      color: #FFF;
+      letter-spacing: -0.02em;
+    }
+
+    .front-title .cyan-span {
+      background: linear-gradient(135deg, #00F0FF 0%, #70A6FF 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .front-subtitle {
+      font-size: 0.85rem;
+      color: #CBD5E1;
+      line-height: 1.4;
+      margin-top: 6px;
+    }
+
+    /* Grilla de 4 Pilares */
+    .front-pillars-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin: 12px 0;
+    }
+
+    .pillar-card {
+      background: rgba(13, 17, 26, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      padding: 8px 10px;
+      backdrop-filter: blur(8px);
+    }
+
+    .pillar-icon-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 2px;
+    }
+
+    .pillar-icon-row span.icon {
+      font-size: 1rem;
+    }
+
+    .pillar-title {
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: #FFF;
+    }
+
+    .pillar-desc {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      line-height: 1.3;
+    }
+
+    /* Caja de Oferta / Demo Gratis con QR */
+    .front-cta-box {
+      background: linear-gradient(135deg, rgba(0, 240, 255, 0.15) 0%, rgba(124, 58, 237, 0.15) 100%);
+      border: 1.5px solid var(--accent-cyan);
+      border-radius: 12px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      box-shadow: 0 8px 24px -6px rgba(0, 240, 255, 0.35);
+    }
+
+    .cta-qr-wrap {
+      width: 72px;
+      height: 72px;
+      background: #FFF;
+      border-radius: 8px;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .cta-qr-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .cta-text-wrap {
+      flex: 1;
+    }
+
+    .cta-badge-live {
+      display: inline-block;
+      background: #E50914;
+      color: #FFF;
+      font-size: 0.62rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-bottom: 4px;
+    }
+
+    .cta-heading {
+      font-size: 0.95rem;
+      font-weight: 900;
+      color: #FFF;
+      line-height: 1.2;
+    }
+
+    .cta-subtext {
+      font-size: 0.72rem;
+      color: #E2E8F0;
+      line-height: 1.3;
+      margin-top: 3px;
+    }
+
+    .cta-phone {
+      font-family: 'Space Grotesk', monospace;
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: var(--accent-cyan);
+      margin-top: 3px;
+      display: block;
+    }
+
+    /* Footer frontal */
+    .front-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 8px;
+      font-size: 0.68rem;
+      color: var(--text-dim);
+    }
+
+    .front-footer strong {
+      color: var(--accent-cyan);
+    }
+
+
+    /* ═══════════════════════════════════════════════
+       CARA 2: REVERSO (BACK COVER - TARIFAS Y BLINDAJE)
+       ═══════════════════════════════════════════════ */
+    .back-cover {
+      background: #080B12;
+      padding: 22px 22px 18px;
+      justify-content: space-between;
+    }
+
+    .back-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 10px;
+    }
+
+    .back-title {
+      font-size: 0.95rem;
+      font-weight: 900;
+      color: #FFF;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .back-edition-pill {
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    /* Comparativa Dolor vs Solución */
+    .vs-strip {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 10px 0;
+    }
+
+    .vs-box {
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 0.72rem;
+      line-height: 1.35;
+    }
+
+    .vs-box.bad {
+      background: rgba(229, 9, 20, 0.08);
+      border: 1px solid rgba(229, 9, 20, 0.3);
+      color: #FECACA;
+    }
+
+    .vs-box.bad h5 {
+      color: #F87171;
+      font-size: 0.78rem;
+      font-weight: 800;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .vs-box.good {
+      background: rgba(0, 230, 118, 0.08);
+      border: 1px solid rgba(0, 230, 118, 0.35);
+      color: #DCFCE7;
+    }
+
+    .vs-box.good h5 {
+      color: #4ADE80;
+      font-size: 0.78rem;
+      font-weight: 800;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Tabla de 3 Planes */
+    .back-plans-row {
+      display: grid;
+      grid-template-columns: 1fr 1.15fr 1fr;
+      gap: 8px;
+      margin: 8px 0;
+      align-items: stretch;
+    }
+
+    .plan-card {
+      background: rgba(13, 17, 26, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      padding: 10px 8px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+    }
+
+    .plan-card.featured {
+      border: 1.5px solid var(--accent-cyan);
+      background: linear-gradient(180deg, rgba(0, 240, 255, 0.12) 0%, rgba(13, 17, 26, 0.95) 100%);
+      box-shadow: 0 8px 20px -8px rgba(0, 240, 255, 0.4);
+    }
+
+    .plan-featured-tag {
+      position: absolute;
+      top: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--accent-cyan);
+      color: #040608;
+      font-size: 0.58rem;
+      font-weight: 900;
+      padding: 2px 8px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+    }
+
+    .plan-title {
+      font-size: 0.76rem;
+      font-weight: 800;
+      color: #FFF;
+      margin-bottom: 2px;
+    }
+
+    .plan-price-num {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.35rem;
+      font-weight: 900;
+      color: #FFF;
+      line-height: 1.1;
+      margin: 4px 0 2px;
+    }
+
+    .plan-card.featured .plan-price-num {
+      color: var(--accent-cyan);
+    }
+
+    .plan-period {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+    }
+
+    .plan-subdetail {
+      font-size: 0.62rem;
+      color: #00E676;
+      font-weight: 700;
+      margin-top: 4px;
+    }
+
+    /* 3 Pasos de Activación */
+    .steps-section {
+      background: rgba(13, 17, 26, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin: 8px 0;
+    }
+
+    .steps-heading {
+      font-size: 0.74rem;
+      font-weight: 800;
+      color: var(--accent-cyan);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .steps-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+    }
+
+    .step-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .step-num {
+      width: 18px;
+      height: 18px;
+      background: var(--accent-cyan);
+      color: #040608;
+      border-radius: 50%;
+      font-size: 0.68rem;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 2px;
+    }
+
+    .step-text {
+      font-size: 0.66rem;
+      color: #CBD5E1;
+      line-height: 1.3;
+    }
+
+    /* Barra de Métodos de Pago y Garantía */
+    .back-bottom-strip {
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .pay-methods-text {
+      font-size: 0.64rem;
+      color: var(--text-muted);
+      line-height: 1.3;
+    }
+
+    .pay-methods-text strong {
+      color: #FFF;
+    }
+
+    .back-qr-micro {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0, 240, 255, 0.08);
+      border: 1px solid rgba(0, 240, 255, 0.25);
+      border-radius: 8px;
+      padding: 4px 8px;
+    }
+
+    .back-qr-micro img {
+      width: 38px;
+      height: 38px;
+      background: #FFF;
+      border-radius: 4px;
+      padding: 2px;
+    }
+
+    .back-qr-micro-text {
+      font-size: 0.62rem;
+      line-height: 1.25;
+      color: #FFF;
+    }
+
+    .back-qr-micro-text strong {
+      color: var(--accent-cyan);
+      display: block;
+      font-size: 0.7rem;
+    }
+
+    /* ESTILOS DE IMPRESIÓN (PRINT READY 300 DPI) */
+    @media print {
+      body {
+        background: #FFF !important;
+        padding: 0 !important;
+      }
+      .toolbar {
+        display: none !important;
+      }
+      .flyers-stage {
+        gap: 0 !important;
+      }
+      .flyer-page {
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        page-break-after: always;
+        width: 100% !important;
+        height: 100vh !important;
+        max-width: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- BARRA DE CONTROL INTERACTIVA -->
+  <div class="toolbar">
+    <div class="toolbar-title">
+      <span>🎨</span>
+      <span>Generador de Flyers Publicitarios VIDEM</span>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+      <!-- Selector País -->
+      <div class="btn-group">
+        <button type="button" class="btn-toggle active" id="btnES" onclick="setEdition('es')">🇪🇸 Edición España (€)</button>
+        <button type="button" class="btn-toggle" id="btnCO" onclick="setEdition('co')">🇨🇴 Edición Colombia (COP)</button>
+      </div>
+
+      <!-- Selector Vista -->
+      <div class="btn-group">
+        <button type="button" class="btn-toggle active" id="btnViewBoth" onclick="setView('both')">Ambas Caras</button>
+        <button type="button" class="btn-toggle" id="btnViewFront" onclick="setView('front')">Frente</button>
+        <button type="button" class="btn-toggle" id="btnViewBack" onclick="setView('back')">Reverso</button>
+      </div>
+
+      <button type="button" class="btn-print" onclick="window.print()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+        <span>Imprimir / Guardar PDF</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ESCENARIO DE LOS DOS LADOS DEL FLYER -->
+  <div class="flyers-stage">
+
+    <!-- ═══════════════════════════════════════════════
+         CARA FRONTAL (ANVERSO)
+         ═══════════════════════════════════════════════ -->
+    <div class="flyer-page front-cover" id="pageFront">
+      <div class="front-bg-photo"></div>
+      <div class="front-bg-gradient"></div>
+
+      <div class="front-content">
+        
+        <!-- Header con nuevo Imagotipo Prismático -->
+        <div class="front-header">
+          <div class="brand-lockup">
+            <img src="../assets/images/logo-videm.png" alt="Videm" class="brand-icon">
+            <img src="../assets/images/videm-wordmark-crystal.png" alt="VIDEM" class="brand-wordmark-img">
+          </div>
+          <span class="front-badge-edition" id="frontEditionBadge">🇪🇸 Edición España</span>
+        </div>
+
+        <!-- Titular de Alto Impacto -->
+        <div class="front-hero-text">
+          <div class="front-tagline">
+            <span>✦</span>
+            <span>El Estándar Definitivo del Cine en Casa</span>
+          </div>
+          <h1 class="front-title">
+            Todo el Cine y Series en <span class="cyan-span">1 Sola App</span> en tu Smart TV.
+          </h1>
+          <p class="front-subtitle" id="frontHeroSubtitle">
+            Películas y series en <strong>4K Remux real sin compresión</strong>, con audio en <strong>Castellano oficial</strong> y <strong>VOSE</strong>. Sin suscripciones fragmentadas ni cobros sorpresa.
+          </p>
+        </div>
+
+        <!-- 4 Pilares de Calidad Superior -->
+        <div class="front-pillars-grid">
+          <div class="pillar-card">
+            <div class="pillar-icon-row">
+              <span class="icon">💎</span>
+              <span class="pillar-title">4K Remux Puro</span>
+            </div>
+            <div class="pillar-desc">Bitrate de hasta 80 Mbps. Calidad Blu-ray real sin pixelado ni caídas.</div>
+          </div>
+
+          <div class="pillar-card">
+            <div class="pillar-icon-row">
+              <span class="icon">🔊</span>
+              <span class="pillar-title">Dolby Atmos & Vision</span>
+            </div>
+            <div class="pillar-desc">Audio espacial cinematográfico y rango dinámico con negros profundos.</div>
+          </div>
+
+          <div class="pillar-card">
+            <div class="pillar-icon-row">
+              <span class="icon">🎬</span>
+              <span class="pillar-title" id="pillarCuraduriaTitle">Castellano & VOSE</span>
+            </div>
+            <div class="pillar-desc" id="pillarCuraduriaDesc">Doblaje oficial de estudio y subtítulos sincronizados al milisegundo.</div>
+          </div>
+
+          <div class="pillar-card">
+            <div class="pillar-icon-row">
+              <span class="icon">⚡</span>
+              <span class="pillar-title">Llave en Mano (2 min)</span>
+            </div>
+            <div class="pillar-desc">Cero cables ni visitas técnicas. Sincronización remota instantánea.</div>
+          </div>
+        </div>
+
+        <!-- Caja de Prueba Gratuita con QR -->
+        <div class="front-cta-box">
+          <div class="cta-qr-wrap">
+            <img src="../assets/images/whatsapp_qr.png" alt="Código QR WhatsApp" class="cta-qr-img">
+          </div>
+          <div class="cta-text-wrap">
+            <span class="cta-badge-live">✦ Cortesía de Bienvenida</span>
+            <div class="cta-heading">Pruébalo GRATIS 2 Horas</div>
+            <div class="cta-subtext">Te enlazamos tu pantalla al instante sin tarjetas ni permanencias.</div>
+            <span class="cta-phone" id="frontPhoneText">WhatsApp: +34 746 05 77 76</span>
+          </div>
+        </div>
+
+        <!-- Footer Frontal -->
+        <div class="front-footer">
+          <span>Compatible con: <strong>Samsung • LG • Android TV • Fire TV • Apple TV</strong></span>
+          <span>Web: <strong id="frontWebText">videm.tv/es.html</strong></span>
+        </div>
+
+      </div>
+    </div>
+
+
+    <!-- ═══════════════════════════════════════════════
+         CARA POSTERIOR (REVERSO)
+         ═══════════════════════════════════════════════ -->
+    <div class="flyer-page back-cover" id="pageBack">
+      
+      <!-- Header Reverso -->
+      <div class="back-header">
+        <div class="brand-lockup">
+          <img src="../assets/images/logo-videm.png" alt="Videm" style="width: 26px; height: 26px;">
+          <span class="back-title">Planes & Comparativa Real</span>
+        </div>
+        <span class="back-edition-pill" id="backEditionPill">Transparencia Total • Cero Permanencia</span>
+      </div>
+
+      <!-- Comparativa Visual Dolor vs Solución -->
+      <div class="vs-strip">
+        <div class="vs-box bad">
+          <h5>❌ Múltiples Suscripciones</h5>
+          <p id="vsBadText">
+            Netflix + Prime + HBO + Disney = <strong>&gt; 60 € / mes (&gt; 700 € / año)</strong>. Video comprimido a solo 12-16 Mbps. Cobros automáticos sorpresa cada 30 días.
+          </p>
+        </div>
+        <div class="vs-box good">
+          <h5>✅ Estándar VIDEM VIP</h5>
+          <p id="vsGoodText">
+            <strong>Desde 7,50 € / mes</strong>. Todo el cine en 1 sola app. 4K Remux hasta 80 Mbps sin pérdidas. Cero cobros automáticos: renuevas solo cuando quieras.
+          </p>
+        </div>
+      </div>
+
+      <!-- Fila de Tarifas (3 Planes) -->
+      <div class="back-plans-row">
+        
+        <!-- Plan 1 Mes -->
+        <div class="plan-card">
+          <div>
+            <div class="plan-title">1 Mes Flex</div>
+            <div class="plan-price-num" id="plan1Price">9,99 €</div>
+            <div class="plan-period">Pago único • Sin ataduras</div>
+          </div>
+          <div class="plan-subdetail">Prueba 1 mes completo</div>
+        </div>
+
+        <!-- Plan 12 Meses (DESTACADO CENTRAL) -->
+        <div class="plan-card featured">
+          <span class="plan-featured-tag">🔥 El Más Elegido</span>
+          <div>
+            <div class="plan-title">Pase Anual (12 Meses)</div>
+            <div class="plan-price-num" id="plan12Price">89,99 €</div>
+            <div class="plan-period" id="plan12Monthly">Sólo ~7,50 € / mes</div>
+          </div>
+          <div class="plan-subdetail" id="plan12Saving">Ahorras más de 150 €</div>
+        </div>
+
+        <!-- Plan 6 Meses -->
+        <div class="plan-card">
+          <div>
+            <div class="plan-title">6 Meses VIP</div>
+            <div class="plan-price-num" id="plan6Price">49,99 €</div>
+            <div class="plan-period" id="plan6Monthly">Sólo ~8,33 € / mes</div>
+          </div>
+          <div class="plan-subdetail">Toda la temporada</div>
+        </div>
+
+      </div>
+
+      <!-- Procedimiento Llave en Mano en 3 Pasos -->
+      <div class="steps-section">
+        <div class="steps-heading">
+          <span>🚀</span>
+          <span>¿Cómo se activa en tu televisor? (En 2 Minutos)</span>
+        </div>
+        <div class="steps-list">
+          <div class="step-item">
+            <div class="step-num">1</div>
+            <div class="step-text"><strong>Abre la app</strong> en tu Smart TV o Fire TV Stick.</div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">2</div>
+            <div class="step-text"><strong>Copia el código</strong> de letras que sale en pantalla.</div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">3</div>
+            <div class="step-text"><strong>Mándalo al WhatsApp</strong> y te calibramos la sala al instante.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Métodos de Pago y Garantía de Contacto -->
+      <div class="back-bottom-strip">
+        <div class="pay-methods-text">
+          <div id="backPaymentMethods"><strong>Métodos de Pago:</strong> Tarjeta (Visa/Mastercard), Apple Pay, PayPal, Bizum.</div>
+          <div style="margin-top: 3px; color: var(--text-dim);">Servicio operado por <strong>Levanna S.A.S.</strong> • Soporte VIP dedicado</div>
+        </div>
+
+        <div class="back-qr-micro">
+          <img src="../assets/images/whatsapp_qr.png" alt="QR Contacto">
+          <div class="back-qr-micro-text">
+            <strong>Pide tu Demo:</strong>
+            <span id="backPhoneSmall">+34 746 05 77 76</span>
+            <span id="backWebSmall" style="display:block; color: var(--accent-cyan);">videm.tv</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- SCRIPT DINÁMICO PARA CONMUTAR EDICIONES (ESPAÑA / COLOMBIA) Y VISTAS -->
+  <script>
+    const dataEditions = {
+      es: {
+        badge: "🇪🇸 Edición España & Europa",
+        subtitle: "Películas y series en <strong>4K Remux real sin compresión</strong>, con audio en <strong>Castellano oficial</strong> y <strong>VOSE</strong>. Sin suscripciones fragmentadas ni cobros sorpresa.",
+        pillarCuraduriaTitle: "Castellano & VOSE",
+        pillarCuraduriaDesc: "Doblaje oficial de estudio y subtítulos sincronizados al milisegundo.",
+        phone: "WhatsApp: +34 746 05 77 76",
+        phoneRaw: "+34 746 05 77 76",
+        web: "videm.tv/es.html",
+        vsBad: "Netflix + Prime + HBO + Disney = <strong>&gt; 60 € / mes (&gt; 700 € / año)</strong>. Video comprimido a solo 12-16 Mbps. Cobros automáticos sorpresa cada 30 días.",
+        vsGood: "<strong>Desde 7,50 € / mes</strong>. Todo el cine en 1 sola app. 4K Remux hasta 80 Mbps sin pérdidas. Cero cobros automáticos: renuevas solo cuando quieras.",
+        plan1Price: "9,99 €",
+        plan6Price: "49,99 €",
+        plan6Monthly: "Sólo ~8,33 € / mes",
+        plan12Price: "89,99 €",
+        plan12Monthly: "Sólo ~7,50 € / mes",
+        plan12Saving: "Ahorras más de 150 €",
+        payments: "<strong>Métodos de Pago:</strong> Tarjetas (Visa / Mastercard), Apple Pay, PayPal y Bizum."
+      },
+      co: {
+        badge: "🇨🇴 Edición Colombia",
+        subtitle: "Películas y series en <strong>4K Remux real sin compresión</strong>, con audio en <strong>Español Latino</strong> y <strong>VOSE</strong>. Conectado directo a servidores de fibra óptica dedicados.",
+        pillarCuraduriaTitle: "Español Latino & VOSE",
+        pillarCuraduriaDesc: "Doblaje latino oficial y subtítulos neutros sincronizados sin desfase.",
+        phone: "WhatsApp: +57 301 556 8904",
+        phoneRaw: "+57 301 556 8904",
+        web: "videm.tv",
+        vsBad: "¿Cuánto pagas al mes? Netflix + Prime + HBO + Disney = <strong>&gt; $140.000 COP / mes (&gt; $1.680.000 / año)</strong>. Video comprimido a solo 12 Mbps. Cobros sorpresa en tarjeta.",
+        vsGood: "<strong>Desde $36.600 COP / mes</strong>. Todo el catálogo en 1 sola app. 4K Remux hasta 80 Mbps puro. Cero suscripciones sorpresa: renuevas cuando quieras.",
+        plan1Price: "$55.000",
+        plan6Price: "$240.000",
+        plan6Monthly: "Sólo ~$40.000 COP / mes",
+        plan12Price: "$440.000",
+        plan12Monthly: "Sólo ~$36.600 COP / mes",
+        plan12Saving: "Ahorras más de $100.000 COP",
+        payments: "<strong>Métodos de Pago:</strong> Wompi (Bancolombia, Nequi, Daviplata, Tarjetas y PSE)."
+      }
+    };
+
+    function setEdition(code) {
+      document.getElementById('btnES').classList.toggle('active', code === 'es');
+      document.getElementById('btnCO').classList.toggle('active', code === 'co');
+
+      const d = dataEditions[code];
+      document.getElementById('frontEditionBadge').innerText = d.badge;
+      document.getElementById('frontHeroSubtitle').innerHTML = d.subtitle;
+      document.getElementById('pillarCuraduriaTitle').innerText = d.pillarCuraduriaTitle;
+      document.getElementById('pillarCuraduriaDesc').innerText = d.pillarCuraduriaDesc;
+      document.getElementById('frontPhoneText').innerText = d.phone;
+      document.getElementById('frontWebText').innerText = d.web;
+
+      document.getElementById('vsBadText').innerHTML = d.vsBad;
+      document.getElementById('vsGoodText').innerHTML = d.vsGood;
+
+      document.getElementById('plan1Price').innerText = d.plan1Price;
+      document.getElementById('plan6Price').innerText = d.plan6Price;
+      document.getElementById('plan6Monthly').innerText = d.plan6Monthly;
+      document.getElementById('plan12Price').innerText = d.plan12Price;
+      document.getElementById('plan12Monthly').innerText = d.plan12Monthly;
+      document.getElementById('plan12Saving').innerText = d.plan12Saving;
+
+      document.getElementById('backPaymentMethods').innerHTML = d.payments;
+      document.getElementById('backPhoneSmall').innerText = d.phoneRaw;
+      document.getElementById('backWebSmall').innerText = d.web;
+    }
+
+    function setView(view) {
+      document.getElementById('btnViewBoth').classList.toggle('active', view === 'both');
+      document.getElementById('btnViewFront').classList.toggle('active', view === 'front');
+      document.getElementById('btnViewBack').classList.toggle('active', view === 'back');
+
+      const front = document.getElementById('pageFront');
+      const back = document.getElementById('pageBack');
+
+      if (view === 'both') {
+        front.style.display = 'flex';
+        back.style.display = 'flex';
+      } else if (view === 'front') {
+        front.style.display = 'flex';
+        back.style.display = 'none';
+      } else {
+        front.style.display = 'none';
+        back.style.display = 'flex';
+      }
+    }
+  </script>
+</body>
+</html>

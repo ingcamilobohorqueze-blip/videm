@@ -51,8 +51,50 @@ function fetchCoM3U() {
       res.on('data', c => data += c);
       res.on('end', () => {
         const epgUrl = config.endpoints.epgXmltv;
-        const body = data.replace(/^#EXTM3U[^\r\n]*/i, `#EXTM3U url-tvg="${epgUrl}" x-tvg-url="${epgUrl}" name="TDT & Cable Colombia (Respaldo Independiente)"`);
-        resolve(body);
+        let out = `#EXTM3U url-tvg="${epgUrl}" x-tvg-url="${epgUrl}" name="TDT & Cable Colombia (Lista Libre)"\n\n`;
+
+        // 1. Inyectar arriba las señales principales 1080p estables de la cabecera TDT Colombia (138.121.15.230)
+        const topTdt = [
+          { id: 'Caracol.co', name: 'Caracol TV 1080p (TDT Principal)', url: 'http://138.121.15.230:9002/CARACOL/index.m3u8' },
+          { id: 'RCN.co', name: 'Canal RCN 1080p (TDT Principal)', url: 'http://138.121.15.230:9002/RCN/index.m3u8' },
+          { id: 'Canal.1.co', name: 'Canal 1 1080p (TDT Principal)', url: 'http://138.121.15.230:9002/CANAL-UNO/index.m3u8' }
+        ];
+        topTdt.forEach(c => {
+          const { logo } = resolveEpgAndLogo({ name: c.name }, c.name);
+          out += `#EXTINF:-1 tvg-id="${c.id}" tvg-name="${c.id}" tvg-logo="${logo}" group-title="🇨🇴 TDT Principales",${c.name}\n${c.url}\n\n`;
+        });
+
+        // 2. Filtrar enlaces muertos de co.m3u que causaban error MRL en VLC y corregir la etiqueta de ch19 (ESPN 5)
+        const deadUrls = new Set([
+          'http://38.187.7.252:8000/play/a03d/index.m3u8', // DSports caído
+          'http://38.190.100.202:8000/play/a09v/index.m3u8', // Caracol 404 (reemplazado arriba)
+          'http://168.196.127.137:6001/play/a095/index.m3u8', // TNT Series caído
+          'http://38.134.250.110:8000/play/a003/index.m3u8', // Discovery Kids 404
+          'http://181.78.14.26:4000/play/a00d/index.m3u8', // Caracol HD2 caído
+          'http://181.78.14.26:4000/play/a07m/index.m3u8'  // RCN HD2 caído
+        ]);
+
+        const lines = data.split(/\r?\n/);
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i].trim();
+          if (!line.startsWith('#EXTINF')) continue;
+          if (/\[Geo-blocked\]|\[Not 24\/7\]/i.test(line)) continue;
+
+          let j = i + 1;
+          while (j < lines.length && !lines[j].trim().startsWith('http') && !lines[j].trim().startsWith('#EXTINF')) j++;
+          const streamUrl = (lines[j] || '').trim();
+          if (!streamUrl.startsWith('http') || deadUrls.has(streamUrl)) continue;
+
+          let extinf = line;
+          if (streamUrl.includes('181.78.12.119:16123/play/ch19')) {
+            extinf = extinf
+              .replace(/tvg-id="[^"]*"/, 'tvg-id="ESPN.5.co"')
+              .replace(/,Win\+\s*Futbol.*$/i, ',ESPN 5 / Eventos Fútbol (1080p)');
+          }
+          out += `${extinf}\n${streamUrl}\n\n`;
+        }
+
+        resolve(out);
       });
     }).on('error', reject);
   });

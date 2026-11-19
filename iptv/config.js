@@ -58,40 +58,8 @@ module.exports = {
     '1334': 'SPORTS EVENTS'
   },
 
-  // Señales TDT 1080p de Respaldo EXCLUSIVAMENTE para Canales Nacionales (130-149) del servidor estable 138.121.15.230
-  // (Se eliminaron los enlaces públicos inestables de deportes/cable de co.m3u que mostraban ESPN 5 en vez de Win+ o daban error MRL en DSPORTS)
-  tdtDirectByDial: {
-    130: [
-      { title: 'RCN Televisión 1080p (Respaldo TDT)', url: 'http://138.121.15.230:9002/RCN/index.m3u8' }
-    ],
-    132: [
-      { title: 'Caracol Televisión 1080p (Respaldo TDT)', url: 'http://138.121.15.230:9002/CARACOL/index.m3u8' }
-    ],
-    133: [
-      { title: 'CityTV Bogotá 1080p (Respaldo TDT)', url: 'http://138.121.15.230:9002/CITY-TV/index.m3u8' }
-    ],
-    136: [
-      { title: 'Canal 1 1080p (Respaldo TDT)', url: 'http://138.121.15.230:9002/CANAL-UNO/index.m3u8' }
-    ],
-    137: [
-      { title: 'Señal Colombia 1080p (Respaldo TDT)', url: 'http://138.121.15.230:9002/SENAL-COLOMBIA/index.m3u8' }
-    ],
-    140: [
-      { title: 'Teleantioquia 1080p (Respaldo TDT)', url: 'http://138.121.15.230:9002/TELEANTIOQUIA/index.m3u8' }
-    ],
-    141: [
-      { title: 'Telepacífico 1080p (Respaldo TDT)', url: 'http://138.121.15.230:9002/TELEPACIFICO/index.m3u8' }
-    ],
-    142: [
-      { title: 'Telecaribe 1080p (Respaldo TDT)', url: 'http://138.121.15.230:9002/TELECARIBE/index.m3u8' }
-    ],
-    143: [
-      { title: 'Canal Capital 1080p (Respaldo TDT)', url: 'http://138.121.15.230:9002/CANAL-CAPITAL/index.m3u8' }
-    ],
-    149: [
-      { title: 'Telecafé 1080p (Respaldo TDT)', url: 'http://138.121.15.230:9002/TELECAFE/index.m3u8' }
-    ]
-  },
+  // En la lista principal de TREX no mezclamos enlaces públicos de co.m3u porque ya existe la lista independiente ?lista=co
+  tdtDirectByDial: {},
 
   // Logos oficiales verificados (CDN Telefónica/Movistar Colombia GVP) y mapeo EDT/EPG
   // Corrige picons erróneos de TREX (ej. ID 145416 Win Sports+ que traía el logo francés de Infosport+)

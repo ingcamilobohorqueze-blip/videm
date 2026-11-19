@@ -53,25 +53,34 @@ function fetchCoM3U() {
         const epgUrl = config.endpoints.epgXmltv;
         let out = `#EXTM3U url-tvg="${epgUrl}" x-tvg-url="${epgUrl}" name="TDT & Cable Colombia (Lista Libre)"\n\n`;
 
-        // 1. Inyectar arriba las señales principales 1080p estables de la cabecera TDT Colombia (138.121.15.230)
+        // 1. Inyectar arriba las señales principales 1080p estables de las cabeceras TDT/Cable Colombia (138.121.15.230 y 181.78.211.244)
         const topTdt = [
-          { id: 'Caracol.co', name: 'Caracol TV 1080p (TDT Principal)', url: 'http://138.121.15.230:9002/CARACOL/index.m3u8' },
-          { id: 'RCN.co', name: 'Canal RCN 1080p (TDT Principal)', url: 'http://138.121.15.230:9002/RCN/index.m3u8' },
-          { id: 'Canal.1.co', name: 'Canal 1 1080p (TDT Principal)', url: 'http://138.121.15.230:9002/CANAL-UNO/index.m3u8' }
+          { id: 'Caracol.co', group: '🇨🇴 TDT Principales', name: 'Caracol TV 1080p (TDT Principal)', url: 'http://138.121.15.230:9002/CARACOL/index.m3u8' },
+          { id: 'RCN.co', group: '🇨🇴 TDT Principales', name: 'Canal RCN 1080p (TDT Principal)', url: 'http://138.121.15.230:9002/RCN/index.m3u8' },
+          { id: 'Canal.1.co', group: '🇨🇴 TDT Principales', name: 'Canal 1 1080p (TDT Principal)', url: 'http://138.121.15.230:9002/CANAL-UNO/index.m3u8' },
+          { id: 'Win.Sports.co', group: '⚽ Deportes Colombia', name: 'Win Sports 1080p (Señal 1)', url: 'http://181.78.211.244:8005/play/a0am/index.m3u8' },
+          { id: 'Win.Sports.co', group: '⚽ Deportes Colombia', name: 'Win Sports 1080p (Señal 2)', url: 'http://138.121.15.230:9002/WIN-SPORT/index.m3u8' },
+          { id: 'ESPN.co', group: '⚽ Deportes Colombia', name: 'ESPN Colombia HD', url: 'http://181.78.211.244:8005/play/a0b4/index.m3u8' },
+          { id: 'ESPN.2.co', group: '⚽ Deportes Colombia', name: 'ESPN 2 Colombia HD', url: 'http://138.121.15.230:9002/ESPN-2/index.m3u8' },
+          { id: 'ESPN.3.co', group: '⚽ Deportes Colombia', name: 'ESPN 3 Colombia HD', url: 'http://138.121.15.230:9002/ESPN-3/index.m3u8' },
+          { id: 'ESPN.4.co', group: '⚽ Deportes Colombia', name: 'ESPN 4 Colombia HD', url: 'http://138.121.15.230:9002/ESPN-4/index.m3u8' },
+          { id: 'ESPN.5.co', group: '⚽ Deportes Colombia', name: 'ESPN 5 Colombia HD', url: 'http://138.121.15.230:9002/ESPN-5/index.m3u8' },
+          { id: 'ESPN.6.HD.co', group: '⚽ Deportes Colombia', name: 'ESPN 6 Colombia HD', url: 'http://138.121.15.230:9002/ESPN-6/index.m3u8' },
+          { id: 'ESPN.7.HD.co', group: '⚽ Deportes Colombia', name: 'ESPN 7 Colombia HD', url: 'http://138.121.15.230:9002/ESPN-7/index.m3u8' }
         ];
         topTdt.forEach(c => {
           const { logo } = resolveEpgAndLogo({ name: c.name }, c.name);
-          out += `#EXTINF:-1 tvg-id="${c.id}" tvg-name="${c.id}" tvg-logo="${logo}" group-title="🇨🇴 TDT Principales",${c.name}\n${c.url}\n\n`;
+          out += `#EXTINF:-1 tvg-id="${c.id}" tvg-name="${c.id}" tvg-logo="${logo}" group-title="${c.group}",${c.name}\n${c.url}\n\n`;
         });
 
-        // 2. Filtrar enlaces muertos de co.m3u que causaban error MRL en VLC y corregir la etiqueta de ch19 (ESPN 5)
+        // 2. Filtrar enlaces muertos de co.m3u (incluyendo barinaslive1.boldmss.com que daba error MRL en ESPN 3-7)
         const deadUrls = new Set([
-          'http://38.187.7.252:8000/play/a03d/index.m3u8', // DSports caído
-          'http://38.190.100.202:8000/play/a09v/index.m3u8', // Caracol 404 (reemplazado arriba)
-          'http://168.196.127.137:6001/play/a095/index.m3u8', // TNT Series caído
-          'http://38.134.250.110:8000/play/a003/index.m3u8', // Discovery Kids 404
-          'http://181.78.14.26:4000/play/a00d/index.m3u8', // Caracol HD2 caído
-          'http://181.78.14.26:4000/play/a07m/index.m3u8'  // RCN HD2 caído
+          'http://38.187.7.252:8000/play/a03d/index.m3u8',
+          'http://38.190.100.202:8000/play/a09v/index.m3u8',
+          'http://168.196.127.137:6001/play/a095/index.m3u8',
+          'http://38.134.250.110:8000/play/a003/index.m3u8',
+          'http://181.78.14.26:4000/play/a00d/index.m3u8',
+          'http://181.78.14.26:4000/play/a07m/index.m3u8'
         ]);
 
         const lines = data.split(/\r?\n/);
@@ -83,7 +92,7 @@ function fetchCoM3U() {
           let j = i + 1;
           while (j < lines.length && !lines[j].trim().startsWith('http') && !lines[j].trim().startsWith('#EXTINF')) j++;
           const streamUrl = (lines[j] || '').trim();
-          if (!streamUrl.startsWith('http') || deadUrls.has(streamUrl)) continue;
+          if (!streamUrl.startsWith('http') || deadUrls.has(streamUrl) || streamUrl.includes('barinaslive1.boldmss.com')) continue;
 
           let extinf = line;
           if (streamUrl.includes('181.78.12.119:16123/play/ch19')) {

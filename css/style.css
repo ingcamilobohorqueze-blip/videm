@@ -2933,3 +2933,91 @@ body {
   padding: 6px 12px;
   border-radius: 999px;
 }
+
+/* ==========================================================================
+   POWERED BY LEVANNA FOOTER BADGE
+   ========================================================================== */
+.footer-powered-by {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin: 24px auto 16px;
+  padding: 10px 22px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  width: fit-content;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.footer-powered-by:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(0, 240, 255, 0.3);
+  box-shadow: 0 4px 20px rgba(0, 240, 255, 0.15);
+}
+
+.footer-powered-by .powered-text {
+  font-size: 0.82rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.footer-powered-by .powered-logo-wrap {
+  display: flex;
+  align-items: center;
+}
+
+.footer-powered-by img {
+  height: 38px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+}
+
+.levanna-logo-dark {
+  display: none !important;
+}
+
+.levanna-logo-light {
+  display: block !important;
+}
+
+[data-theme="light"] .footer-powered-by {
+  background: rgba(0, 0, 0, 0.03);
+  border-color: rgba(0, 0, 0, 0.09);
+}
+
+[data-theme="light"] .footer-powered-by:hover {
+  background: rgba(0, 0, 0, 0.06);
+  border-color: rgba(0, 119, 255, 0.3);
+}
+
+[data-theme="light"] .levanna-logo-light {
+  display: none !important;
+}
+
+[data-theme="light"] .levanna-logo-dark {
+  display: block !important;
+}
+
+/* ==========================================================================
+   SECTION DEMOS VIDEO CARDS
+   ========================================================================== */
+.demo-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(0, 240, 255, 0.35) !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), 0 0 25px rgba(0, 240, 255, 0.15) !important;
+}
+[data-theme="light"] .demo-card {
+  background: #FFFFFF !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08) !important;
+}
+[data-theme="light"] .demo-card:hover {
+  border-color: rgba(0, 119, 255, 0.35) !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12), 0 0 25px rgba(0, 119, 255, 0.15) !important;
+}

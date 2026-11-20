@@ -62,7 +62,7 @@
 
   <!-- Stylesheets -->
   <link rel="stylesheet" href="css/tokens.css?v=20261106-5">
-  <link rel="stylesheet" href="css/style.css?v=20261106-5">
+  <link rel="stylesheet" href="css/style.css?v=20261120-levanna">
 
   <style>
     /* Critical Mobile Menu & Theme Icon Fallback against stale cache */
@@ -406,6 +406,13 @@
   </style>
 
   <script src="js/theme.js?v=20261105-2"></script>
+
+  <style id="levanna-theme-override">
+    .footer-powered-by img.levanna-logo-light { display: inline-block !important; height: 52px !important; width: auto !important; }
+    .footer-powered-by img.levanna-logo-dark { display: none !important; }
+    [data-theme="light"] .footer-powered-by img.levanna-logo-light { display: none !important; }
+    [data-theme="light"] .footer-powered-by img.levanna-logo-dark { display: inline-block !important; height: 52px !important; width: auto !important; }
+  </style>
 </head>
 <body>
 
@@ -1311,8 +1318,8 @@
       <div class="footer-powered-by">
         <span class="powered-text">Desarrollado y Respaldado por</span>
         <div class="powered-logo-wrap">
-          <img src="assets/images/logo-levanna-light.png" alt="LEVANNA" class="levanna-logo-light" width="130" height="38">
-          <img src="assets/images/logo-levanna-dark.png" alt="LEVANNA" class="levanna-logo-dark" width="130" height="38">
+          <img src="assets/images/logo-levanna-light.png" alt="LEVANNA" class="levanna-logo-light" style="height: 52px; width: auto; object-fit: contain;">
+          <img src="assets/images/logo-levanna-dark.png" alt="LEVANNA" class="levanna-logo-dark" style="height: 52px; width: auto; object-fit: contain; display: none;">
         </div>
       </div>
 

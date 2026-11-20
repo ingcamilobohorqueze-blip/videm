@@ -15,7 +15,9 @@
       --accent-blue: #0070BA;
       --accent-purple: #7C3AED;
       --accent-red: #E50914;
-      --accent-green: #00E676;
+      --accent-gold: #FFD54F;
+      --accent-gold-border: rgba(255, 193, 7, 0.6);
+      --accent-gold-bg: rgba(255, 193, 7, 0.12);
       --text-white: #FFFFFF;
       --text-muted: #94A3B8;
       --text-dim: #64748B;
@@ -145,7 +147,7 @@
     }
 
     /* ═══════════════════════════════════════════════
-       CARA 1: ANVERSO (FRONT COVER - ILUMINADO & LIMPIO)
+       CARA 1: ANVERSO (FRONT COVER)
        ═══════════════════════════════════════════════ */
     .front-cover {
       position: relative;
@@ -173,12 +175,45 @@
       width: 100%;
       height: 100%;
       background: linear-gradient(180deg, 
-        rgba(2, 4, 8, 0.72) 0%, 
-        rgba(2, 4, 8, 0.15) 30%, 
-        rgba(2, 4, 8, 0.05) 50%, 
-        rgba(2, 4, 8, 0.38) 72%, 
-        rgba(2, 4, 8, 0.85) 100%);
+        rgba(2, 4, 8, 0.68) 0%, 
+        rgba(2, 4, 8, 0.12) 30%, 
+        rgba(2, 4, 8, 0.04) 50%, 
+        rgba(2, 4, 8, 0.35) 72%, 
+        rgba(2, 4, 8, 0.82) 100%);
       z-index: 2;
+    }
+
+    /* Parche con Logotipo Oficial Videm Sobre la Pantalla del TV */
+    .tv-screen-brand-patch {
+      position: absolute;
+      top: 25.8%;
+      left: 79.5%;
+      width: 13.5%;
+      height: 11.5%;
+      background: #040913;
+      border: 1.5px solid rgba(0, 240, 255, 0.65);
+      border-radius: 6px;
+      box-shadow: 0 0 16px rgba(0, 240, 255, 0.45), inset 0 0 10px rgba(0, 240, 255, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      padding: 3px 6px;
+      z-index: 2;
+      transform: perspective(600px) rotateY(-11deg) skewY(-1deg);
+      transform-origin: center right;
+      overflow: hidden;
+    }
+    .tv-patch-icon {
+      width: 22px;
+      height: 22px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.85));
+    }
+    .tv-patch-wordmark {
+      height: 15px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.95));
     }
 
     /* Capa de Contenido Flotante */
@@ -191,7 +226,7 @@
       justify-content: space-between;
     }
 
-    /* Fila Superior: Logo Videm transparente + Titular Principal Directo */
+    /* Fila Superior: Logo Videm Imponente + Titular con 1 SOLA APP en Blanco Resaltado */
     .front-top-row {
       display: flex;
       align-items: center;
@@ -199,48 +234,54 @@
       gap: 16px;
     }
 
+    /* Logo Videm Aumentado e Imponente */
     .brand-float {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       flex-shrink: 0;
     }
 
     .brand-icon-img {
-      width: 38px;
-      height: 38px;
+      width: 58px;
+      height: 58px;
       object-fit: contain;
-      filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 12px rgba(0, 240, 255, 0.5));
+      filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 18px rgba(0, 240, 255, 0.65));
     }
 
     .brand-wordmark-float {
-      height: 24px;
+      height: 38px;
       object-fit: contain;
-      filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 16px rgba(0, 240, 255, 0.6));
+      filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 20px rgba(0, 240, 255, 0.75));
     }
 
     .front-headline-wrap {
       text-align: right;
-      max-width: 420px;
+      max-width: 390px;
     }
 
     .front-headline {
       font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.30rem;
-      font-weight: 900;
-      line-height: 1.2;
-      color: #FFFFFF;
+      font-size: 1.25rem;
+      font-weight: 800;
+      line-height: 1.25;
+      color: #E2E8F0;
       letter-spacing: -0.02em;
       text-shadow: 0 3px 12px rgba(0, 0, 0, 0.95), 0 1px 3px rgba(0, 0, 0, 0.9);
     }
 
-    .front-headline .cyan-accent {
-      background: linear-gradient(135deg, #00F0FF 0%, #70A6FF 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+    /* Texto 1 SOLA APP en Blanco Puro, Mayúsculas y con Brillo */
+    .front-headline .white-hero-highlight {
+      color: #FFFFFF;
+      font-size: 1.15em;
+      font-weight: 900;
+      letter-spacing: 0.02em;
+      text-shadow: 0 0 25px rgba(255, 255, 255, 0.9), 0 3px 12px rgba(0, 0, 0, 0.95);
+      display: inline-block;
+      padding: 0 2px;
     }
 
-    /* ── BARRA CENTRAL: SELLOS TECNOLÓGICOS GLASS ── */
+    /* ── BARRA CENTRAL: SELLOS TECNOLÓGICOS CON MAYOR TRANSPARENCIA ── */
     .front-specs-bar {
       display: flex;
       align-items: center;
@@ -250,16 +291,17 @@
       margin-bottom: 12px;
     }
 
+    /* Mayor transparencia (30%) para que la fotografía se aprecie al máximo */
     .spec-badge-glass {
-      background: rgba(8, 12, 22, 0.65);
-      border: 1px solid rgba(0, 240, 255, 0.35);
-      backdrop-filter: blur(8px);
-      padding: 4px 9px;
-      border-radius: 7px;
+      background: rgba(4, 7, 14, 0.30);
+      border: 1px solid rgba(255, 255, 255, 0.20);
+      backdrop-filter: blur(5px);
+      padding: 5px 10px;
+      border-radius: 8px;
       display: flex;
       align-items: center;
-      gap: 6px;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6);
+      gap: 7px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
     }
 
     .badge-icon-pill {
@@ -294,7 +336,7 @@
       font-weight: 800;
       color: #FFFFFF;
       line-height: 1.1;
-      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.85);
     }
 
     .spec-badge-desc {
@@ -304,7 +346,7 @@
       line-height: 1;
     }
 
-    /* ── BARRA INFERIOR: PRECIO EN 1 RENGLÓN + RECUADRO VERDE CENTRADO + QR WHATSAPP ── */
+    /* ── BARRA INFERIOR: PRECIO EN 1 RENGLÓN + DORADO + QR WHATSAPP ── */
     .front-bottom-row {
       display: flex;
       align-items: flex-end;
@@ -333,7 +375,7 @@
     }
 
     .price-hook-tag span.fire {
-      color: #00E676;
+      color: var(--accent-gold);
     }
 
     .price-hook-display {
@@ -372,35 +414,35 @@
       text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
     }
 
-    /* Recuadro verde perfectamente ajustado y centrado al texto */
+    /* Recuadro Dorado Ajustado y Centrado */
     .price-badge-sub {
-      background: rgba(0, 230, 118, 0.15);
-      border: 1px solid rgba(0, 230, 118, 0.45);
-      color: #00E676;
+      background: var(--accent-gold-bg);
+      border: 1px solid var(--accent-gold-border);
+      color: var(--accent-gold);
       font-size: 0.62rem;
       font-weight: 800;
-      padding: 4px 10px;
+      padding: 4px 12px;
       border-radius: 999px;
       white-space: nowrap;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       width: fit-content;
-      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
+      box-shadow: 0 2px 10px rgba(255, 193, 7, 0.2);
     }
 
-    /* QR Bot de WhatsApp Directo para Prueba de 2 Horas */
+    /* Tarjeta QR con Mayor Transparencia y Acento Dorado */
     .front-qr-card {
       display: flex;
       align-items: center;
-      gap: 9px;
-      background: rgba(8, 12, 22, 0.75);
-      border: 1px solid rgba(0, 240, 255, 0.4);
+      gap: 10px;
+      background: rgba(4, 7, 14, 0.32);
+      border: 1px solid rgba(255, 215, 0, 0.35);
       padding: 5px 10px 5px 6px;
       border-radius: 9px;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(6px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
     }
 
     .front-qr-card img {
@@ -417,12 +459,14 @@
       flex-direction: column;
     }
 
+    /* Pide tu Demo GRATIS en Color Dorado */
     .front-qr-info strong {
-      font-size: 0.66rem;
-      color: #00E676;
+      font-size: 0.68rem;
+      color: var(--accent-gold);
       font-weight: 900;
       line-height: 1.15;
       letter-spacing: 0.02em;
+      text-shadow: 0 0 10px rgba(255, 193, 7, 0.45);
     }
 
     .front-qr-info span.demo-sub {
@@ -482,9 +526,9 @@
     .back-tagline-pill {
       font-size: 0.62rem;
       font-weight: 800;
-      color: #00E676;
-      background: rgba(0, 230, 118, 0.12);
-      border: 1px solid rgba(0, 230, 118, 0.3);
+      color: var(--accent-gold);
+      background: var(--accent-gold-bg);
+      border: 1px solid var(--accent-gold-border);
       padding: 2px 8px;
       border-radius: 999px;
     }
@@ -607,7 +651,7 @@
 
     .plan-card-a6 .p-save {
       font-size: 0.52rem;
-      color: #00E676;
+      color: var(--accent-gold);
       font-weight: 700;
       margin-top: 2px;
       border-top: 1px solid rgba(255, 255, 255, 0.08);
@@ -696,7 +740,7 @@
       line-height: 1.15;
     }
     .back-action-text strong {
-      color: var(--accent-cyan);
+      color: var(--accent-gold);
       display: block;
       font-size: 0.60rem;
     }
@@ -795,10 +839,16 @@
       <div class="front-bg-photo"></div>
       <div class="front-bg-vignette"></div>
 
+      <!-- Parche con Logotipo Oficial Videm en Cristal Sobre el TV -->
+      <div class="tv-screen-brand-patch" title="VIDEM 4K Streaming">
+        <img src="../assets/images/logo-videm.png" alt="Videm" class="tv-patch-icon">
+        <img src="../assets/images/videm-wordmark-crystal.png?v=3" alt="VIDEM" class="tv-patch-wordmark">
+      </div>
+
       <!-- Capa de Contenido Flotante Sin Fondo -->
       <div class="front-layer">
         
-        <!-- Zona Superior: Logo Transparente e Isotipo + Titular Sin Subtítulo Redundante -->
+        <!-- Zona Superior: Logo Videm Imponente + Titular con 1 SOLA APP en Blanco Resaltado -->
         <div class="front-top-row">
           
           <div class="brand-float">
@@ -808,13 +858,13 @@
 
           <div class="front-headline-wrap">
             <h1 class="front-headline">
-              Todo el Cine y Series en <span class="cyan-accent">1 Sola App</span> en tu Smart TV
+              Todo el Cine y Series en <span class="white-hero-highlight">1 SOLA APP</span> en tu Smart TV
             </h1>
           </div>
 
         </div>
 
-        <!-- Barra Central: 4 Sellos Tecnológicos Glass Flotantes -->
+        <!-- Barra Central: 4 Sellos Tecnológicos con Mayor Transparencia Glass -->
         <div class="front-specs-bar">
           
           <div class="spec-badge-glass">
@@ -844,7 +894,6 @@
             </div>
           </div>
 
-          <!-- Característica 4 Ajustada: Descarga y Regístrate en Minutos -->
           <div class="spec-badge-glass">
             <span style="color: #00E676; font-size: 0.82rem; font-weight: 900; line-height: 1;">⚡</span>
             <div class="spec-badge-text">
@@ -855,7 +904,7 @@
 
         </div>
 
-        <!-- Zona Inferior: Precio en 1 Solo Renglón + Recuadro Verde Centrado + QR Directo a WhatsApp -->
+        <!-- Zona Inferior: Precio en 1 Renglón + Dorado + QR WhatsApp Demo -->
         <div class="front-bottom-row">
           
           <!-- Gancho Comercial de Precio -->
@@ -871,12 +920,12 @@
                 <span class="price-val" id="priceDisplay">9,99 €</span>
                 <span class="price-slash" id="pricePeriod">/ mes</span>
               </div>
-              <!-- Recuadro verde ajustado perfectamente al texto y centrado -->
+              <!-- Recuadro Dorado Ajustado y Centrado -->
               <div class="price-badge-sub">Sin permanencia • Cancela cuando quieras</div>
             </div>
           </div>
 
-          <!-- QR WhatsApp Directo para Prueba de 2 Horas + Web limpia sin .html -->
+          <!-- QR WhatsApp Directo con Acento Dorado para Demo GRATIS -->
           <div class="front-qr-card">
             <img src="../assets/images/qr-wa-es.png" alt="QR WhatsApp Demo" id="frontQrImg">
             <div class="front-qr-info">

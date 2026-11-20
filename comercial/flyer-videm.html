@@ -145,16 +145,16 @@
     }
 
     /* ═══════════════════════════════════════════════
-       CARA 1: ANVERSO (FRONT COVER - FULL BLEED HERO)
+       CARA 1: ANVERSO (FRONT COVER - ILUMINADO & LIMPIO)
        ═══════════════════════════════════════════════ */
     .front-cover {
       position: relative;
-      padding: 20px 26px 18px; /* Margen de seguridad para corte de imprenta */
+      padding: 20px 26px 18px; /* Margen perimetral seguro de corte */
       justify-content: space-between;
-      background: #020408;
+      background: #060910;
     }
 
-    /* Fotografía de Fondo Full-Bleed */
+    /* Fotografía de Fondo Iluminada y Cálida */
     .front-bg-photo {
       position: absolute;
       inset: 0;
@@ -166,22 +166,22 @@
       z-index: 1;
     }
 
-    /* Gradiente cinematográfico perimetral (permite legibilidad sin tapar la escena) */
+    /* Viñeta suave para contraste de textos manteniendo la iluminación de la estancia */
     .front-bg-vignette {
       position: absolute;
       inset: 0;
       width: 100%;
       height: 100%;
       background: linear-gradient(180deg, 
-        rgba(3, 5, 10, 0.88) 0%, 
-        rgba(3, 5, 10, 0.35) 28%, 
-        rgba(3, 5, 10, 0.15) 50%, 
-        rgba(3, 5, 10, 0.55) 72%, 
-        rgba(3, 5, 10, 0.95) 100%);
+        rgba(2, 4, 8, 0.72) 0%, 
+        rgba(2, 4, 8, 0.15) 30%, 
+        rgba(2, 4, 8, 0.05) 50%, 
+        rgba(2, 4, 8, 0.38) 72%, 
+        rgba(2, 4, 8, 0.85) 100%);
       z-index: 2;
     }
 
-    /* Contenido Flotante Frontal (Z-index 3) */
+    /* Capa de Contenido Flotante */
     .front-layer {
       position: relative;
       z-index: 3;
@@ -191,10 +191,10 @@
       justify-content: space-between;
     }
 
-    /* Encabezado: Logo Videm transparente + Titular principal */
+    /* Fila Superior: Logo Videm transparente + Titular Principal Directo */
     .front-top-row {
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       justify-content: space-between;
       gap: 16px;
     }
@@ -221,14 +221,14 @@
 
     .front-headline-wrap {
       text-align: right;
-      max-width: 410px;
+      max-width: 420px;
     }
 
     .front-headline {
       font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.25rem;
+      font-size: 1.30rem;
       font-weight: 900;
-      line-height: 1.18;
+      line-height: 1.2;
       color: #FFFFFF;
       letter-spacing: -0.02em;
       text-shadow: 0 3px 12px rgba(0, 0, 0, 0.95), 0 1px 3px rgba(0, 0, 0, 0.9);
@@ -240,15 +240,7 @@
       -webkit-text-fill-color: transparent;
     }
 
-    .front-subheadline {
-      font-size: 0.70rem;
-      font-weight: 700;
-      color: #CBD5E1;
-      margin-top: 3px;
-      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
-    }
-
-    /* ── BARRA CENTRAL: SELLOS TECNOLÓGICOS GLASS (4K, DOLBY, IDIOMA, TIEMPO) ── */
+    /* ── BARRA CENTRAL: SELLOS TECNOLÓGICOS GLASS ── */
     .front-specs-bar {
       display: flex;
       align-items: center;
@@ -312,7 +304,7 @@
       line-height: 1;
     }
 
-    /* ── BARRA INFERIOR: GANCHO DE PRECIO POTENCIADO + QR WEB ── */
+    /* ── BARRA INFERIOR: PRECIO EN 1 RENGLÓN + RECUADRO VERDE CENTRADO + QR WHATSAPP ── */
     .front-bottom-row {
       display: flex;
       align-items: flex-end;
@@ -325,10 +317,11 @@
     .price-hook-block {
       display: flex;
       flex-direction: column;
+      gap: 2px;
     }
 
     .price-hook-tag {
-      font-size: 0.66rem;
+      font-size: 0.65rem;
       font-weight: 900;
       text-transform: uppercase;
       letter-spacing: 0.08em;
@@ -336,7 +329,7 @@
       text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9);
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
     }
 
     .price-hook-tag span.fire {
@@ -345,50 +338,63 @@
 
     .price-hook-display {
       display: flex;
-      align-items: baseline;
-      gap: 10px;
-      margin-top: 1px;
+      align-items: center;
+      gap: 12px;
+      margin-top: 2px;
+      flex-wrap: nowrap;
     }
 
-    .price-main-number {
+    /* Precio todo en 1 solo renglón */
+    .price-single-line {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 5px;
+      white-space: nowrap;
+    }
+
+    .price-val {
       font-family: 'Space Grotesk', sans-serif;
-      font-size: 2.2rem;
+      font-size: 2.1rem;
       font-weight: 900;
       line-height: 1;
       color: #FFFFFF;
-      letter-spacing: -0.03em;
-      text-shadow: 0 4px 16px rgba(0, 0, 0, 0.95), 0 0 25px rgba(0, 240, 255, 0.5);
+      letter-spacing: -0.02em;
+      text-shadow: 0 4px 14px rgba(0, 0, 0, 0.95), 0 0 22px rgba(0, 240, 255, 0.45);
     }
 
-    .price-main-number span.currency {
-      color: var(--accent-cyan);
-    }
-
-    .price-period-label {
-      font-size: 0.82rem;
+    .price-slash {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.15rem;
       font-weight: 800;
       color: var(--accent-cyan);
       text-transform: uppercase;
-      letter-spacing: 0.04em;
+      letter-spacing: -0.01em;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
     }
 
+    /* Recuadro verde perfectamente ajustado y centrado al texto */
     .price-badge-sub {
       background: rgba(0, 230, 118, 0.15);
-      border: 1px solid rgba(0, 230, 118, 0.35);
+      border: 1px solid rgba(0, 230, 118, 0.45);
       color: #00E676;
-      font-size: 0.60rem;
+      font-size: 0.62rem;
       font-weight: 800;
-      padding: 3px 8px;
+      padding: 4px 10px;
       border-radius: 999px;
-      align-self: center;
-      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: fit-content;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
     }
 
-    /* QR Code Flotante Web */
+    /* QR Bot de WhatsApp Directo para Prueba de 2 Horas */
     .front-qr-card {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 9px;
       background: rgba(8, 12, 22, 0.75);
       border: 1px solid rgba(0, 240, 255, 0.4);
       padding: 5px 10px 5px 6px;
@@ -412,15 +418,17 @@
     }
 
     .front-qr-info strong {
-      font-size: 0.65rem;
-      color: #FFF;
-      font-weight: 800;
+      font-size: 0.66rem;
+      color: #00E676;
+      font-weight: 900;
       line-height: 1.15;
+      letter-spacing: 0.02em;
     }
 
-    .front-qr-info span {
-      font-size: 0.56rem;
-      color: #94A3B8;
+    .front-qr-info span.demo-sub {
+      font-size: 0.58rem;
+      color: #FFFFFF;
+      font-weight: 700;
       line-height: 1.15;
       margin-top: 1px;
     }
@@ -428,7 +436,7 @@
     .front-qr-info span.web-link {
       font-family: 'Space Grotesk', monospace;
       color: var(--accent-cyan);
-      font-size: 0.66rem;
+      font-size: 0.65rem;
       font-weight: 800;
       margin-top: 2px;
     }
@@ -783,14 +791,14 @@
          ═══════════════════════════════════════════════ -->
     <div class="flyer-page front-cover" id="pageFront">
       
-      <!-- Fondo Fotográfico Cinemático (Sin botellas, familia en sofá, Smart TV con catálogo y logo Videm) -->
+      <!-- Fondo Fotográfico Cinemático Cálido e Iluminado -->
       <div class="front-bg-photo"></div>
       <div class="front-bg-vignette"></div>
 
       <!-- Capa de Contenido Flotante Sin Fondo -->
       <div class="front-layer">
         
-        <!-- Zona Superior: Logo Transparente e Isotipo + Titular Moderno -->
+        <!-- Zona Superior: Logo Transparente e Isotipo + Titular Sin Subtítulo Redundante -->
         <div class="front-top-row">
           
           <div class="brand-float">
@@ -802,9 +810,6 @@
             <h1 class="front-headline">
               Todo el Cine y Series en <span class="cyan-accent">1 Sola App</span> en tu Smart TV
             </h1>
-            <p class="front-subheadline" id="frontSubheadline">
-              Calidad 4K Remux real sin compresión • Cero suscripciones fragmentadas
-            </p>
           </div>
 
         </div>
@@ -839,17 +844,18 @@
             </div>
           </div>
 
+          <!-- Característica 4 Ajustada: Descarga y Regístrate en Minutos -->
           <div class="spec-badge-glass">
-            <span style="color: #00E676; font-size: 0.80rem; font-weight: 900; line-height: 1;">⚡ 2m</span>
+            <span style="color: #00E676; font-size: 0.82rem; font-weight: 900; line-height: 1;">⚡</span>
             <div class="spec-badge-text">
-              <span class="spec-badge-title">Llave en Mano</span>
-              <span class="spec-badge-desc">Cero Cables</span>
+              <span class="spec-badge-title">Descarga y Regístrate</span>
+              <span class="spec-badge-desc">En Minutos</span>
             </div>
           </div>
 
         </div>
 
-        <!-- Zona Inferior: Gancho de Precio Resaltado + QR Web Flotante -->
+        <!-- Zona Inferior: Precio en 1 Solo Renglón + Recuadro Verde Centrado + QR Directo a WhatsApp -->
         <div class="front-bottom-row">
           
           <!-- Gancho Comercial de Precio -->
@@ -858,22 +864,25 @@
               <span class="fire">✦</span>
               <span>Vive la mejor experiencia audiovisual por solo</span>
             </div>
+            
             <div class="price-hook-display">
-              <div class="price-main-number" id="priceDisplay">
-                9,99<span class="currency"> €</span>
+              <!-- Precio todo en un solo renglón -->
+              <div class="price-single-line">
+                <span class="price-val" id="priceDisplay">9,99 €</span>
+                <span class="price-slash" id="pricePeriod">/ mes</span>
               </div>
-              <span class="price-period-label" id="pricePeriod">/ mes</span>
-              <span class="price-badge-sub">Sin permanencia • Cancela cuando quieras</span>
+              <!-- Recuadro verde ajustado perfectamente al texto y centrado -->
+              <div class="price-badge-sub">Sin permanencia • Cancela cuando quieras</div>
             </div>
           </div>
 
-          <!-- QR Web Flotante Directo -->
+          <!-- QR WhatsApp Directo para Prueba de 2 Horas + Web limpia sin .html -->
           <div class="front-qr-card">
-            <img src="../assets/images/qr-videm-es.svg" alt="QR Web Videm" id="frontQrImg">
+            <img src="../assets/images/qr-wa-es.png" alt="QR WhatsApp Demo" id="frontQrImg">
             <div class="front-qr-info">
-              <strong>Escanea y Conoce Videm</strong>
-              <span>Demos en video y catálogo</span>
-              <span class="web-link" id="frontWebLink">videm.tv/es.html</span>
+              <strong>Pide tu Demo GRATIS</strong>
+              <span class="demo-sub">Prueba 2 Horas en tu Smart TV</span>
+              <span class="web-link" id="frontWebLink">videm.tv/es</span>
             </div>
           </div>
 
@@ -970,7 +979,7 @@
             <div class="back-action-text">
               <strong>Soporte VIP & Demo Inmediata:</strong>
               <span id="backPhoneSmall">+34 746 05 77 76</span>
-              <div style="color: var(--accent-cyan); font-weight: 700; margin-top: 1px;" id="backWebSmall">videm.tv/es.html</div>
+              <div style="color: var(--accent-cyan); font-weight: 700; margin-top: 1px;" id="backWebSmall">videm.tv/es</div>
             </div>
           </div>
 
@@ -994,12 +1003,11 @@
       es: {
         flag: "🇪🇸",
         lang: "Castellano & VOSE",
-        subheadline: "Calidad 4K Remux real sin compresión • Cero suscripciones fragmentadas",
-        priceMain: "9,99<span class='currency'> €</span>",
+        priceMain: "9,99 €",
         pricePeriod: "/ mes",
-        qrFront: "../assets/images/qr-videm-es.svg",
+        qrFront: "../assets/images/qr-wa-es.png",
         qrBack: "../assets/images/qr-wa-es.png",
-        web: "videm.tv/es.html",
+        web: "videm.tv/es",
         phone: "+34 746 05 77 76",
         vsBad: "Netflix + Prime + Max + Disney = > 60 €/mes (> 700 €/año). Video comprimido a solo 14 Mbps y cobros sorpresa.",
         vsGood: "Desde 7,50 €/mes. Todo en 1 sola app. 4K Remux hasta 80 Mbps sin cortes. Renuevas solo cuando tú decidas.",
@@ -1014,10 +1022,9 @@
       co: {
         flag: "🇨🇴",
         lang: "Español Latino & VOSE",
-        subheadline: "Calidad 4K Remux real sin compresión • Servidores de fibra óptica dedicados",
-        priceMain: "55.000<span class='currency'> COP</span>",
+        priceMain: "$55.000 COP",
         pricePeriod: "/ mes",
-        qrFront: "../assets/images/qr-videm-co.svg",
+        qrFront: "../assets/images/qr-wa-co.png",
         qrBack: "../assets/images/qr-wa-co.png",
         web: "videm.tv",
         phone: "+57 301 556 8904",
@@ -1040,9 +1047,8 @@
       const d = dataEditions[code];
       document.getElementById('specFlag').innerText = d.flag;
       document.getElementById('specLang').innerText = d.lang;
-      document.getElementById('frontSubheadline').innerText = d.subheadline;
 
-      document.getElementById('priceDisplay').innerHTML = d.priceMain;
+      document.getElementById('priceDisplay').innerText = d.priceMain;
       document.getElementById('pricePeriod').innerText = d.pricePeriod;
       document.getElementById('frontQrImg').src = d.qrFront;
       document.getElementById('frontWebLink').innerText = d.web;

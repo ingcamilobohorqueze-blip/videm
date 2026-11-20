@@ -308,19 +308,22 @@
       display: flex;
       align-items: flex-end;
       justify-content: space-between;
-      gap: 16px;
+      gap: 12px;
       padding-top: 8px;
       border-top: 1px solid rgba(0, 240, 255, 0.25);
+      width: 100%;
     }
 
     .price-hook-block {
       display: flex;
       flex-direction: column;
       gap: 2px;
+      flex: 1;
+      min-width: 0;
     }
 
     .price-hook-tag {
-      font-size: 0.65rem;
+      font-size: 0.64rem;
       font-weight: 900;
       text-transform: uppercase;
       letter-spacing: 0.08em;
@@ -338,22 +341,23 @@
     .price-hook-display {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       margin-top: 2px;
       flex-wrap: nowrap;
     }
 
-    /* Precio todo en 1 solo renglón */
+    /* Precio todo en 1 solo renglón ajustado */
     .price-single-line {
       display: inline-flex;
       align-items: baseline;
-      gap: 5px;
+      gap: 4px;
       white-space: nowrap;
+      flex-shrink: 0;
     }
 
     .price-val {
       font-family: 'Space Grotesk', sans-serif;
-      font-size: 2.1rem;
+      font-size: 1.85rem;
       font-weight: 900;
       line-height: 1;
       color: #FFFFFF;
@@ -363,7 +367,7 @@
 
     .price-slash {
       font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.15rem;
+      font-size: 1.05rem;
       font-weight: 800;
       color: var(--accent-cyan);
       text-transform: uppercase;
@@ -376,9 +380,9 @@
       background: var(--accent-gold-bg);
       border: 1px solid var(--accent-gold-border);
       color: var(--accent-gold);
-      font-size: 0.62rem;
+      font-size: 0.60rem;
       font-weight: 800;
-      padding: 4px 12px;
+      padding: 4px 10px;
       border-radius: 999px;
       white-space: nowrap;
       display: inline-flex;
@@ -393,13 +397,14 @@
     .front-qr-card {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 9px;
       background: rgba(4, 7, 14, 0.30);
       border: 1px solid rgba(255, 215, 0, 0.35);
-      padding: 5px 10px 5px 6px;
+      padding: 5px 9px 5px 6px;
       border-radius: 9px;
       backdrop-filter: blur(6px);
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+      flex-shrink: 0;
     }
 
     .front-qr-card img {
@@ -789,6 +794,7 @@
       }
       .front-qr-card {
         padding: 3px 6px !important;
+        flex-shrink: 0 !important;
       }
       .front-qr-card img {
         width: 40px !important;
@@ -1071,7 +1077,7 @@
       co: {
         flag: "🇨🇴",
         lang: "Español Latino & VOSE",
-        priceMain: "$55.000 COP",
+        priceMain: "$55.000",
         pricePeriod: "/ mes",
         qrFront: "../assets/images/qr-wa-co.png",
         qrBack: "../assets/images/qr-wa-co.png",

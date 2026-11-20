@@ -62,7 +62,7 @@
 
   <!-- Stylesheets -->
   <link rel="stylesheet" href="css/tokens.css?v=20261106-5">
-  <link rel="stylesheet" href="css/style.css?v=20261120-levanna">
+  <link rel="stylesheet" href="css/style.css?v=20261120-levanna2">
 
   <style>
     /* Critical Mobile Menu & Theme Icon Fallback against stale cache */
@@ -408,10 +408,13 @@
   <script src="js/theme.js?v=20261105-2"></script>
 
   <style id="levanna-theme-override">
-    .footer-powered-by img.levanna-logo-light { display: inline-block !important; height: 52px !important; width: auto !important; }
+    .footer-header-row { display: flex; align-items: center; justify-content: center; gap: 32px; flex-wrap: wrap; margin-bottom: 2rem; }
+    .footer-header-row .footer-brand { margin-bottom: 0 !important; }
+    .footer-powered-by { display: inline-flex; align-items: center; justify-content: center; gap: 14px; margin: 0 !important; padding: 8px 22px; border-radius: 999px; }
+    .footer-powered-by img.levanna-logo-light { display: inline-block !important; height: 48px !important; width: auto !important; }
     .footer-powered-by img.levanna-logo-dark { display: none !important; }
     [data-theme="light"] .footer-powered-by img.levanna-logo-light { display: none !important; }
-    [data-theme="light"] .footer-powered-by img.levanna-logo-dark { display: inline-block !important; height: 52px !important; width: auto !important; }
+    [data-theme="light"] .footer-powered-by img.levanna-logo-dark { display: inline-block !important; height: 48px !important; width: auto !important; }
   </style>
 </head>
 <body>
@@ -1306,29 +1309,32 @@
   <!-- FOOTER -->
   <footer class="site-footer" id="contacto">
     <div class="container footer-content">
-      <div class="footer-brand">
-        <div class="footer-logo-row">
-          <img src="assets/images/logo-videm.png" alt="Isotipo Videm" class="footer-logo-img" width="44" height="44">
-          <img src="assets/images/videm-wordmark-crystal.png?v=3" alt="VIDEM" class="footer-wordmark-img" width="155" height="32">
+      <div class="footer-header-row">
+        <!-- Logo de Videm -->
+        <div class="footer-brand">
+          <div class="footer-logo-row">
+            <img src="assets/images/logo-videm.png" alt="Isotipo Videm" class="footer-logo-img" width="44" height="44">
+            <img src="assets/images/videm-wordmark-crystal.png?v=3" alt="VIDEM" class="footer-wordmark-img" width="155" height="32">
+          </div>
+        </div>
+
+        <!-- Badge de Respaldo Corporativo: Powered by Levanna -->
+        <div class="footer-powered-by">
+          <span class="powered-text">Desarrollado y Respaldado por</span>
+          <div class="powered-logo-wrap">
+            <img src="assets/images/logo-levanna-light.png" alt="LEVANNA" class="levanna-logo-light" style="height: 48px; width: auto; object-fit: contain;">
+            <img src="assets/images/logo-levanna-dark.png" alt="LEVANNA" class="levanna-logo-dark" style="height: 48px; width: auto; object-fit: contain; display: none;">
+          </div>
         </div>
       </div>
 
       
-      <!-- Badge de Respaldo Corporativo: Powered by Levanna -->
-      <div class="footer-powered-by">
-        <span class="powered-text">Desarrollado y Respaldado por</span>
-        <div class="powered-logo-wrap">
-          <img src="assets/images/logo-levanna-light.png" alt="LEVANNA" class="levanna-logo-light" style="height: 52px; width: auto; object-fit: contain;">
-          <img src="assets/images/logo-levanna-dark.png" alt="LEVANNA" class="levanna-logo-dark" style="height: 52px; width: auto; object-fit: contain; display: none;">
-        </div>
-      </div>
-
       <p class="legal-disclaimer">
-        <strong>Aviso Legal y Operativo:</strong> VIDEM es una marca comercial y unidad de negocio operada internacionalmente por LEVANNA DC S.A.S., sociedad legalmente constituida dedicada a la prestación de servicios de consultoría técnica, asistencia en configuración telemática y optimización de dispositivos multimedia de reproducción para el hogar. VIDEM no aloja, comercializa, transcodifica ni almacena contenido audiovisual protegido por derechos de autor. Las marcas comerciales citadas (Samsung, LG, Google TV, Apple TV, Fire TV, Stremio) pertenecen a sus respectivos titulares y se mencionan exclusivamente con fines de compatibilidad técnica.
+        <strong>Aviso Legal y Operativo:</strong> VIDEM es una marca comercial y unidad de negocio operada internacionalmente por Levanna S.A.S., sociedad legalmente constituida dedicada a la prestación de servicios de consultoría técnica, asistencia en configuración telemática y optimización de dispositivos multimedia de reproducción para el hogar. VIDEM no aloja, comercializa, transcodifica ni almacena contenido audiovisual protegido por derechos de autor. Las marcas comerciales citadas (Samsung, LG, Google TV, Apple TV, Fire TV, Stremio) pertenecen a sus respectivos titulares y se mencionan exclusivamente con fines de compatibilidad técnica.
       </p>
 
       <div class="copyright-text">
-        © 2026 LEVANNA DC S.A.S. • Marca Operativa VIDEM • España & Europa • Atención WhatsApp: <a href="https://wa.me/34746057776" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: underline;">+34 746 05 77 76</a>. Todos los derechos reservados.
+        © 2026 Levanna S.A.S. • Marca Operativa VIDEM • España & Europa • Atención WhatsApp: <a href="https://wa.me/34746057776" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: underline;">+34 746 05 77 76</a>. Todos los derechos reservados.
       </div>
     </div>
   </footer>

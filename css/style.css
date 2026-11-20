@@ -2935,6 +2935,22 @@ body {
 }
 
 /* ==========================================================================
+   FOOTER HEADER ROW (VIDEM + LEVANNA SIDE BY SIDE)
+   ========================================================================== */
+.footer-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+
+.footer-header-row .footer-brand {
+  margin-bottom: 0 !important;
+}
+
+/* ==========================================================================
    POWERED BY LEVANNA FOOTER BADGE
    ========================================================================== */
 .footer-powered-by {
@@ -2942,7 +2958,7 @@ body {
   align-items: center;
   justify-content: center;
   gap: 16px;
-  margin: 28px auto 20px;
+  margin: 0 !important;
   padding: 10px 24px;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.1);

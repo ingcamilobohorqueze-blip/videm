@@ -156,7 +156,7 @@
       background: #060910;
     }
 
-    /* Fotografía de Fondo Iluminada y Cálida */
+    /* Fotografía de Fondo Iluminada y Cálida (Original y Natural) */
     .front-bg-photo {
       position: absolute;
       inset: 0;
@@ -168,52 +168,19 @@
       z-index: 1;
     }
 
-    /* Viñeta suave para contraste de textos manteniendo la iluminación de la estancia */
+    /* Viñeta suave para contraste de textos */
     .front-bg-vignette {
       position: absolute;
       inset: 0;
       width: 100%;
       height: 100%;
       background: linear-gradient(180deg, 
-        rgba(2, 4, 8, 0.68) 0%, 
-        rgba(2, 4, 8, 0.12) 30%, 
-        rgba(2, 4, 8, 0.04) 50%, 
-        rgba(2, 4, 8, 0.35) 72%, 
-        rgba(2, 4, 8, 0.82) 100%);
+        rgba(2, 4, 8, 0.65) 0%, 
+        rgba(2, 4, 8, 0.10) 30%, 
+        rgba(2, 4, 8, 0.03) 50%, 
+        rgba(2, 4, 8, 0.32) 72%, 
+        rgba(2, 4, 8, 0.80) 100%);
       z-index: 2;
-    }
-
-    /* Parche con Logotipo Oficial Videm Sobre la Pantalla del TV */
-    .tv-screen-brand-patch {
-      position: absolute;
-      top: 25.8%;
-      left: 79.5%;
-      width: 13.5%;
-      height: 11.5%;
-      background: #040913;
-      border: 1.5px solid rgba(0, 240, 255, 0.65);
-      border-radius: 6px;
-      box-shadow: 0 0 16px rgba(0, 240, 255, 0.45), inset 0 0 10px rgba(0, 240, 255, 0.25);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 5px;
-      padding: 3px 6px;
-      z-index: 2;
-      transform: perspective(600px) rotateY(-11deg) skewY(-1deg);
-      transform-origin: center right;
-      overflow: hidden;
-    }
-    .tv-patch-icon {
-      width: 22px;
-      height: 22px;
-      object-fit: contain;
-      filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.85));
-    }
-    .tv-patch-wordmark {
-      height: 15px;
-      object-fit: contain;
-      filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.95));
     }
 
     /* Capa de Contenido Flotante */
@@ -226,7 +193,7 @@
       justify-content: space-between;
     }
 
-    /* Fila Superior: Logo Videm Imponente + Titular con 1 SOLA APP en Blanco Resaltado */
+    /* Fila Superior: Logo Videm Equilibrado + Titular Uniforme */
     .front-top-row {
       display: flex;
       align-items: center;
@@ -234,54 +201,45 @@
       gap: 16px;
     }
 
-    /* Logo Videm Aumentado e Imponente */
+    /* Logo Videm con isotipo V del mismo tamaño o un poco más alto que las letras */
     .brand-float {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       flex-shrink: 0;
     }
 
     .brand-icon-img {
-      width: 58px;
-      height: 58px;
+      height: 42px;
+      width: auto;
       object-fit: contain;
-      filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 18px rgba(0, 240, 255, 0.65));
+      filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 16px rgba(0, 240, 255, 0.65));
     }
 
     .brand-wordmark-float {
-      height: 38px;
+      height: 32px;
+      width: auto;
       object-fit: contain;
-      filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 20px rgba(0, 240, 255, 0.75));
+      filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 18px rgba(0, 240, 255, 0.7));
     }
 
     .front-headline-wrap {
       text-align: right;
-      max-width: 390px;
+      max-width: 420px;
     }
 
+    /* Titular con formato igualado y uniforme */
     .front-headline {
       font-family: 'Space Grotesk', sans-serif;
       font-size: 1.25rem;
       font-weight: 800;
       line-height: 1.25;
-      color: #E2E8F0;
-      letter-spacing: -0.02em;
+      color: #FFFFFF;
+      letter-spacing: -0.015em;
       text-shadow: 0 3px 12px rgba(0, 0, 0, 0.95), 0 1px 3px rgba(0, 0, 0, 0.9);
     }
 
-    /* Texto 1 SOLA APP en Blanco Puro, Mayúsculas y con Brillo */
-    .front-headline .white-hero-highlight {
-      color: #FFFFFF;
-      font-size: 1.15em;
-      font-weight: 900;
-      letter-spacing: 0.02em;
-      text-shadow: 0 0 25px rgba(255, 255, 255, 0.9), 0 3px 12px rgba(0, 0, 0, 0.95);
-      display: inline-block;
-      padding: 0 2px;
-    }
-
-    /* ── BARRA CENTRAL: SELLOS TECNOLÓGICOS CON MAYOR TRANSPARENCIA ── */
+    /* ── BARRA CENTRAL: SELLOS TECNOLÓGICOS CON TRANSPARENCIA GLASS ── */
     .front-specs-bar {
       display: flex;
       align-items: center;
@@ -291,9 +249,8 @@
       margin-bottom: 12px;
     }
 
-    /* Mayor transparencia (30%) para que la fotografía se aprecie al máximo */
     .spec-badge-glass {
-      background: rgba(4, 7, 14, 0.30);
+      background: rgba(4, 7, 14, 0.28);
       border: 1px solid rgba(255, 255, 255, 0.20);
       backdrop-filter: blur(5px);
       padding: 5px 10px;
@@ -432,12 +389,12 @@
       box-shadow: 0 2px 10px rgba(255, 193, 7, 0.2);
     }
 
-    /* Tarjeta QR con Mayor Transparencia y Acento Dorado */
+    /* Tarjeta QR Transparente con Acento Dorado */
     .front-qr-card {
       display: flex;
       align-items: center;
       gap: 10px;
-      background: rgba(4, 7, 14, 0.32);
+      background: rgba(4, 7, 14, 0.30);
       border: 1px solid rgba(255, 215, 0, 0.35);
       padding: 5px 10px 5px 6px;
       border-radius: 9px;
@@ -760,7 +717,7 @@
     }
 
     /* ═══════════════════════════════════════════════
-       REGLAS DE IMPRESIÓN (A6 HORIZONTAL 148 × 105 MM)
+       REGLAS DE IMPRESIÓN CALIBRADAS (A6 HORIZONTAL 148 × 105 MM)
        ═══════════════════════════════════════════════ */
     @page {
       size: 148mm 105mm landscape;
@@ -768,10 +725,15 @@
     }
 
     @media print {
-      body {
-        background: transparent !important;
-        padding: 0 !important;
+      html, body {
+        width: 148mm !important;
+        height: 105mm !important;
         margin: 0 !important;
+        padding: 0 !important;
+        background: #000 !important;
+        overflow: hidden !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
       }
 
       .toolbar {
@@ -779,19 +741,61 @@
       }
 
       .flyers-stage {
+        display: block !important;
+        width: 148mm !important;
+        margin: 0 !important;
+        padding: 0 !important;
         gap: 0 !important;
-        max-width: 100% !important;
       }
 
       .flyer-page {
         width: 148mm !important;
         height: 105mm !important;
+        min-height: 105mm !important;
+        max-height: 105mm !important;
         box-shadow: none !important;
         border: none !important;
         border-radius: 0 !important;
-        page-break-after: always;
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
+        margin: 0 !important;
+        padding: 6mm 8mm 5mm !important; /* Ajuste milimétrico para imprenta */
+        overflow: hidden !important;
+        page-break-after: always !important;
+        page-break-inside: avoid !important;
+        break-after: page !important;
+        box-sizing: border-box !important;
+      }
+
+      .front-bg-photo, .front-bg-vignette {
+        width: 148mm !important;
+        height: 105mm !important;
+      }
+
+      /* Escalado armónico para que nada desborde en el tamaño físico A6 */
+      .brand-icon-img {
+        height: 36px !important;
+      }
+      .brand-wordmark-float {
+        height: 28px !important;
+      }
+      .front-headline {
+        font-size: 1.08rem !important;
+        line-height: 1.2 !important;
+      }
+      .price-val {
+        font-size: 1.75rem !important;
+      }
+      .price-slash {
+        font-size: 0.95rem !important;
+      }
+      .front-qr-card {
+        padding: 3px 6px !important;
+      }
+      .front-qr-card img {
+        width: 40px !important;
+        height: 40px !important;
+      }
+      .spec-badge-glass {
+        padding: 3px 7px !important;
       }
     }
   </style>
@@ -822,7 +826,7 @@
 
       <button type="button" class="btn-print" onclick="window.print()">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
-        <span>Imprimir A6</span>
+        <span>Imprimir / Guardar PDF</span>
       </button>
     </div>
   </div>
@@ -835,30 +839,25 @@
          ═══════════════════════════════════════════════ -->
     <div class="flyer-page front-cover" id="pageFront">
       
-      <!-- Fondo Fotográfico Cinemático Cálido e Iluminado -->
+      <!-- Fondo Fotográfico Cinemático Cálido e Iluminado (100% natural sin parches) -->
       <div class="front-bg-photo"></div>
       <div class="front-bg-vignette"></div>
-
-      <!-- Parche con Logotipo Oficial Videm en Cristal Sobre el TV -->
-      <div class="tv-screen-brand-patch" title="VIDEM 4K Streaming">
-        <img src="../assets/images/logo-videm.png" alt="Videm" class="tv-patch-icon">
-        <img src="../assets/images/videm-wordmark-crystal.png?v=3" alt="VIDEM" class="tv-patch-wordmark">
-      </div>
 
       <!-- Capa de Contenido Flotante Sin Fondo -->
       <div class="front-layer">
         
-        <!-- Zona Superior: Logo Videm Imponente + Titular con 1 SOLA APP en Blanco Resaltado -->
+        <!-- Zona Superior: Logo Videm Equilibrado + Titular con formato unificado -->
         <div class="front-top-row">
           
           <div class="brand-float">
-            <img src="../assets/images/logo-videm.png" alt="Videm" class="brand-icon-img">
+            <!-- Isotipo V recortado a medida para que tenga la misma altura o supere a las letras -->
+            <img src="../assets/images/logo-videm-cropped.png" alt="Videm" class="brand-icon-img">
             <img src="../assets/images/videm-wordmark-crystal.png?v=3" alt="VIDEM" class="brand-wordmark-float">
           </div>
 
           <div class="front-headline-wrap">
             <h1 class="front-headline">
-              Todo el Cine y Series en <span class="white-hero-highlight">1 SOLA APP</span> en tu Smart TV
+              Todo el Cine y Series en 1 Sola App en tu Smart TV
             </h1>
           </div>
 
@@ -894,6 +893,7 @@
             </div>
           </div>
 
+          <!-- Característica 4: Descarga y Regístrate en Minutos -->
           <div class="spec-badge-glass">
             <span style="color: #00E676; font-size: 0.82rem; font-weight: 900; line-height: 1;">⚡</span>
             <div class="spec-badge-text">
@@ -950,7 +950,7 @@
       <!-- Header Reverso -->
       <div class="back-header">
         <div class="back-brand-group">
-          <img src="../assets/images/logo-videm.png" alt="Videm">
+          <img src="../assets/images/logo-videm-cropped.png" alt="Videm">
           <span class="back-header-title">Planes Transparentes & Activación Inmediata</span>
         </div>
         <span class="back-tagline-pill">Cero Cobros Automáticos Sorpresa</span>

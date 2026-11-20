@@ -6,14 +6,14 @@
         "rule": {
           "interval": [
             {
-              "field": "hours",
-              "hoursInterval": 6
+              "field": "cronExpression",
+              "expression": "0 4,16 * * *"
             }
           ]
         }
       },
       "id": "schedule-iptv-check",
-      "name": "Cada 6 Horas",
+      "name": "4:00 AM y 4:00 PM (Cada 12 Horas)",
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.2,
       "position": [220, 300]
@@ -63,7 +63,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://evolution-api-production-8353.up.railway.app/message/sendText/VidemProd",
+        "url": "=https://evolution-api-production-8353.up.railway.app/message/sendText/{{ $json.whatsappInstance || 'VidemProd' }}",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -75,17 +75,18 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ number: '573015568904', text: '📺 *Auto-Healer IPTV Activo*\\n\\nSe actualizaron automáticamente ' + $json.healedCount + ' señales en la parrilla de TV:\\n' + ($json.healedChannels || []).join('\\n') }) }}"
+        "jsonBody": "={{ JSON.stringify({ number: '573103311543', text: '📺 *Auto-Healer IPTV Activo* (' + ($json.whatsappInstance || 'VidemProd') + ')\\n\\nSe actualizaron automáticamente ' + $json.healedCount + ' señales en la parrilla de TV:\\n' + ($json.healedChannels || []).join('\\n') }) }}"
       },
       "id": "wa-notify-healed",
       "name": "Notificar Auto-Reparación por WhatsApp",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
+      "onError": "continueRegularOutput",
       "position": [960, 220]
     }
   ],
   "connections": {
-    "Cada 6 Horas": {
+    "4:00 AM y 4:00 PM (Cada 12 Horas)": {
       "main": [
         [
           {
@@ -122,6 +123,7 @@
   },
   "active": true,
   "settings": {
-    "executionOrder": "v1"
+    "executionOrder": "v1",
+    "timezone": "America/Bogota"
   }
 }

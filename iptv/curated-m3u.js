@@ -494,6 +494,36 @@ module.exports = async (req, res) => {
         lastFetchTime = 0;
       }
 
+      // Detectar instancia activa de Evolution API (prioridad: VidemProd Colombia -> LevannaMain -> VidemEsp)
+      let whatsappInstance = 'VidemProd';
+      try {
+        whatsappInstance = await new Promise((resolve) => {
+          const r = https.get('https://evolution-api-production-8353.up.railway.app/instance/fetchInstances', {
+            headers: { 'apikey': 'levanna-wa-key-2024' },
+            timeout: 2500
+          }, (resp) => {
+            let body = '';
+            resp.on('data', c => body += c);
+            resp.on('end', () => {
+              try {
+                const list = JSON.parse(body);
+                const openNames = new Set(
+                  (Array.isArray(list) ? list : [])
+                    .filter(i => (i.connectionStatus || i.instance?.status) === 'open')
+                    .map(i => i.name || i.instance?.instanceName)
+                );
+                for (const pref of ['VidemProd', 'LevannaMain', 'VidemEsp']) {
+                  if (openNames.has(pref)) return resolve(pref);
+                }
+              } catch (e) {}
+              resolve('VidemProd');
+            });
+          });
+          r.on('error', () => resolve('VidemProd'));
+          r.on('timeout', () => { r.destroy(); resolve('VidemProd'); });
+        });
+      } catch (e) {}
+
       const payload = JSON.stringify({
         success: true,
         elapsedMs: Date.now() - startTime,
@@ -502,6 +532,7 @@ module.exports = async (req, res) => {
         liveCount,
         healedCount,
         healedChannels,
+        whatsappInstance,
         activeOverrides: healedIdOverrides
       }, null, 2);
 

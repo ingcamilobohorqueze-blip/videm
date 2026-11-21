@@ -74,6 +74,16 @@ Para explicarle al cliente cómo funciona la tecnología sin revelar marcas de p
 
 ---
 
+### Objeción 1.1 (Pregunta Específica): *"¿Y Netflix o Disney cómo ganan dinero si yo veo sus series por aquí y no les pago a ellos?"*
+> **Respuesta del Asesor (Coloquial, Transparente y Sin Rodeos):**  
+> *"Te soy 100% sincero y transparente: Netflix no recibe dinero directo de este servicio. Netflix cobra por su propia aplicación oficial en tu teléfono o televisor.*  
+>  
+> *Nosotros no te vendemos Netflix ni sus licencias; nosotros te cobramos por un **servicio técnico de ingeniería y calibración** para tu Smart TV. Es exactamente como cuando llevas tu carro a un taller mecánico: el mecánico te cobra por mejorar el motor y dejarlo al 100% de potencia; el mecánico no le manda regalías a Ford ni a Chevrolet, te cobra por su mano de obra y conocimiento.*  
+>  
+> *¿Y cómo gana Netflix entonces? Netflix tiene más de 270 millones de suscriptores en el mundo que pagan su app básica con comerciales, más publicidad millonaria y acuerdos con operadoras de telefonía. La inmensa mayoría de la gente prefiere pagar la app sencilla aunque se vea comprimida. Nosotros existimos para el cinéfilo exigente que tiene un buen televisor o teatro en casa y quiere la calidad máxima de Blu-ray 4K sin perder tiempo configurando nada."*
+
+---
+
 ### Objeción 2: *"¿En qué se diferencia de MagisTV o las aplicaciones de IPTV baratas?"*
 > **Respuesta del Asesor:**  
 > *"La diferencia es como comparar un archivo MP3 comprimido de baja calidad contra escuchar una orquesta en vivo.*  

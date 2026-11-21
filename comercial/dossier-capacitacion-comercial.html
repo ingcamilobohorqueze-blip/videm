@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VIDEM | Dossier de Capacitación Comercial & Filosofía de Marca</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0A0D14;
+      --surface: #121722;
+      --surface-light: #1A2232;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-accent: rgba(0, 240, 255, 0.25);
+      --text: #F1F5F9;
+      --text-muted: #94A3B8;
+      --cyan: #00F0FF;
+      --gold: #F59E0B;
+      --green: #10B981;
+      --blue: #3B82F6;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    .header-card {
+      background: linear-gradient(135deg, rgba(0, 240, 255, 0.08) 0%, rgba(18, 23, 34, 0.8) 100%);
+      border: 1px solid var(--border-accent);
+      border-radius: 20px;
+      padding: 36px 32px;
+      margin-bottom: 32px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .brand-title {
+      font-size: 1.8rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #FFF;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .badge-doc {
+      display: inline-block;
+      padding: 6px 14px;
+      background: rgba(0, 240, 255, 0.12);
+      border: 1px solid var(--border-accent);
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--cyan);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+    }
+
+    .header-meta {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* Section Cards */
+    .section-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 24px;
+      box-shadow: 0 6px 25px rgba(0, 0, 0, 0.25);
+    }
+
+    .section-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #FFF;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .manifesto-box {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(26, 34, 50, 0.5) 100%);
+      border-left: 4px solid var(--gold);
+      padding: 20px 24px;
+      border-radius: 0 12px 12px 0;
+      margin: 18px 0;
+      font-style: italic;
+      font-size: 1.05rem;
+      color: #F8FAFC;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 18px;
+      margin-top: 18px;
+    }
+
+    .pillar-card {
+      background: var(--surface-light);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .pillar-card h4 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--cyan);
+    }
+
+    .script-box {
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px dashed rgba(0, 240, 255, 0.3);
+      border-radius: 12px;
+      padding: 18px 20px;
+      margin: 14px 0;
+      font-size: 0.95rem;
+      color: #E2E8F0;
+    }
+
+    .rule-tag {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-right: 6px;
+    }
+    .rule-danger { background: rgba(239, 68, 68, 0.2); color: #EF4444; border: 1px solid rgba(239, 68, 68, 0.4); }
+    .rule-success { background: rgba(16, 185, 129, 0.2); color: #10B981; border: 1px solid rgba(16, 185, 129, 0.4); }
+
+    .print-btn {
+      background: var(--cyan);
+      color: #06080D;
+      font-weight: 800;
+      padding: 10px 20px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: opacity 0.2s;
+    }
+    .print-btn:hover { opacity: 0.9; }
+
+    @media print {
+      body { background: #FFF; color: #000; padding: 0; }
+      .header-card, .section-card, .pillar-card { background: #FFF !important; border-color: #CCC !important; color: #000 !important; box-shadow: none !important; }
+      .brand-title, .section-title, h4 { color: #000 !important; }
+      .manifesto-box { background: #F8FAFC !important; color: #000 !important; border-color: #D97706 !important; }
+      .script-box { background: #F1F5F9 !important; color: #000 !important; border-style: solid !important; }
+      .print-btn { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    
+    <!-- HEADER -->
+    <div class="header-card">
+      <div>
+        <span class="badge-doc">Documento Oficial de Capacitación</span>
+        <h1 class="brand-title">VIDEM | Argumentario Comercial & Marco Legal</h1>
+        <p class="header-meta">Operado por <strong>Levanna S.A.S.</strong> • Manual de Consulta para Asesores Comerciales y Conserjes VIP</p>
+      </div>
+      <div>
+        <button class="print-btn" onclick="window.print()">🖨️ Imprimir / Guardar PDF</button>
+      </div>
+    </div>
+
+    <!-- SECCIÓN 1: FILOSOFÍA DE MARCA -->
+    <div class="section-card">
+      <h2 class="section-title">🏛️ 1. Nuestra Filosofía: El Cine como Patrimonio de la Humanidad</h2>
+      <p>En VIDEM no vendemos "aplicaciones" ni "canales de televisión". Vendemos el rescate del arte cinematográfico para el hogar.</p>
+
+      <div class="manifesto-box">
+        "El cine y las series son patrimonio cultural de la humanidad. Toda familia debería tener acceso a disfrutar las mejores obras maestras en su calidad de cine original, sin pagar cinco suscripciones fragmentadas que cobran de más y comprimen el video quitándole el alma a la película."
+      </div>
+
+      <p style="color: var(--text-muted); font-size: 0.95rem;">
+        Las plataformas comerciales compiten por exclusividades comerciales y recomprimen el video a 15 Mbps y el audio a 192 kbps. VIDEM nace como una <strong>Conserjería Tecnológica Privada</strong> que devuelve el cine en <strong>4K Remux a 80 Mbps y Dolby Atmos físico</strong> en una sola interfaz limpia.
+      </p>
+    </div>
+
+    <!-- SECCIÓN 2: MARCO DE LEGALIDAD -->
+    <div class="section-card">
+      <h2 class="section-title">⚖️ 2. El Marco de Legalidad: Los 3 Pilares Inquebrantables</h2>
+      <p style="color: var(--text-muted); font-size: 0.95rem;">Cuando un cliente o prospecto pregunte si el servicio es legal, este es el respaldo jurídico que ampara nuestra operación:</p>
+
+      <div class="grid-2">
+        <div class="pillar-card">
+          <h4>Pilar 1: Empresa de Consultoría (Cero Alojamiento)</h4>
+          <p style="font-size: 0.88rem; color: var(--text-muted);">
+            Levanna S.A.S. presta <strong>asistencia técnica y optimización en el hogar</strong>. VIDEM no posee servidores de contenido, no aloja un solo byte de video y no retransmite señales televisivas en vivo. El cliente paga honorarios por calibración técnica llave en mano.
+          </p>
+        </div>
+        <div class="pillar-card">
+          <h4>Pilar 2: Software de Código Abierto Oficial</h4>
+          <p style="font-size: 0.88rem; color: var(--text-muted);">
+            La aplicación instalada en el TV del cliente es un reproductor multimedia oficial y legal, auditado y aprobado en las tiendas de <strong>Samsung Tizen, LG webOS, Google Play, Apple y Amazon</strong>. Funciona igual que un navegador web como Chrome o un reproductor como VLC.
+          </p>
+        </div>
+        <div class="pillar-card" style="grid-column: 1 / -1;">
+          <h4>Pilar 3: Servidores Privados CDN en Francia (Unión Europea)</h4>
+          <p style="font-size: 0.88rem; color: var(--text-muted);">
+            En lugar de usar redes torrents P2P (donde el usuario comparte archivos con extraños), VIDEM conecta la pantalla a <strong>servidores de infraestructura privada en la nube ubicados en Francia</strong>, bajo la estricta Directiva Europea de Comercio Electrónico. La señal se transmite por un <strong>túnel HTTPS cifrado (TLS 1.3)</strong> exclusivo para consumo privado doméstico.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECCIÓN 3: CÓMO ESTÁN LOS ESTRENOS -->
+    <div class="section-card">
+      <h2 class="section-title">🌐 3. ¿Cómo es posible que estén los estrenos de todas las plataformas?</h2>
+      <p style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 14px;">
+        Explicación técnica simplificada para el cliente: <strong>La Memoria Descentralizada de Internet</strong>.
+      </p>
+
+      <div class="pillar-card" style="margin-bottom: 12px;">
+        <p style="font-size: 0.9rem;">
+          <strong>1. Entusiastas y Archivistas Globales:</strong> Comunidades de cinéfilos en todo el mundo digitalizan los discos físicos originales (Blu-ray 4K Ultra HD) o capturan los másteres directos de estudio sin compresión y los preservan en la red mundial.
+        </p>
+      </div>
+      <div class="pillar-card" style="margin-bottom: 12px;">
+        <p style="font-size: 0.9rem;">
+          <strong>2. Nuestros Servidores en Francia:</strong> Nuestra infraestructura de enlace en la nube almacena copias de alta velocidad en caché en Europa. Cuando sale una película en cualquier parte del mundo, nuestros servidores ya la tienen lista en menos de minutos.
+        </p>
+      </div>
+      <div class="pillar-card">
+        <p style="font-size: 0.9rem;">
+          <strong>3. Transmisión Instantánea a 80 Mbps:</strong> Al cliente no le toca descargar nada: le transmitimos la señal al instante a su Smart TV por fibra óptica a máxima resolución y con audio cinematográfico.
+        </p>
+      </div>
+    </div>
+
+    <!-- SECCIÓN 4: GUIONES DE VENTA Y MANEJO DE OBJECIONES -->
+    <div class="section-card">
+      <h2 class="section-title">💬 4. Guiones Oficiales para el Asesor Comercial</h2>
+
+      <p><strong>Pregunta: "¿Esto es legal? ¿Por qué no tengo que pagar Netflix ni Disney?"</strong></p>
+      <div class="script-box">
+        "Totalmente legal. En VIDEM no vendemos señales piratas de televisión ni apps de $10.000 que se caen los fines de semana.<br><br>
+        Nosotros somos una conserjería técnica especializada: te calibramos tu televisor para conectarlo a una infraestructura privada en la nube con servidores en Francia que tiene respaldada la filmoteca mundial en calidad de cine original (4K Remux a 80 Mbps), alimentada por comunidades de cinéfilos y entusiastas del arte audiovisual.<br><br>
+        Creemos que el cine es un patrimonio que no debería estar fragmentado en 5 plataformas que te cobran de más por video comprimido. Te dejamos una sola interfaz con todo el contenido del mundo, sin anuncios y con soporte técnico permanente."
+      </div>
+
+      <p style="margin-top: 18px;"><strong>Pregunta: "¿En qué se diferencia de MagisTV o aplicaciones de IPTV?"</strong></p>
+      <div class="script-box">
+        "La diferencia es como comparar un archivo MP3 comprimido contra una orquesta en vivo.<br><br>
+        • <strong>Calidad de Imagen:</strong> Las IPTV recomprimen el video a 3 Mbps y en pantallas grandes de 55" a 75" se ve pixelado y borroso. VIDEM transmite a <strong>80 Mbps nativos en 4K puro</strong> (calidad física Blu-ray).<br>
+        • <strong>Sonido Real:</strong> Las IPTV solo dan estéreo básico. VIDEM entrega <strong>Dolby Atmos</strong> con profundidad para tu barra de sonido.<br>
+        • <strong>Cero Caídas:</strong> Al conectarse a fibra dedicada en Europa, el servicio nunca se satura ni se congela en partidos o eventos masivos."
+      </div>
+    </div>
+
+    <!-- SECCIÓN 5: REGLAS DE ORO INTERNAS -->
+    <div class="section-card" style="border-left: 4px solid var(--cyan);">
+      <h2 class="section-title">📌 5. Reglas de Oro de la Fuerza Comercial</h2>
+      <ul style="list-style: none; display: flex; flex-direction: column; gap: 10px; font-size: 0.95rem;">
+        <li><span class="rule-tag rule-danger">PROHIBIDO</span> Mencionar nombres de proveedores técnicos internos al cliente final. Se presenta siempre como: <em>"Nuestros servidores privados CDN dedicados en Francia / Europa"</em>.</li>
+        <li><span class="rule-tag rule-danger">PROHIBIDO</span> Llamar a VIDEM "IPTV", "servicio de canales" o "app pirata".</li>
+        <li><span class="rule-tag rule-success">OBLIGATORIO</span> Posicionar a VIDEM como: <strong>"Conserjería Privada de Home Theater y Streaming 4K Remux sin Compresión"</strong>.</li>
+        <li><span class="rule-tag rule-success">VALOR CLAVE</span> Lo que vendemos es <strong>tiempo, comodidad absoluta, calidad audiovisual de sala de cine y libertad</strong>.</li>
+      </ul>
+    </div>
+
+  </div>
+
+</body>
+</html>

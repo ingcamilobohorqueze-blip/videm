@@ -111,12 +111,24 @@ Envíanos el comprobante por aquí para agendar tu calibración de inmediato.
 
 | Pasarela | Región Objetivo | Métodos de Pago Habilitados | Estado Actual |
 | :--- | :--- | :--- | :--- |
+| **Stripe US (Levanna LLC)** | Estados Unidos & Europa | Apple Pay, Google Pay, Tarjetas (Visa, MC, AMEX, Discover) | ✅ **Activa en Producción (`acct_1UearrGr4WrtrXKj`)** |
 | **PayPal Business** | Europa & Global | Saldo PayPal, Tarjetas de Crédito/Débito internacionales | ✅ **Aprobada y Activa** |
 | **Wompi Bancolombia** | Colombia | Bancolombia Botón, PSE, Nequi, Daviplata, Tarjetas | ✅ **Activa** |
-| **SEPA Transfer (Banking Circle)** | Unión Europea / España | Transferencia Bancaria Directa SEPA | ✅ **Lista para emitir** |
-| **ACH / Domestic Wire (Citibank)** | Estados Unidos | Transferencia Bancaria ACH en EE.UU. | ✅ **Lista para emitir** |
-| **Stripe (Global / Europa / USA)** | España, USA y Latam | Tarjetas, Apple Pay, Google Pay, Bizum (España), ACH | 🔄 **En proceso de activación** |
-| **Bizum Corporativo** | España | Integrable a través de Stripe o pasarela española | 🔄 **Planificado** |
+| **SEPA Transfer (Banking Circle)** | Unión Europea / España | Transferencia Bancaria Directa SEPA (IBAN Luxemburgo) | ✅ **Lista para emitir** |
+| **ACH / Domestic Wire (Citibank)** | Estados Unidos | Transferencia Bancaria ACH en EE.UU. (Routing 031100209) | ✅ **Lista para emitir** |
+| **PayPal USA (Levanna LLC)** | Estados Unidos | Saldo PayPal USD, Venmo, Pay in 4 | 🔄 **Opcional / Por conectar con Citibank** |
+
+### Enlaces de Pago Oficiales en Producción (Stripe Live):
+
+#### 🇺🇸 VIDEM USA (USD - Liquidación Citibank, N.A.):
+- **1 Mes Flex ($14.99 USD):** `https://buy.stripe.com/cNieVd0EXfrJbeVayT3VC02`
+- **6 Meses VIP ($69.99 USD):** `https://buy.stripe.com/3cI8wP87pdjBbeV5ez3VC01`
+- **12 Meses Anual VIP ($119.99 USD):** `https://buy.stripe.com/aFabJ14Vd2EX96N5ez3VC00`
+
+#### 🇪🇸 VIDEM ESPAÑA (EUR - Liquidación Banking Circle Luxemburgo):
+- **1 Mes Flex (9,99 €):** `https://buy.stripe.com/4gMfZh9bt5R96YFfTd3VC05`
+- **6 Meses VIP (49,99 €):** `https://buy.stripe.com/9B628r4Vd4N5aaR4av3VC04`
+- **12 Meses Anual VIP (89,99 €):** `https://buy.stripe.com/7sYdR94Vd4N5aaReP93VC03`
 
 ---
 

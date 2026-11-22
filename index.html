@@ -59,10 +59,27 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
 
   <!-- Stylesheets -->
-  <link rel="stylesheet" href="css/tokens.css?v=20261106-5">
-  <link rel="stylesheet" href="css/style.css?v=20261120-levanna2">
+  <link rel="stylesheet" href="css/tokens.css?v=20261122-regions">
+  <link rel="stylesheet" href="css/style.css?v=20261122-regions">
 
   <style>
+    /* Critical Region Selector Styles (Inlined to prevent cache issues) */
+    .region-selector-wrapper { position: relative; display: inline-flex; align-items: center; z-index: 300; }
+    .region-selector-btn { background: var(--pill-bg, rgba(255,255,255,0.06)); border: 1px solid var(--pill-border, rgba(255,255,255,0.12)); color: var(--text-primary, #FFF); height: 40px; padding: 0 10px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; gap: 6px; font-family: inherit; font-size: 0.8rem; font-weight: 700; transition: all 0.2s ease; }
+    .region-selector-btn:hover { background: var(--pill-hover-bg, rgba(255,255,255,0.1)); border-color: var(--accent-primary, #00F0FF); }
+    .region-svg-flag { width: 18px; height: 13px; border-radius: 2px; object-fit: cover; flex-shrink: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.3); display: inline-block; }
+    .region-code { font-size: 0.8rem; font-weight: 800; letter-spacing: 0.05em; color: var(--text-primary, #FFF); }
+    .region-chevron { transition: transform 0.2s ease; stroke: var(--text-muted, #94A3B8); }
+    .region-selector-btn[aria-expanded="true"] .region-chevron { transform: rotate(180deg); }
+    .region-dropdown-menu { position: absolute; top: calc(100% + 8px); right: 0; min-width: 215px; background: var(--bg-surface, #0E121B); border: 1px solid var(--nav-border, rgba(255,255,255,0.15)); border-radius: 14px; box-shadow: 0 20px 40px rgba(0,0,0,0.6); padding: 6px; display: none !important; flex-direction: column; gap: 4px; z-index: 350; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+    .region-dropdown-menu.is-open { display: flex !important; }
+    .region-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 9px; text-decoration: none; color: var(--text-primary, #FFF); transition: background 0.15s ease; }
+    .region-item:hover { background: rgba(255,255,255,0.08); }
+    .region-item.active { background: rgba(0, 240, 255, 0.12); border: 1px solid rgba(0, 240, 255, 0.35); }
+    .region-item-info { display: flex; flex-direction: column; line-height: 1.2; text-align: left; }
+    .region-item-name { font-size: 0.82rem; font-weight: 700; color: var(--text-primary, #FFF); }
+    .region-item-curr { font-size: 0.72rem; color: var(--text-muted, #94A3B8); font-weight: 500; }
+
     /* Critical Mobile Menu & Theme Icon Fallback against stale cache */
     .mobile-menu-toggle { display: none; background: var(--pill-bg); border: 1px solid var(--pill-border); color: var(--text-primary); width: 42px; height: 42px; border-radius: 12px; cursor: pointer; align-items: center; justify-content: center; padding: 0; flex-shrink: 0; }
     .mobile-menu-toggle svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2.2; fill: none; }
@@ -214,7 +231,7 @@
           <!-- Region / Country Selector -->
           <div class="region-selector-wrapper">
             <button type="button" class="region-selector-btn" id="regionBtn" aria-expanded="false" aria-label="Seleccionar región">
-              <span class="region-flag">🇨🇴</span>
+              <svg class="region-svg-flag" width="18" height="13" viewBox="0 0 18 13"><rect width="18" height="6.5" fill="#FCD116"/><rect y="6.5" width="18" height="3.25" fill="#003893"/><rect y="9.75" width="18" height="3.25" fill="#CE1126"/></svg>
               <span class="region-code">COL</span>
               <svg class="region-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                 <polyline points="6 9 12 15 18 9"></polyline>
@@ -222,21 +239,21 @@
             </button>
             <div class="region-dropdown-menu" id="regionMenu" aria-hidden="true">
               <a href="/" class="region-item active">
-                <span class="region-item-flag">🇨🇴</span>
+                <svg class="region-svg-flag" width="18" height="13" viewBox="0 0 18 13"><rect width="18" height="6.5" fill="#FCD116"/><rect y="6.5" width="18" height="3.25" fill="#003893"/><rect y="9.75" width="18" height="3.25" fill="#CE1126"/></svg>
                 <div class="region-item-info">
                   <span class="region-item-name">Colombia & Latam</span>
                   <span class="region-item-curr">COP ($)</span>
                 </div>
               </a>
               <a href="/es" class="region-item">
-                <span class="region-item-flag">🇪🇸</span>
+                <svg class="region-svg-flag" width="18" height="13" viewBox="0 0 18 13"><rect width="18" height="3.25" fill="#AA151B"/><rect y="3.25" width="18" height="6.5" fill="#F1BF00"/><rect y="9.75" width="18" height="3.25" fill="#AA151B"/></svg>
                 <div class="region-item-info">
                   <span class="region-item-name">España & Europa</span>
                   <span class="region-item-curr">EUR (€)</span>
                 </div>
               </a>
               <a href="/us" class="region-item">
-                <span class="region-item-flag">🇺🇸</span>
+                <svg class="region-svg-flag" width="18" height="13" viewBox="0 0 18 13"><rect width="18" height="13" fill="#B22234"/><rect y="1" width="18" height="1" fill="#FFF"/><rect y="3" width="18" height="1" fill="#FFF"/><rect y="5" width="18" height="1" fill="#FFF"/><rect y="7" width="18" height="1" fill="#FFF"/><rect y="9" width="18" height="1" fill="#FFF"/><rect y="11" width="18" height="1" fill="#FFF"/><rect width="7.5" height="7" fill="#3C3B6E"/></svg>
                 <div class="region-item-info">
                   <span class="region-item-name">United States</span>
                   <span class="region-item-curr">USD ($)</span>
@@ -1404,6 +1421,6 @@
   </div>
 
   <!-- Scripts -->
-  <script src="js/app.js?v=20261105-2"></script>
+  <script src="js/app.js?v=20261122-regions"></script>
 </body>
 </html>

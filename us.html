@@ -61,10 +61,27 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
 
   <!-- Stylesheets -->
-  <link rel="stylesheet" href="css/tokens.css?v=20261106-5">
-  <link rel="stylesheet" href="css/style.css?v=20261120-levanna2">
+  <link rel="stylesheet" href="css/tokens.css?v=20261122-regions">
+  <link rel="stylesheet" href="css/style.css?v=20261122-regions">
 
   <style>
+    /* Critical Region Selector Styles (Inlined to prevent cache issues) */
+    .region-selector-wrapper { position: relative; display: inline-flex; align-items: center; z-index: 300; }
+    .region-selector-btn { background: var(--pill-bg, rgba(255,255,255,0.06)); border: 1px solid var(--pill-border, rgba(255,255,255,0.12)); color: var(--text-primary, #FFF); height: 40px; padding: 0 10px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; gap: 6px; font-family: inherit; font-size: 0.8rem; font-weight: 700; transition: all 0.2s ease; }
+    .region-selector-btn:hover { background: var(--pill-hover-bg, rgba(255,255,255,0.1)); border-color: var(--accent-primary, #00F0FF); }
+    .region-svg-flag { width: 18px; height: 13px; border-radius: 2px; object-fit: cover; flex-shrink: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.3); display: inline-block; }
+    .region-code { font-size: 0.8rem; font-weight: 800; letter-spacing: 0.05em; color: var(--text-primary, #FFF); }
+    .region-chevron { transition: transform 0.2s ease; stroke: var(--text-muted, #94A3B8); }
+    .region-selector-btn[aria-expanded="true"] .region-chevron { transform: rotate(180deg); }
+    .region-dropdown-menu { position: absolute; top: calc(100% + 8px); right: 0; min-width: 215px; background: var(--bg-surface, #0E121B); border: 1px solid var(--nav-border, rgba(255,255,255,0.15)); border-radius: 14px; box-shadow: 0 20px 40px rgba(0,0,0,0.6); padding: 6px; display: none !important; flex-direction: column; gap: 4px; z-index: 350; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+    .region-dropdown-menu.is-open { display: flex !important; }
+    .region-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 9px; text-decoration: none; color: var(--text-primary, #FFF); transition: background 0.15s ease; }
+    .region-item:hover { background: rgba(255,255,255,0.08); }
+    .region-item.active { background: rgba(0, 240, 255, 0.12); border: 1px solid rgba(0, 240, 255, 0.35); }
+    .region-item-info { display: flex; flex-direction: column; line-height: 1.2; text-align: left; }
+    .region-item-name { font-size: 0.82rem; font-weight: 700; color: var(--text-primary, #FFF); }
+    .region-item-curr { font-size: 0.72rem; color: var(--text-muted, #94A3B8); font-weight: 500; }
+
     /* Critical Mobile Menu & Theme Icon Fallback against stale cache */
     .mobile-menu-toggle { display: none; background: var(--pill-bg); border: 1px solid var(--pill-border); color: var(--text-primary); width: 42px; height: 42px; border-radius: 12px; cursor: pointer; align-items: center; justify-content: center; padding: 0; flex-shrink: 0; }
     .mobile-menu-toggle svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2.2; fill: none; }
@@ -439,21 +456,21 @@
           aria-expanded="false" 
           aria-haspopup="true" 
           aria-controls="cdnStatusPopover" 
-          title="Haz clic para ver el monitor de salud de la red europea"
+          title="Haz clic para ver el monitor de salud de la red CDN en Estados Unidos"
         >
           <span class="status-dot"></span>
-          <span>Red CDN Europa: 100% Operacional</span>
+          <span>Red CDN USA: 100% Operacional</span>
           <svg class="chevron-status" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <polyline points="6 9 12 15 18 9"></polyline>
           </svg>
         </button>
 
-        <!-- Popover Monitor de Salud de la Red CDN Europa con Termómetro -->
+        <!-- Popover Monitor de Salud de la Red CDN USA con Termómetro -->
         <div class="cdn-status-popover" id="cdnStatusPopover" aria-hidden="true">
           <div class="popover-header">
             <div class="popover-title-row">
               <span class="status-pulse-dot"></span>
-              <span class="popover-title">Monitor CDN Europa (Madrid / París)</span>
+              <span class="popover-title">Monitor CDN USA (Virginia / Miami / Dallas)</span>
             </div>
             <span class="popover-badge-live">EN VIVO</span>
           </div>
@@ -526,7 +543,7 @@
           <!-- Region / Country Selector -->
           <div class="region-selector-wrapper">
             <button type="button" class="region-selector-btn" id="regionBtn" aria-expanded="false" aria-label="Seleccionar región">
-              <span class="region-flag">🇺🇸</span>
+              <svg class="region-svg-flag" width="18" height="13" viewBox="0 0 18 13"><rect width="18" height="13" fill="#B22234"/><rect y="1" width="18" height="1" fill="#FFF"/><rect y="3" width="18" height="1" fill="#FFF"/><rect y="5" width="18" height="1" fill="#FFF"/><rect y="7" width="18" height="1" fill="#FFF"/><rect y="9" width="18" height="1" fill="#FFF"/><rect y="11" width="18" height="1" fill="#FFF"/><rect width="7.5" height="7" fill="#3C3B6E"/></svg>
               <span class="region-code">USA</span>
               <svg class="region-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                 <polyline points="6 9 12 15 18 9"></polyline>
@@ -534,21 +551,21 @@
             </button>
             <div class="region-dropdown-menu" id="regionMenu" aria-hidden="true">
               <a href="/" class="region-item">
-                <span class="region-item-flag">🇨🇴</span>
+                <svg class="region-svg-flag" width="18" height="13" viewBox="0 0 18 13"><rect width="18" height="6.5" fill="#FCD116"/><rect y="6.5" width="18" height="3.25" fill="#003893"/><rect y="9.75" width="18" height="3.25" fill="#CE1126"/></svg>
                 <div class="region-item-info">
                   <span class="region-item-name">Colombia & Latam</span>
                   <span class="region-item-curr">COP ($)</span>
                 </div>
               </a>
               <a href="/es" class="region-item">
-                <span class="region-item-flag">🇪🇸</span>
+                <svg class="region-svg-flag" width="18" height="13" viewBox="0 0 18 13"><rect width="18" height="3.25" fill="#AA151B"/><rect y="3.25" width="18" height="6.5" fill="#F1BF00"/><rect y="9.75" width="18" height="3.25" fill="#AA151B"/></svg>
                 <div class="region-item-info">
                   <span class="region-item-name">España & Europa</span>
                   <span class="region-item-curr">EUR (€)</span>
                 </div>
               </a>
               <a href="/us" class="region-item active">
-                <span class="region-item-flag">🇺🇸</span>
+                <svg class="region-svg-flag" width="18" height="13" viewBox="0 0 18 13"><rect width="18" height="13" fill="#B22234"/><rect y="1" width="18" height="1" fill="#FFF"/><rect y="3" width="18" height="1" fill="#FFF"/><rect y="5" width="18" height="1" fill="#FFF"/><rect y="7" width="18" height="1" fill="#FFF"/><rect y="9" width="18" height="1" fill="#FFF"/><rect y="11" width="18" height="1" fill="#FFF"/><rect width="7.5" height="7" fill="#3C3B6E"/></svg>
                 <div class="region-item-info">
                   <span class="region-item-name">United States</span>
                   <span class="region-item-curr">USD ($)</span>
@@ -641,17 +658,17 @@
         
         <!-- Header -->
         <div class="section-header">
-          <span class="section-tag">Infraestructura Europea de Vanguardia</span>
+          <span class="section-tag">Infraestructura Cloud de Vanguardia</span>
           <h2 class="section-title">Adiós a la piratería inestable.<br>Hola al cine sin concesiones en tu salón.</h2>
           <p class="section-desc">
-            Diseñado para quienes valoran su tiempo y su Smart TV. Servidores privados dedicados en Europa, fibra óptica sin bloqueos de operadoras y la máxima fidelidad técnica.
+            Diseñado para quienes valoran su tiempo y su Smart TV. Servidores privados dedicados en Estados Unidos, ancho de banda gigabit sin cartas de operadoras y la máxima fidelidad técnica.
           </p>
         </div>
 
         <!-- 3 Minimalist Columns -->
         <div class="benefits-grid">
 
-          <!-- Columna 1: CDN Europea de Fibra Óptica -->
+          <!-- Columna 1: CDN USA de Fibra Óptica -->
           <article class="benefit-card">
             <div class="card-icon-container" aria-hidden="true">
               <svg viewBox="0 0 24 24">
@@ -665,7 +682,7 @@
             <p class="card-text">
               Cero redes P2P torrents que se congelan sin semillas o son vigiladas por operadoras. Tu televisor se conecta por HTTPS cifrado a servidores CDN privados con descargas a más de 80 Mbps continuos.
             </p>
-            <div class="card-pill-tag">Red CDN Europa • 100% Sin P2P</div>
+            <div class="card-pill-tag">Red CDN USA • 100% Sin P2P</div>
           </article>
 
           <!-- Columna 2: Castellano Oficial & VOSE Sincronizada -->
@@ -742,7 +759,7 @@
           <span class="section-tag">La Realidad del Streaming</span>
           <h2 class="section-title">¿Por qué pagar 5 suscripciones fragmentadas?</h2>
           <p class="section-desc">
-            En España, mantener las plataformas tradicionales te cuesta más de 600 € al año para recibir video comprimido. Compara tú mismo:
+            En Estados Unidos, mantener las plataformas tradicionales te cuesta más de $1,400 USD al año para recibir video comprimido. Compara tú mismo:
           </p>
         </div>
 
@@ -758,8 +775,8 @@
             <tbody>
               <tr>
                 <td><strong>Coste Mensual</strong></td>
-                <td>Entre 50 € y 75 € / mes</td>
-                <td class="highlight-col"><strong>Desde 7,50 € / mes</strong></td>
+                <td>Entre $120 y $160 USD / mes</td>
+                <td class="highlight-col"><strong>Desde $9.99 USD / mes</strong></td>
               </tr>
               <tr>
                 <td><strong>Calidad de Imagen</strong></td>
@@ -1055,7 +1072,7 @@
             <span class="filter-badge-pill">Filtro de Calidad</span>
             <h2 class="filter-title">Diagnóstico de Compatibilidad</h2>
             <p class="filter-intro">
-              Comprueba en 10 segundos si tu televisor y la fibra óptica de tu hogar en España están listos para <img src="assets/images/videm-wordmark-crystal.png?v=3" alt="Videm" class="inline-wordmark" width="82" height="17"> en 4K Remux:
+              Comprueba en 10 segundos si tu televisor y la conexión a internet de tu hogar en Estados Unidos están listos para <img src="assets/images/videm-wordmark-crystal.png?v=3" alt="Videm" class="inline-wordmark" width="82" height="17"> en 4K Remux:
             </p>
           </div>
 
@@ -1084,8 +1101,8 @@
             <div class="req-box">
               <div class="req-number">2</div>
               <div class="req-content">
-                <h4>Fibra óptica en España (&gt; 100 Mbps)</h4>
-                <p>Compatible con cualquier operador (Movistar, Digi, Orange, Vodafone, MásMóvil, Yoigo, O2) mediante enlace CDN cifrado sin P2P.</p>
+                <h4>Internet de alta velocidad en EE.UU. (&gt; 100 Mbps)</h4>
+                <p>Compatible con cualquier operador (Xfinity, AT&T, Spectrum, Verizon Fios, Google Fiber) mediante enlace CDN cifrado TLS 1.3 sin P2P.</p>
                 <div class="tech-badges-row">
                   <span class="os-pill">Fibra Simétrica</span>
                   <span class="os-pill">&gt; 100 Mbps</span>
@@ -1171,7 +1188,7 @@
               <span>Cumplo los requisitos. Pedir Prueba Gratis (2h)</span>
             </a>
             <p class="guarantee-note">
-              Atención directa en España por WhatsApp (+34 746 05 77 76). Sin tarjeta ni permanencia.
+              Atención directa VIP por WhatsApp (+57 310 331 1543). Sin tarjeta ni permanencia.
             </p>
           </div>
 
@@ -1238,7 +1255,7 @@
             </div>
             <h3 class="card-title">PIN Ágil de 4 Dígitos</h3>
             <p class="card-text">
-              Accede en 1 segundo con tu móvil y tu PIN personal. Consulta tu tiempo restante de membresía, estado CDN en vivo y enlace directo a soporte VIP en España por WhatsApp (+34).
+              Accede en 1 segundo con tu móvil y tu PIN personal. Consulta tu tiempo restante de membresía, estado CDN en vivo y enlace directo a soporte VIP por WhatsApp.
             </p>
             <div class="card-pill-tag">Acceso Ultrarrápido</div>
           </article>
@@ -1255,7 +1272,7 @@
             </p>
           </div>
           <div>
-            <a href="/app?pais=es" class="btn-app-download" style="padding: 0.95rem 1.8rem; font-size: 0.98rem;">
+            <a href="/app?pais=us" class="btn-app-download" style="padding: 0.95rem 1.8rem; font-size: 0.98rem;">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                 <rect x="5" y="2" width="14" height="20" rx="3" ry="3"></rect>
                 <line x1="12" y1="18" x2="12.01" y2="18"></line>
@@ -1268,14 +1285,14 @@
       </div>
     </section>
 
-    <!-- FAQS ESPECÍFICAS DE ESPAÑA -->
+    <!-- FAQS ESPECÍFICAS DE ESTADOS UNIDOS -->
     <section class="section-faqs" id="faqs" style="padding: 70px 0;">
       <div class="container">
         <div class="section-header">
           <span class="section-tag">Dudas Resueltas</span>
-          <h2 class="section-title">Preguntas Frecuentes en España</h2>
+          <h2 class="section-title">Preguntas Frecuentes en Estados Unidos</h2>
           <p class="section-desc">
-            Claridad absoluta para que disfrutes de tu Smart TV con total tranquilidad.
+            Claridad absoluta para que disfrutes de tu Smart TV o Apple TV con total tranquilidad.
           </p>
         </div>
 
@@ -1290,7 +1307,7 @@
             </button>
             <div class="faq-answer">
               <div class="faq-answer-inner">
-                Stremio es solo un reproductor vacío (como un televisor sin señal). Los addons gratuitos y comunitarios dependen de redes torrent (P2P), que se quedan sin semillas, sufren parones constantes y en España están monitorizadas por las operadoras de internet. <strong>VIDEM te conecta a servidores privados de fibra óptica (CDN) sin torrents</strong>, con más de 80 Mbps continuos, con curaduría de audio en <strong>Castellano oficial y VOSE perfecta</strong>, y entrega lista para usar en 30 segundos sin configurar llaves técnicas.
+                Stremio es solo un reproductor vacío (como un televisor sin señal). Los addons gratuitos y comunitarios dependen de redes torrent (P2P), que se quedan sin semillas, sufren parones constantes y en Estados Unidos los proveedores de internet (ISPs como Comcast o Spectrum) envían cartas de infracción y avisos. <strong>VIDEM te conecta a servidores privados dedicados de alta velocidad mediante túnel cifrado TLS 1.3 sin torrents</strong>, con más de 80 Mbps continuos, con curaduría de audio en <strong>Español Latino, Castellano y VOSE oficial</strong>, y entrega lista para usar en 30 segundos sin configurar llaves técnicas.
               </div>
             </div>
           </div>
@@ -1468,6 +1485,6 @@
     </div>
   </div>
 
-  <script src="js/app.js?v=20261105-2"></script>
+  <script src="js/app.js?v=20261122-regions"></script>
 </body>
 </html>

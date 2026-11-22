@@ -61,8 +61,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
 
   <!-- Stylesheets -->
-  <link rel="stylesheet" href="css/tokens.css?v=20261122-regions">
-  <link rel="stylesheet" href="css/style.css?v=20261122-regions">
+  <link rel="stylesheet" href="css/tokens.css?v=20261122-v3">
+  <link rel="stylesheet" href="css/style.css?v=20261122-v3">
 
   <style>
     /* Critical Region Selector Styles (Inlined to prevent cache issues) */
@@ -83,7 +83,8 @@
     .region-item-curr { font-size: 0.72rem; color: var(--text-muted, #94A3B8); font-weight: 500; }
 
     /* Critical Mobile Menu & Theme Icon Fallback against stale cache */
-    .mobile-menu-toggle { display: none; background: var(--pill-bg); border: 1px solid var(--pill-border); color: var(--text-primary); width: 42px; height: 42px; border-radius: 12px; cursor: pointer; align-items: center; justify-content: center; padding: 0; flex-shrink: 0; }
+    .mobile-menu-toggle { display: inline-flex !important; background: var(--pill-bg, rgba(255,255,255,0.06)); border: 1px solid var(--pill-border, rgba(255,255,255,0.12)); color: var(--text-primary, #FFF); width: 40px; height: 40px; border-radius: 12px; cursor: pointer; align-items: center; justify-content: center; padding: 0; flex-shrink: 0; transition: all 0.2s ease; }
+    .mobile-menu-toggle:hover { background: var(--pill-hover-bg, rgba(255,255,255,0.1)); border-color: var(--accent-primary, #00F0FF); }
     .mobile-menu-toggle svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2.2; fill: none; }
     .mobile-menu-toggle .icon-close-menu { display: none; }
     .mobile-menu-toggle[aria-expanded="true"] .icon-open-menu { display: none; }
@@ -92,17 +93,17 @@
     .brand-logo-img { width: 48px; height: 48px; object-fit: contain; flex-shrink: 0; filter: drop-shadow(0 0 14px rgba(0, 240, 255, 0.45)); }
     .brand-text-wordmark { height: 15px; width: auto; object-fit: contain; flex-shrink: 0; filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.3)); }
     .nav-controls-right { display: flex; align-items: center; gap: 0.6rem; }
-    .nav-menu-links { display: flex; align-items: center; gap: 0.45rem; }
-    .nav-text-link { font-size: 0.85rem; padding: 0.35rem 0.6rem; white-space: nowrap; }
-    .nav-app-link { padding: 0.38rem 0.8rem; font-size: 0.82rem; white-space: nowrap; }
+    .nav-actions { display: flex; align-items: center; gap: 0.6rem; }
+    .nav-menu-links { display: none !important; position: absolute; top: calc(100% + 8px); right: 16px; min-width: 280px; background: var(--bg-surface, #0E121B); border: 1px solid var(--nav-border, rgba(255,255,255,0.15)); border-radius: 16px; box-shadow: 0 20px 50px rgba(0,0,0,0.65); padding: 10px; flex-direction: column; gap: 4px; z-index: 400; backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); }
+    .nav-menu-links.is-open { display: flex !important; animation: fadeInDown 0.2s ease-out; }
+    .nav-menu-links .nav-text-link { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-radius: 10px; color: var(--text-primary, #FFF); text-decoration: none; font-size: 0.88rem; font-weight: 600; background: rgba(255,255,255,0.03); transition: all 0.15s ease; white-space: nowrap; }
+    .nav-menu-links .nav-text-link:hover { background: rgba(0, 240, 255, 0.12); color: var(--accent-primary, #00F0FF); }
+    .nav-center-badge { padding: 6px 12px !important; font-size: 0.78rem !important; gap: 6px !important; white-space: nowrap !important; }
     .btn-nav-cta { padding: 0.45rem 0.95rem; font-size: 0.84rem; white-space: nowrap; }
     @media (max-width: 768px) {
       .nav-container { position: static; justify-content: space-between; }
-      .mobile-menu-toggle { display: inline-flex; }
-      .nav-menu-links { display: none; position: absolute; top: 68px; left: 0; right: 0; background: var(--bg-surface); border-bottom: 1px solid var(--nav-border); box-shadow: var(--shadow-lg); padding: 1.15rem 1.25rem 1.4rem; flex-direction: column; align-items: stretch; gap: 0.65rem; z-index: 250; }
-      .nav-menu-links.is-open { display: flex; }
-      .nav-menu-links .nav-text-link { padding: 0.8rem 1rem; border-radius: 10px; background: var(--pill-bg); border: 1px solid var(--pill-border); color: var(--text-primary); }
-      .nav-menu-links .nav-app-link { justify-content: center; padding: 0.85rem 1rem; border-radius: 10px; }
+      .nav-desktop-only { display: none !important; }
+      .nav-menu-links { left: 0; right: 0; top: 68px; border-radius: 0 0 16px 16px; border-left: none; border-right: none; padding: 14px 16px; }
       .nav-menu-links .btn-nav-cta { justify-content: center; padding: 0.9rem 1.2rem; background: var(--accent-gradient); color: #FFFFFF; border: none; }
     }
     /* Estilos específicos para la landing de España y tabla de tarifas */
@@ -459,7 +460,7 @@
           title="Haz clic para ver el monitor de salud de la red CDN en Estados Unidos"
         >
           <span class="status-dot"></span>
-          <span>Red CDN USA: 100% Operacional</span>
+          <span>CDN • 100%</span>
           <svg class="chevron-status" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <polyline points="6 9 12 15 18 9"></polyline>
           </svg>
@@ -524,18 +525,26 @@
 
       <!-- Actions -->
       <div class="nav-actions">
+        <!-- Quick desktop conversion links -->
+        <a href="#tarifas" class="nav-text-link nav-desktop-only" style="font-size: 0.84rem; padding: 0.35rem 0.65rem; color: var(--text-primary); text-decoration: none; font-weight: 700;">Tarifas</a>
+        <a href="/app?pais=us" class="nav-app-link nav-desktop-only" title="App VIP para Clientes">
+          <span>📲 App VIP</span>
+        </a>
+        <a href="https://wa.me/573015568904?text=Hola,%20estoy%20en%20Estados%20Unidos%20y%20quiero%20probar%20VIDEM%20en%20mi%20Smart%20TV" target="_blank" rel="noopener noreferrer" class="btn-nav-cta nav-desktop-only">
+          <span>Prueba Gratis (2h)</span>
+        </a>
+
+        <!-- Flyout Menu (Available on click for Desktop & Mobile) -->
         <nav class="nav-menu-links" id="navMenuLinks" aria-label="Navegación Principal">
-          <a href="#beneficios" class="nav-text-link">Beneficios</a>
-          <a href="#comparativa" class="nav-text-link">Comparativa</a>
-          <a href="#demos" class="nav-text-link">Demos 4K</a>
-          <a href="#tarifas" class="nav-text-link">Tarifas</a>
-          <a href="#requisitos" class="nav-text-link">Diagnóstico</a>
-          <a href="#faqs" class="nav-text-link">Preguntas</a>
-          <a href="/app?pais=us" class="nav-app-link" title="App VIP para Clientes">
-            <span>📲 App VIP</span>
-          </a>
-          <a href="https://wa.me/573015568904?text=Hola,%20estoy%20en%20Estados%20Unidos%20y%20quiero%20probar%20VIDEM%20en%20mi%20Smart%20TV" target="_blank" rel="noopener noreferrer" class="btn-nav-cta">
-            <span>Prueba Gratis (2h)</span>
+          <a href="#beneficios" class="nav-text-link"><span>💎 Beneficios</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></a>
+          <a href="#comparativa" class="nav-text-link"><span>⚖️ Comparativa</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></a>
+          <a href="#demos" class="nav-text-link"><span>🎬 Demos 4K</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></a>
+          <a href="#tarifas" class="nav-text-link"><span>🏷️ Tarifas VIP</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></a>
+          <a href="#requisitos" class="nav-text-link"><span>🔍 Diagnóstico Internet/TV</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></a>
+          <a href="#faqs" class="nav-text-link"><span>❓ Preguntas Frecuentes</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></a>
+          <a href="/app?pais=us" class="nav-text-link" style="color: var(--accent-primary);"><span>📲 App VIP Clientes</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></a>
+          <a href="https://wa.me/573015568904?text=Hola,%20estoy%20en%20Estados%20Unidos%20y%20quiero%20probar%20VIDEM%20en%20mi%20Smart%20TV" target="_blank" rel="noopener noreferrer" class="btn-nav-cta" style="margin-top: 6px; justify-content: center; width: 100%;">
+            <span>🎁 Pedir Prueba Gratis (2h)</span>
           </a>
         </nav>
 
@@ -944,9 +953,9 @@
             </ul>
 
             <!-- Botones de Acción Pago Tarjeta/Stripe + WhatsApp Concierge -->
-            <a href="https://buy.stripe.com/cNieVd0EXfrJbeVayT3VC02" target="_blank" rel="noopener noreferrer" class="btn-paypal-checkout" style="display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 14px 20px; background: linear-gradient(135deg, #635BFF 0%, #0A2540 100%); color: #FFF; font-weight: 700; border-radius: 10px; text-decoration: none; box-shadow: 0 4px 15px rgba(99,91,255,0.3); transition: transform 0.2s, box-shadow 0.2s; margin-bottom: 8px;">
+            <a href="https://buy.stripe.com/cNieVd0EXfrJbeVayT3VC02" target="_blank" rel="noopener noreferrer" class="btn-paypal-checkout" style="display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 13px 16px; background: linear-gradient(135deg, #635BFF 0%, #0A2540 100%); color: #FFF; font-weight: 700; font-size: 0.92rem; border-radius: 11px; text-decoration: none; box-shadow: 0 4px 15px rgba(99,91,255,0.3); transition: transform 0.2s, box-shadow 0.2s; margin-bottom: 8px; white-space: nowrap;">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
-              <span>Pagar con Apple Pay / Tarjeta ($14.99 USD)</span>
+              <span>Tarjeta o Apple Pay • $14.99</span>
             </a>
             <a href="https://wa.me/573015568904?text=Hola,%20tengo%20dudas%20sobre%20VIDEM%20en%20Estados%20Unidos" target="_blank" rel="noopener noreferrer" style="display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; padding: 8px; color: var(--text-muted); font-size: 0.8rem; text-decoration: none; transition: color 0.2s;">
               <span>💬 Consultar soporte por WhatsApp</span>
@@ -985,9 +994,9 @@
             </ul>
 
             <!-- Botones de Acción Pago Tarjeta/Stripe + WhatsApp Concierge -->
-            <a href="https://buy.stripe.com/3cI8wP87pdjBbeV5ez3VC01" target="_blank" rel="noopener noreferrer" class="btn-paypal-checkout" style="display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 14px 20px; background: linear-gradient(135deg, #635BFF 0%, #0A2540 100%); color: #FFF; font-weight: 700; border-radius: 10px; text-decoration: none; box-shadow: 0 4px 15px rgba(99,91,255,0.3); transition: transform 0.2s, box-shadow 0.2s; margin-bottom: 8px;">
+            <a href="https://buy.stripe.com/3cI8wP87pdjBbeV5ez3VC01" target="_blank" rel="noopener noreferrer" class="btn-paypal-checkout" style="display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 13px 16px; background: linear-gradient(135deg, #635BFF 0%, #0A2540 100%); color: #FFF; font-weight: 700; font-size: 0.92rem; border-radius: 11px; text-decoration: none; box-shadow: 0 4px 15px rgba(99,91,255,0.3); transition: transform 0.2s, box-shadow 0.2s; margin-bottom: 8px; white-space: nowrap;">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
-              <span>Pagar con Apple Pay / Tarjeta ($69.99 USD)</span>
+              <span>Tarjeta o Apple Pay • $69.99</span>
             </a>
             <a href="https://wa.me/573015568904?text=Hola,%20quiero%20más%20info%20del%20Pase%20Semestral%20para%20USA" target="_blank" rel="noopener noreferrer" style="display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; padding: 8px; color: var(--text-muted); font-size: 0.8rem; text-decoration: none; transition: color 0.2s;">
               <span>💬 O consultar por WhatsApp</span>
@@ -1028,9 +1037,9 @@
             </ul>
 
             <!-- Botones de Acción Pago Tarjeta/Stripe + WhatsApp Concierge -->
-            <a href="https://buy.stripe.com/aFabJ14Vd2EX96N5ez3VC00" target="_blank" rel="noopener noreferrer" class="btn-paypal-checkout" style="display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 15px 20px; background: linear-gradient(135deg, #E50914 0%, #B20710 100%); color: #FFF; font-weight: 800; border-radius: 10px; text-decoration: none; box-shadow: 0 4px 20px rgba(229,9,20,0.4); transition: transform 0.2s, box-shadow 0.2s; margin-bottom: 8px;">
+            <a href="https://buy.stripe.com/aFabJ14Vd2EX96N5ez3VC00" target="_blank" rel="noopener noreferrer" class="btn-paypal-checkout" style="display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 14px 18px; background: linear-gradient(135deg, #E50914 0%, #B20710 100%); color: #FFF; font-weight: 800; font-size: 0.95rem; border-radius: 11px; text-decoration: none; box-shadow: 0 4px 20px rgba(229,9,20,0.4); transition: transform 0.2s, box-shadow 0.2s; margin-bottom: 8px; white-space: nowrap;">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
-              <span>Pagar Pase Anual con Apple Pay / Tarjeta ($119.99 USD)</span>
+              <span>Pase Anual VIP • $119.99</span>
             </a>
             <a href="https://wa.me/573015568904?text=Hola,%20quiero%20activar%20el%20Pase%20Anual%20para%20USA" target="_blank" rel="noopener noreferrer" style="display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; padding: 8px; color: var(--text-muted); font-size: 0.8rem; text-decoration: none; transition: color 0.2s;">
               <span>💬 O consultar por WhatsApp</span>

@@ -79,11 +79,23 @@
       "destination": "/es.html"
     },
     {
+      "source": "/ES",
+      "destination": "/es.html"
+    },
+    {
       "source": "/us",
       "destination": "/us.html"
     },
     {
+      "source": "/US",
+      "destination": "/us.html"
+    },
+    {
       "source": "/usa",
+      "destination": "/us.html"
+    },
+    {
+      "source": "/USA",
       "destination": "/us.html"
     },
     {

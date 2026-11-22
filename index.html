@@ -59,8 +59,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
 
   <!-- Stylesheets -->
-  <link rel="stylesheet" href="css/tokens.css?v=20261122-regions">
-  <link rel="stylesheet" href="css/style.css?v=20261122-regions">
+  <link rel="stylesheet" href="css/tokens.css?v=20261122-v3">
+  <link rel="stylesheet" href="css/style.css?v=20261122-v3">
 
   <style>
     /* Critical Region Selector Styles (Inlined to prevent cache issues) */
@@ -81,7 +81,8 @@
     .region-item-curr { font-size: 0.72rem; color: var(--text-muted, #94A3B8); font-weight: 500; }
 
     /* Critical Mobile Menu & Theme Icon Fallback against stale cache */
-    .mobile-menu-toggle { display: none; background: var(--pill-bg); border: 1px solid var(--pill-border); color: var(--text-primary); width: 42px; height: 42px; border-radius: 12px; cursor: pointer; align-items: center; justify-content: center; padding: 0; flex-shrink: 0; }
+    .mobile-menu-toggle { display: inline-flex !important; background: var(--pill-bg, rgba(255,255,255,0.06)); border: 1px solid var(--pill-border, rgba(255,255,255,0.12)); color: var(--text-primary, #FFF); width: 40px; height: 40px; border-radius: 12px; cursor: pointer; align-items: center; justify-content: center; padding: 0; flex-shrink: 0; transition: all 0.2s ease; }
+    .mobile-menu-toggle:hover { background: var(--pill-hover-bg, rgba(255,255,255,0.1)); border-color: var(--accent-primary, #00F0FF); }
     .mobile-menu-toggle svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2.2; fill: none; }
     .mobile-menu-toggle .icon-close-menu { display: none; }
     .mobile-menu-toggle[aria-expanded="true"] .icon-open-menu { display: none; }
@@ -90,17 +91,17 @@
     .brand-logo-img { width: 48px; height: 48px; object-fit: contain; flex-shrink: 0; filter: drop-shadow(0 0 14px rgba(0, 240, 255, 0.45)); }
     .brand-text-wordmark { height: 15px; width: auto; object-fit: contain; flex-shrink: 0; filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.3)); }
     .nav-controls-right { display: flex; align-items: center; gap: 0.6rem; }
-    .nav-menu-links { display: flex; align-items: center; gap: 0.45rem; }
-    .nav-text-link { font-size: 0.85rem; padding: 0.35rem 0.6rem; white-space: nowrap; }
-    .nav-app-link { padding: 0.38rem 0.8rem; font-size: 0.82rem; white-space: nowrap; }
+    .nav-actions { display: flex; align-items: center; gap: 0.6rem; }
+    .nav-menu-links { display: none !important; position: absolute; top: calc(100% + 8px); right: 16px; min-width: 280px; background: var(--bg-surface, #0E121B); border: 1px solid var(--nav-border, rgba(255,255,255,0.15)); border-radius: 16px; box-shadow: 0 20px 50px rgba(0,0,0,0.65); padding: 10px; flex-direction: column; gap: 4px; z-index: 400; backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); }
+    .nav-menu-links.is-open { display: flex !important; animation: fadeInDown 0.2s ease-out; }
+    .nav-menu-links .nav-text-link { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-radius: 10px; color: var(--text-primary, #FFF); text-decoration: none; font-size: 0.88rem; font-weight: 600; background: rgba(255,255,255,0.03); transition: all 0.15s ease; white-space: nowrap; }
+    .nav-menu-links .nav-text-link:hover { background: rgba(0, 240, 255, 0.12); color: var(--accent-primary, #00F0FF); }
+    .nav-center-badge { padding: 6px 12px !important; font-size: 0.78rem !important; gap: 6px !important; white-space: nowrap !important; }
     .btn-nav-cta { padding: 0.45rem 0.95rem; font-size: 0.84rem; white-space: nowrap; }
     @media (max-width: 768px) {
       .nav-container { position: static; justify-content: space-between; }
-      .mobile-menu-toggle { display: inline-flex; }
-      .nav-menu-links { display: none; position: absolute; top: 68px; left: 0; right: 0; background: var(--bg-surface); border-bottom: 1px solid var(--nav-border); box-shadow: var(--shadow-lg); padding: 1.15rem 1.25rem 1.4rem; flex-direction: column; align-items: stretch; gap: 0.65rem; z-index: 250; }
-      .nav-menu-links.is-open { display: flex; }
-      .nav-menu-links .nav-text-link { padding: 0.8rem 1rem; border-radius: 10px; background: var(--pill-bg); border: 1px solid var(--pill-border); color: var(--text-primary); }
-      .nav-menu-links .nav-app-link { justify-content: center; padding: 0.85rem 1rem; border-radius: 10px; }
+      .nav-desktop-only { display: none !important; }
+      .nav-menu-links { left: 0; right: 0; top: 68px; border-radius: 0 0 16px 16px; border-left: none; border-right: none; padding: 14px 16px; }
       .nav-menu-links .btn-nav-cta { justify-content: center; padding: 0.9rem 1.2rem; background: var(--accent-gradient); color: #FFFFFF; border: none; }
     }
   </style>
@@ -146,7 +147,7 @@
           title="Haz clic para ver el monitor de salud de la red"
         >
           <span class="status-dot"></span>
-          <span>Red CDN: 100% Operacional</span>
+          <span>CDN • 100%</span>
           <svg class="chevron-status" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <polyline points="6 9 12 15 18 9"></polyline>
           </svg>
@@ -213,17 +214,26 @@
 
       <!-- Actions: Theme Toggle & Direct CTA -->
       <div class="nav-actions">
+        <!-- Quick desktop conversion links -->
+        <a href="#tarifas" class="nav-text-link nav-desktop-only" style="font-size: 0.84rem; padding: 0.35rem 0.65rem; color: var(--text-primary); text-decoration: none; font-weight: 700;">Tarifas</a>
+        <a href="/app" class="nav-app-link nav-desktop-only" title="App VIP para Clientes">
+          <span>📲 App VIP</span>
+        </a>
+        <a href="#requisitos" class="btn-nav-cta nav-desktop-only" id="navCheckLink">
+          <span>Verificar TV</span>
+        </a>
+
+        <!-- Flyout Menu (Available on click for Desktop & Mobile) -->
         <nav class="nav-menu-links" id="navMenuLinks" aria-label="Navegación Principal">
-          <a href="#beneficios" class="nav-text-link">Beneficios</a>
-          <a href="#comparativa" class="nav-text-link">Comparativa</a>
-          <a href="#demos" class="nav-text-link">Demos 4K</a>
-          <a href="#tarifas" class="nav-text-link">Tarifas</a>
-          <a href="#faqs" class="nav-text-link">Preguntas</a>
-          <a href="/app" class="nav-app-link" title="App Web y Móvil para Clientes VIP">
-            <span>📲 App VIP</span>
-          </a>
-          <a href="#requisitos" class="btn-nav-cta" id="navCheckLink">
-            <span>Verificar TV</span>
+          <a href="#beneficios" class="nav-text-link"><span>💎 Beneficios</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></a>
+          <a href="#comparativa" class="nav-text-link"><span>⚖️ Comparativa</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></a>
+          <a href="#demos" class="nav-text-link"><span>🎬 Demos 4K</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></a>
+          <a href="#tarifas" class="nav-text-link"><span>🏷️ Tarifas VIP</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></a>
+          <a href="#requisitos" class="nav-text-link"><span>🔍 Diagnóstico TV / Red</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></a>
+          <a href="#faqs" class="nav-text-link"><span>❓ Preguntas Frecuentes</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></a>
+          <a href="/app" class="nav-text-link" style="color: var(--accent-primary);"><span>📲 App VIP Clientes</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></a>
+          <a href="#requisitos" class="btn-nav-cta" style="margin-top: 6px; justify-content: center; width: 100%;">
+            <span>📺 Diagnosticar mi Smart TV</span>
           </a>
         </nav>
 

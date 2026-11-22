@@ -50,6 +50,11 @@ self.addEventListener('fetch', (event) => {
   const req = event.request;
   const url = new URL(req.url);
 
+  // 0. Only intercept /admin and /app routes, bypass all public site routes natively
+  if (!url.pathname.startsWith('/admin') && !url.pathname.startsWith('/app')) {
+    return;
+  }
+
   // 1. Bypass Service Worker for API calls, JS scripts, and non-GET requests (Always Network First / Only)
   if (
     req.method !== 'GET' ||

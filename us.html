@@ -1,0 +1,1473 @@
+<!DOCTYPE html>
+<html lang="es-US" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  
+  <title>VIDEM USA | Private Home Theater Concierge & 4K Remux</title>
+  <meta name="description" content="Private Home Theater Concierge para televisores 4K y dispositivos de streaming en Estados Unidos. Todo el cine y series en 4K Remux real, Dolby Vision y Dolby Atmos.">
+  <meta name="keywords" content="VIDEM USA, Apple TV 4K, Fire TV Stick 4K Max, Nvidia Shield, 4K Remux, Dolby Atmos, Streaming USA, Home Theater Concierge">
+  <meta name="author" content="Videm Private Concierge">
+  <link rel="canonical" href="https://videm.tv/us">
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://videm.tv/us">
+  <meta property="og:title" content="VIDEM USA | The Ultimate 4K Home Theater Experience">
+  <meta property="og:description" content="Centraliza el cine mundial en tu Smart TV, Apple TV o Fire TV en USA. Calidad 4K Blu-ray real, sonido sin pérdidas y cero cortes.">
+  <meta property="og:image" content="https://videm.tv/assets/images/hero-home-theater.jpeg">
+  <meta property="og:locale" content="es_US">
+  <meta property="og:site_name" content="VIDEM USA">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://videm.tv/us">
+  <meta name="twitter:title" content="VIDEM USA | 4K Remux Home Theater">
+  <meta name="twitter:description" content="Ahorra en streaming en USA. 4K Blu-ray real, Dolby Atmos, subtítulos y audio original en una sola interfaz limpia.">
+  <meta property="twitter:image" content="https://videm.tv/assets/images/hero-home-theater.jpeg">
+
+  <!-- Schema.org JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": "VIDEM USA Concierge",
+    "image": "https://videm.tv/assets/images/hero-home-theater.jpeg",
+    "description": "High-Definition Remote Concierge and 4K Remux Home Theater Calibration in the United States.",
+    "brand": {
+      "@type": "Brand",
+      "name": "VIDEM"
+    },
+    "offers": {
+      "@type": "AggregateOffer",
+      "priceCurrency": "USD",
+      "lowPrice": "14.99",
+      "highPrice": "119.99"
+    }
+  }
+  </script>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="64x64" href="assets/favicon-64.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="assets/favicon.png">
+  <link rel="shortcut icon" href="assets/favicon-64.png">
+  <link rel="apple-touch-icon" href="assets/favicon.png">
+  <meta name="theme-color" content="#06080D">
+
+  <!-- Google Fonts: Plus Jakarta Sans & Space Grotesk -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/tokens.css?v=20261106-5">
+  <link rel="stylesheet" href="css/style.css?v=20261120-levanna2">
+
+  <style>
+    /* Critical Mobile Menu & Theme Icon Fallback against stale cache */
+    .mobile-menu-toggle { display: none; background: var(--pill-bg); border: 1px solid var(--pill-border); color: var(--text-primary); width: 42px; height: 42px; border-radius: 12px; cursor: pointer; align-items: center; justify-content: center; padding: 0; flex-shrink: 0; }
+    .mobile-menu-toggle svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 2.2; fill: none; }
+    .mobile-menu-toggle .icon-close-menu { display: none; }
+    .mobile-menu-toggle[aria-expanded="true"] .icon-open-menu { display: none; }
+    .mobile-menu-toggle[aria-expanded="true"] .icon-close-menu { display: block; }
+    .brand-wrapper { display: flex; align-items: center; gap: 0.65rem; text-decoration: none; color: inherit; flex-shrink: 0; }
+    .brand-logo-img { width: 48px; height: 48px; object-fit: contain; flex-shrink: 0; filter: drop-shadow(0 0 14px rgba(0, 240, 255, 0.45)); }
+    .brand-text-wordmark { height: 15px; width: auto; object-fit: contain; flex-shrink: 0; filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.3)); }
+    .nav-controls-right { display: flex; align-items: center; gap: 0.6rem; }
+    .nav-menu-links { display: flex; align-items: center; gap: 0.45rem; }
+    .nav-text-link { font-size: 0.85rem; padding: 0.35rem 0.6rem; white-space: nowrap; }
+    .nav-app-link { padding: 0.38rem 0.8rem; font-size: 0.82rem; white-space: nowrap; }
+    .btn-nav-cta { padding: 0.45rem 0.95rem; font-size: 0.84rem; white-space: nowrap; }
+    @media (max-width: 768px) {
+      .nav-container { position: static; justify-content: space-between; }
+      .mobile-menu-toggle { display: inline-flex; }
+      .nav-menu-links { display: none; position: absolute; top: 68px; left: 0; right: 0; background: var(--bg-surface); border-bottom: 1px solid var(--nav-border); box-shadow: var(--shadow-lg); padding: 1.15rem 1.25rem 1.4rem; flex-direction: column; align-items: stretch; gap: 0.65rem; z-index: 250; }
+      .nav-menu-links.is-open { display: flex; }
+      .nav-menu-links .nav-text-link { padding: 0.8rem 1rem; border-radius: 10px; background: var(--pill-bg); border: 1px solid var(--pill-border); color: var(--text-primary); }
+      .nav-menu-links .nav-app-link { justify-content: center; padding: 0.85rem 1rem; border-radius: 10px; }
+      .nav-menu-links .btn-nav-cta { justify-content: center; padding: 0.9rem 1.2rem; background: var(--accent-gradient); color: #FFFFFF; border: none; }
+    }
+    /* Estilos específicos para la landing de España y tabla de tarifas */
+    .es-badge-flag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      background: rgba(229, 9, 20, 0.14);
+      border: 1px solid rgba(229, 9, 20, 0.35);
+      color: #ff4d5a;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    [data-theme="light"] .es-badge-flag {
+      background: rgba(229, 9, 20, 0.1);
+      border-color: rgba(229, 9, 20, 0.3);
+      color: #C81E1E;
+    }
+
+    .section-pricing {
+      padding: 70px 0;
+      background: rgba(6, 8, 13, 0.6);
+      border-top: 1px solid var(--nav-border);
+      border-bottom: 1px solid var(--nav-border);
+    }
+    [data-theme="light"] .section-pricing {
+      background: #F1F5F9;
+    }
+
+    .pricing-grid-es {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      margin-top: 36px;
+    }
+    .pricing-card-es {
+      background: var(--bg-card);
+      border: 1px solid var(--bg-card-border);
+      border-radius: 20px;
+      padding: 32px 24px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+      backdrop-filter: blur(16px);
+      box-shadow: var(--shadow-md);
+    }
+    .pricing-card-es:hover {
+      transform: translateY(-6px);
+      border-color: rgba(229, 9, 20, 0.5);
+      box-shadow: 0 20px 40px -15px rgba(229, 9, 20, 0.2);
+    }
+    .pricing-card-title {
+      font-size: 1.3rem;
+      font-weight: 800;
+      margin: 0;
+      color: var(--text-primary);
+    }
+    .pricing-card-featured {
+      border: 1.5px solid #E50914;
+      background: linear-gradient(180deg, rgba(229, 9, 20, 0.1) 0%, rgba(14, 18, 27, 0.88) 100%);
+      box-shadow: 0 12px 32px -10px rgba(229, 9, 20, 0.3);
+    }
+    [data-theme="light"] .pricing-card-featured {
+      border: 2px solid #E50914;
+      background: linear-gradient(180deg, rgba(229, 9, 20, 0.05) 0%, #FFFFFF 100%);
+      box-shadow: 0 16px 35px -10px rgba(229, 9, 20, 0.18);
+    }
+    .pricing-badge-popular {
+      position: absolute;
+      top: -12px;
+      right: 24px;
+      background: #E50914;
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 4px 12px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      box-shadow: 0 4px 12px rgba(229, 9, 20, 0.35);
+    }
+    .price-value-row {
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+      margin: 16px 0 8px;
+      color: var(--text-primary);
+    }
+    .price-currency {
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+    .price-amount {
+      font-size: 3rem;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      color: var(--text-primary);
+      font-family: 'Space Grotesk', sans-serif;
+    }
+    .price-cents {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+    .price-period {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-left: 4px;
+    }
+    .price-monthly-equiv {
+      font-size: 0.86rem;
+      color: #00E676;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+    [data-theme="light"] .price-monthly-equiv {
+      color: #059669;
+    }
+    .pricing-features-list {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      flex-grow: 1;
+    }
+    .pricing-features-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 0.92rem;
+      color: var(--text-secondary);
+      line-height: 1.45;
+    }
+    .pricing-features-list li svg {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      color: #00E676;
+      margin-top: 2px;
+    }
+    [data-theme="light"] .pricing-features-list li svg {
+      color: #059669;
+    }
+
+    /* Métodos de Pago en España */
+    .payment-methods-strip {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px 18px;
+      flex-wrap: wrap;
+      margin-top: 28px;
+      padding: 16px 22px;
+      background: var(--bg-card);
+      border-radius: 16px;
+      border: 1px solid var(--bg-card-border);
+      box-shadow: var(--shadow-sm);
+    }
+    .payment-methods-label {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      font-weight: 700;
+    }
+    .payment-method-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.86rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      background: var(--pill-bg);
+      border: 1px solid var(--pill-border);
+      padding: 6px 12px;
+      border-radius: 999px;
+    }
+
+    /* Tabla Comparativa (Modo Oscuro, Modo Claro y Vista Móvil Apilada) */
+    .comparison-table-wrap {
+      overflow-x: auto;
+      margin: 32px 0;
+      border-radius: 18px;
+      border: 1px solid var(--bg-card-border);
+      background: var(--bg-card);
+      box-shadow: var(--shadow-md);
+    }
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.94rem;
+    }
+    .comparison-table th, .comparison-table td {
+      padding: 16px 22px;
+      border-bottom: 1px solid var(--pill-border);
+      color: var(--text-secondary);
+    }
+    .comparison-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+    .comparison-table td:first-child {
+      color: var(--text-primary);
+      font-weight: 700;
+    }
+    .comparison-table th {
+      background: var(--pill-bg);
+      font-weight: 800;
+      color: var(--text-primary);
+      font-size: 0.92rem;
+    }
+    .comparison-table .highlight-col {
+      background: rgba(229, 9, 20, 0.1);
+      color: #FFFFFF;
+      font-weight: 700;
+    }
+    [data-theme="light"] .comparison-table .highlight-col {
+      background: rgba(229, 9, 20, 0.07);
+      color: #991B1B;
+    }
+    [data-theme="light"] .comparison-table th.highlight-col {
+      background: rgba(229, 9, 20, 0.12);
+      color: #B91C1C;
+    }
+
+    /* Vista Móvil: Convertir tabla comparativa en tarjetas apiladas 100% visibles */
+    @media (max-width: 768px) {
+      .comparison-table-wrap {
+        background: transparent;
+        border: none;
+        box-shadow: none;
+        overflow-x: visible;
+        margin: 20px 0;
+      }
+      .comparison-table,
+      .comparison-table tbody {
+        display: block;
+        width: 100%;
+      }
+      .comparison-table thead {
+        display: none;
+      }
+      .comparison-table tbody tr {
+        display: flex;
+        flex-direction: column;
+        background: var(--bg-card);
+        border: 1px solid var(--bg-card-border);
+        border-radius: 16px;
+        padding: 16px;
+        margin-bottom: 14px;
+        box-shadow: var(--shadow-sm);
+        gap: 10px;
+      }
+      .comparison-table tbody td {
+        display: block;
+        padding: 0;
+        border-bottom: none;
+      }
+      .comparison-table tbody td:first-child {
+        font-family: var(--font-mono);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--accent-primary);
+        border-bottom: 1px solid var(--pill-border);
+        padding-bottom: 8px;
+        margin-bottom: 2px;
+      }
+      .comparison-table tbody td:nth-child(2) {
+        font-size: 0.88rem;
+        color: var(--text-secondary);
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .comparison-table tbody td:nth-child(2)::before {
+        content: "❌ Plataformas Tradicionales:";
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--text-muted);
+      }
+      .comparison-table tbody td.highlight-col {
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: 1px solid rgba(229, 9, 20, 0.28);
+        font-size: 0.92rem;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .comparison-table tbody td.highlight-col::before {
+        content: "✦ VIDEM Cinema 4K:";
+        font-size: 0.75rem;
+        font-weight: 800;
+        color: #ff4d5a;
+        letter-spacing: 0.03em;
+      }
+      [data-theme="light"] .comparison-table tbody td.highlight-col::before {
+        color: #DC2626;
+      }
+      .payment-methods-strip {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+        padding: 16px;
+      }
+      .payment-method-item {
+        justify-content: center;
+      }
+    }
+  </style>
+
+  <script src="js/theme.js?v=20261105-2"></script>
+
+  <style id="levanna-theme-override">
+    .footer-header-row { display: flex; align-items: center; justify-content: center; gap: 32px; flex-wrap: wrap; margin-bottom: 2rem; }
+    .footer-header-row .footer-brand { margin-bottom: 0 !important; }
+    .footer-powered-by { display: inline-flex; align-items: center; justify-content: center; gap: 14px; margin: 0 !important; padding: 8px 22px; border-radius: 999px; }
+    .footer-powered-by img.levanna-logo-light { display: inline-block !important; height: 48px !important; width: auto !important; }
+    .footer-powered-by img.levanna-logo-dark { display: none !important; }
+    [data-theme="light"] .footer-powered-by img.levanna-logo-light { display: none !important; }
+    [data-theme="light"] .footer-powered-by img.levanna-logo-dark { display: inline-block !important; height: 48px !important; width: auto !important; }
+  </style>
+</head>
+<body>
+
+  <!-- Ambient Glow Background -->
+  <div class="ambient-glow" aria-hidden="true"></div>
+
+  <!-- HEADER -->
+  <header class="site-header" id="siteHeader">
+    <div class="container nav-container">
+      <a href="/us" class="brand-wrapper" id="brandHomeLink" aria-label="VIDEM USA">
+        <img src="assets/images/logo-videm.png" alt="Isotipo Videm" class="brand-logo-img" width="48" height="48">
+        <img src="assets/images/videm-wordmark-crystal.png?v=3" alt="VIDEM" class="brand-text-wordmark" width="82" height="15">
+      </a>
+
+      <!-- Center Status Badge / Interactive Popover Trigger -->
+      <div class="nav-status-wrapper">
+        <button 
+          type="button" 
+          class="nav-center-badge nav-status-trigger" 
+          id="cdnStatusTrigger" 
+          aria-expanded="false" 
+          aria-haspopup="true" 
+          aria-controls="cdnStatusPopover" 
+          title="Haz clic para ver el monitor de salud de la red europea"
+        >
+          <span class="status-dot"></span>
+          <span>Red CDN Europa: 100% Operacional</span>
+          <svg class="chevron-status" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
+
+        <!-- Popover Monitor de Salud de la Red CDN Europa con Termómetro -->
+        <div class="cdn-status-popover" id="cdnStatusPopover" aria-hidden="true">
+          <div class="popover-header">
+            <div class="popover-title-row">
+              <span class="status-pulse-dot"></span>
+              <span class="popover-title">Monitor CDN Europa (Madrid / París)</span>
+            </div>
+            <span class="popover-badge-live">EN VIVO</span>
+          </div>
+
+          <div class="thermometer-container">
+            <div class="thermometer-header">
+              <span class="thermometer-label">Termómetro de Red:</span>
+              <span class="thermometer-status-text">99.9% • ÓPTIMA</span>
+            </div>
+            <div class="thermometer-bar-track">
+              <div class="thermometer-step step-bad" title="Mala: Menor a 25 Mbps, alto buffering">
+                <span>Mala</span>
+              </div>
+              <div class="thermometer-step step-unstable" title="Inestable: 25 - 80 Mbps, caídas en hora punta">
+                <span>Inestable</span>
+              </div>
+              <div class="thermometer-step step-good" title="Buena: 80 - 150 Mbps, 1080p y 4K comprimido">
+                <span>Buena</span>
+              </div>
+              <div class="thermometer-step step-optimal is-current" title="Óptima: Fibra CDN > 150 Mbps, Remux 4K sin pérdidas">
+                <span>Óptima</span>
+                <span class="optimal-dot-beacon"></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="popover-metrics-grid">
+            <div class="pop-metric-item">
+              <span class="pop-metric-name">Ancho de Banda CDN</span>
+              <span class="pop-metric-val">&gt; 100 Gbps</span>
+            </div>
+            <div class="pop-metric-item">
+              <span class="pop-metric-name">Latencia USA</span>
+              <span class="pop-metric-val">&lt; 18 ms</span>
+            </div>
+            <div class="pop-metric-item">
+              <span class="pop-metric-name">Congestión Servidor</span>
+              <span class="pop-metric-val val-green">0% (Sin P2P)</span>
+            </div>
+            <div class="pop-metric-item">
+              <span class="pop-metric-name">Disponibilidad</span>
+              <span class="pop-metric-val val-green">99.9% Uptime</span>
+            </div>
+          </div>
+
+          <div class="popover-footer-note">
+            <span>🛡️ Enlace privado cifrado TLS 1.3 hacia servidores dedicados para que las películas 4K Remux nunca sufran bloqueos ni buffering en tu hogar en USA.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="nav-actions">
+        <nav class="nav-menu-links" id="navMenuLinks" aria-label="Navegación Principal">
+          <a href="#beneficios" class="nav-text-link">Beneficios</a>
+          <a href="#comparativa" class="nav-text-link">Comparativa</a>
+          <a href="#demos" class="nav-text-link">Demos 4K</a>
+          <a href="#tarifas" class="nav-text-link">Tarifas</a>
+          <a href="#requisitos" class="nav-text-link">Diagnóstico</a>
+          <a href="#faqs" class="nav-text-link">Preguntas</a>
+          <a href="/app?pais=us" class="nav-app-link" title="App VIP para Clientes">
+            <span>📲 App VIP</span>
+          </a>
+          <a href="https://wa.me/573015568904?text=Hola,%20estoy%20en%20Estados%20Unidos%20y%20quiero%20probar%20VIDEM%20en%20mi%20Smart%20TV" target="_blank" rel="noopener noreferrer" class="btn-nav-cta">
+            <span>Prueba Gratis (2h)</span>
+          </a>
+        </nav>
+
+        <div class="nav-controls-right">
+          <!-- Region / Country Selector -->
+          <div class="region-selector-wrapper">
+            <button type="button" class="region-selector-btn" id="regionBtn" aria-expanded="false" aria-label="Seleccionar región">
+              <span class="region-flag">🇺🇸</span>
+              <span class="region-code">USA</span>
+              <svg class="region-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+            <div class="region-dropdown-menu" id="regionMenu" aria-hidden="true">
+              <a href="/" class="region-item">
+                <span class="region-item-flag">🇨🇴</span>
+                <div class="region-item-info">
+                  <span class="region-item-name">Colombia & Latam</span>
+                  <span class="region-item-curr">COP ($)</span>
+                </div>
+              </a>
+              <a href="/es" class="region-item">
+                <span class="region-item-flag">🇪🇸</span>
+                <div class="region-item-info">
+                  <span class="region-item-name">España & Europa</span>
+                  <span class="region-item-curr">EUR (€)</span>
+                </div>
+              </a>
+              <a href="/us" class="region-item active">
+                <span class="region-item-flag">🇺🇸</span>
+                <div class="region-item-info">
+                  <span class="region-item-name">United States</span>
+                  <span class="region-item-curr">USD ($)</span>
+                </div>
+              </a>
+            </div>
+          </div>
+
+          <button type="button" class="theme-toggle-btn" id="themeToggleBtn" aria-label="Cambiar tema">
+            <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="4"></circle>
+              <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+            </svg>
+            <svg class="icon-moon" style="display:none;" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+              <path d="M19 3v4M17 5h4" fill="none" stroke="currentColor" stroke-width="2"></path>
+            </svg>
+          </button>
+
+          <button type="button" class="mobile-menu-toggle" id="mobileMenuToggle" aria-expanded="false" aria-controls="navMenuLinks" aria-label="Abrir menú de navegación">
+            <svg class="icon-open-menu" viewBox="0 0 24 24" aria-hidden="true">
+              <line x1="4" y1="7" x2="20" y2="7"></line>
+              <line x1="4" y1="12" x2="20" y2="12"></line>
+              <line x1="4" y1="17" x2="20" y2="17"></line>
+            </svg>
+            <svg class="icon-close-menu" viewBox="0 0 24 24" aria-hidden="true">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main>
+
+    <!-- HERO SECTION -->
+    <section class="hero-section" id="hero">
+      <div class="hero-background-wrapper" aria-hidden="true">
+        <img 
+          src="assets/images/hero-home-theater.jpeg" 
+          alt="Cine en casa de alta gama Videm" 
+          class="hero-bg-img"
+          loading="eager"
+        >
+        <div class="hero-backdrop-overlay"></div>
+      </div>
+
+      <div class="container hero-content">
+        <div class="es-badge-flag">
+          <span>🇺🇸 Edición United States & North America</span>
+        </div>
+
+        <h1 class="hero-title">
+          <span class="sr-only">VIDEM USA: The Ultimate 4K Home Theater Experience.</span>
+          <span class="hero-title-prefix">
+            <img src="assets/images/videm-wordmark-crystal.png?v=3" alt="VIDEM" class="hero-wordmark-inline" width="280" height="59">
+          </span>
+          <span class="hero-title-main">
+            El <span class="text-gradient">estándar definitivo</span> del cine en tu hogar.
+          </span>
+        </h1>
+
+        <p class="hero-subtitle">
+          Todas las plataformas centralizadas en tu Apple TV, Fire TV o Smart TV. Películas y series en <strong>4K Remux real sin compresión</strong>, con audio en <strong>Español Latino</strong>, <strong>Castellano</strong> y <strong>Original en Inglés (VOSE)</strong>. Servidores ultrarrápidos dedicados. Cero buffering, cero cuotas sorpresa.
+        </p>
+
+        <div class="cta-group">
+          <a 
+            href="https://wa.me/573015568904?text=Hola,%20estoy%20en%20Estados%20Unidos%20y%20quiero%20probar%20VIDEM%20en%20mi%20Smart%20TV" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            class="btn-primary-wa" 
+            id="heroCtaBtn"
+          >
+            <svg class="wa-icon-svg" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.05 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+            </svg>
+            <span>Pedir Prueba Gratuita (2 Horas) por WhatsApp</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: BENEFICIOS PREMIUM EN USA -->
+    <section class="section-premium" id="beneficios">
+      <div class="container">
+        
+        <!-- Header -->
+        <div class="section-header">
+          <span class="section-tag">Infraestructura Europea de Vanguardia</span>
+          <h2 class="section-title">Adiós a la piratería inestable.<br>Hola al cine sin concesiones en tu salón.</h2>
+          <p class="section-desc">
+            Diseñado para quienes valoran su tiempo y su Smart TV. Servidores privados dedicados en Europa, fibra óptica sin bloqueos de operadoras y la máxima fidelidad técnica.
+          </p>
+        </div>
+
+        <!-- 3 Minimalist Columns -->
+        <div class="benefits-grid">
+
+          <!-- Columna 1: CDN Europea de Fibra Óptica -->
+          <article class="benefit-card">
+            <div class="card-icon-container" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8Z"/>
+                <path d="M12 6a1 1 0 0 1 1 1v4.27l2.87 1.66a1 1 0 0 1-1 1.74l-3.37-1.95A1 1 0 0 1 11 11.85V7a1 1 0 0 1 1-1Z"/>
+                <circle cx="12" cy="12" r="2"/>
+                <path d="m14 10 4-4"/>
+              </svg>
+            </div>
+            <h3 class="card-title">Fibra Óptica Dedicada</h3>
+            <p class="card-text">
+              Cero redes P2P torrents que se congelan sin semillas o son vigiladas por operadoras. Tu televisor se conecta por HTTPS cifrado a servidores CDN privados con descargas a más de 80 Mbps continuos.
+            </p>
+            <div class="card-pill-tag">Red CDN Europa • 100% Sin P2P</div>
+          </article>
+
+          <!-- Columna 2: Castellano Oficial & VOSE Sincronizada -->
+          <article class="benefit-card">
+            <div class="card-icon-container" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path d="M2 12h2"/>
+                <path d="M6 8v8"/>
+                <path d="M10 4v16"/>
+                <path d="M14 6v12"/>
+                <path d="M18 9v6"/>
+                <path d="M22 12h-2"/>
+              </svg>
+            </div>
+            <h3 class="card-title">Español Latino, Castellano & VOSE</h3>
+            <p class="card-text">
+              Curaduría profesional: pistas en Español Latino, Castellano y Versión Original en inglés con subtítulos sincronizados al milisegundo. Calidad de imagen 4K HDR, Dolby Vision y sonido envolvente Dolby Atmos.
+            </p>
+            <div class="card-pill-tag">Remux Puro • Dolby Vision & Atmos</div>
+          </article>
+
+          <!-- Columna 3: Experiencia Llave en Mano -->
+          <article class="benefit-card">
+            <div class="card-icon-container" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <circle cx="7.5" cy="15.5" r="5.5"/>
+                <path d="m21 2-9.6 9.6"/>
+                <path d="m15.5 7.5 3 3L22 7l-2-2"/>
+              </svg>
+            </div>
+            <h3 class="card-title">Conserjería Digital</h3>
+            <p class="card-text">
+              Sin claves complejas ni configuraciones técnicas. Te entregamos tu enlace de televisor listo para disfrutar en 2 minutos. Solo te sientas en el sofá y le das a reproducir.
+            </p>
+            <div class="card-pill-tag">Activación en 2 Minutos</div>
+          </article>
+
+        </div>
+
+        <!-- Comparative Quality Banner -->
+        <div class="comparison-banner">
+          <div class="comp-col bad">
+            <h4>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
+              </svg>
+              Listas IPTV & Addons Gratuitos
+            </h4>
+            <p>
+              Compresión agresiva (1080p a 2 Mbps), desfase de audio en inglés, parones por falta de fuentes en torrents y riesgo de avisos de tu proveedor de internet (ISP warnings en USA).
+            </p>
+          </div>
+
+          <div class="comp-col good">
+            <h4>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+              </svg>
+              Estándar <img src="/assets/images/videm-wordmark-crystal.png?v=3" alt="Videm" class="inline-wordmark" width="90" height="19"> Privado USA
+            </h4>
+            <p>
+              Archivos 4K Remux íntegros (hasta 80 Mbps), metadatos en tu idioma, Dolby Atmos sin compresión y tráfico HTTPS TLS 1.3 directo sin pasar por redes torrent (100% blindado ante tu ISP).
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION COMPARATIVA VS PLATAFORMAS EN ESPAÑA -->
+    <section class="section-features" id="comparativa" style="padding: 60px 0;">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">La Realidad del Streaming</span>
+          <h2 class="section-title">¿Por qué pagar 5 suscripciones fragmentadas?</h2>
+          <p class="section-desc">
+            En España, mantener las plataformas tradicionales te cuesta más de 600 € al año para recibir video comprimido. Compara tú mismo:
+          </p>
+        </div>
+
+        <div class="comparison-table-wrap">
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>Característica</th>
+                <th>Plataformas Tradicionales Combinadas</th>
+                <th class="highlight-col">✦ VIDEM Cinema 4K</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Coste Mensual</strong></td>
+                <td>Entre 50 € y 75 € / mes</td>
+                <td class="highlight-col"><strong>Desde 7,50 € / mes</strong></td>
+              </tr>
+              <tr>
+                <td><strong>Calidad de Imagen</strong></td>
+                <td>Comprimida a 12 - 16 Mbps (pérdida de detalle en negros)</td>
+                <td class="highlight-col"><strong>4K Remux Blu-ray puro (hasta 80 Mbps)</strong></td>
+              </tr>
+              <tr>
+                <td><strong>Sonido</strong></td>
+                <td>Dolby Digital Plus comprimido</td>
+                <td class="highlight-col"><strong>Dolby Atmos / TrueHD sin pérdidas</strong></td>
+              </tr>
+              <tr>
+                <td><strong>Catálogo</strong></td>
+                <td>Fragmentado (tienes que saltar de app en app)</td>
+                <td class="highlight-col"><strong>Todo en una sola interfaz limpia</strong></td>
+              </tr>
+              <tr>
+                <td><strong>Permanencia</strong></td>
+                <td>Cobros automáticos recurrentes</td>
+                <td class="highlight-col"><strong>Cero permanencia: renuevas solo cuando quieras</strong></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    
+    <!-- SECTION DEMOS AUDIOVISUALES (YOUTUBE TEST DRIVE) -->
+    <section class="section-demos" id="demos" style="padding: 70px 0; background: radial-gradient(ellipse at center, rgba(0, 240, 255, 0.04) 0%, transparent 70%);">
+      <div class="container">
+        <div class="section-header" style="text-align: center; margin-bottom: 45px;">
+          <span class="section-tag" style="background: rgba(0, 240, 255, 0.1); color: var(--color-brand-cyan); border: 1px solid rgba(0, 240, 255, 0.25); padding: 6px 14px; border-radius: 999px; font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; display: inline-flex; align-items: center; gap: 6px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+            Test Drive Audiovisual en Vivo
+          </span>
+          <h2 class="section-title" style="margin-top: 14px; font-size: clamp(1.8rem, 3.5vw, 2.5rem); font-weight: 800;">
+            No nos creas a nosotros. <span class="text-gradient">Míralo y escúchalo tú mismo.</span>
+          </h2>
+          <p class="section-desc" style="max-width: 720px; margin: 12px auto 0; color: var(--text-muted); font-size: 1.02rem; line-height: 1.6;">
+            Compara la diferencia real entre el streaming comercial fuertemente comprimido y la experiencia física sin pérdidas de <strong>VIDEM</strong> en 4K Remux y Dolby Atmos.
+          </p>
+        </div>
+
+        <div class="demos-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 28px; max-width: 1100px; margin: 0 auto;">
+          
+          <!-- Card 1: Comparativa de Sonido -->
+          <div class="demo-card" style="background: var(--card-bg, rgba(16, 20, 31, 0.7)); border: 1px solid var(--card-border, rgba(255, 255, 255, 0.08)); border-radius: 18px; overflow: hidden; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35); backdrop-filter: blur(12px); display: flex; flex-direction: column; transition: transform 0.3s ease, border-color 0.3s ease;">
+            <div class="demo-video-wrapper" style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; background: #000;">
+              <iframe 
+                src="https://www.youtube-nocookie.com/embed/QhJAcXvu83Y?start=27" 
+                title="VIDEM - Demostración de Sonido Dolby Atmos" 
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                allowfullscreen 
+                loading="lazy">
+              </iframe>
+            </div>
+            <div class="demo-card-body" style="padding: 24px 22px; display: flex; flex-direction: column; flex-grow: 1;">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: #10B981; background: rgba(16, 185, 129, 0.12); padding: 4px 10px; border-radius: 6px; display: inline-flex; align-items: center; gap: 5px;">
+                  🔊 Prueba Acústica
+                </span>
+                <span style="font-size: 0.8rem; color: var(--text-muted);">Dolby Atmos</span>
+              </div>
+              <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 8px; color: var(--text-primary);">
+                Fidelidad y Rango Dinámico de Audio
+              </h3>
+              <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.55; margin-bottom: 18px; flex-grow: 1;">
+                Comprueba la profundidad de graves, nitidez de diálogos y la espacialidad real frente al audio comprimido a 192 kbps de las apps convencionales.
+              </p>
+              <div style="display: flex; align-items: center; justify-content: space-between; padding-top: 14px; border-top: 1px solid rgba(255, 255, 255, 0.08);">
+                <span style="font-size: 0.78rem; color: var(--text-muted); display: inline-flex; align-items: center; gap: 6px;">
+                  🎧 <em>Recomendado: Usa auriculares o teatro en casa</em>
+                </span>
+                <a href="https://www.youtube.com/watch?v=QhJAcXvu83Y&t=27s" target="_blank" rel="noopener noreferrer" style="font-size: 0.82rem; font-weight: 700; color: var(--color-brand-cyan); text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
+                  Ver en YouTube ↗
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2: Comparativa de Imagen -->
+          <div class="demo-card" style="background: var(--card-bg, rgba(16, 20, 31, 0.7)); border: 1px solid var(--card-border, rgba(255, 255, 255, 0.08)); border-radius: 18px; overflow: hidden; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35); backdrop-filter: blur(12px); display: flex; flex-direction: column; transition: transform 0.3s ease, border-color 0.3s ease;">
+            <div class="demo-video-wrapper" style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; background: #000;">
+              <iframe 
+                src="https://www.youtube-nocookie.com/embed/W0V2G57yNAM" 
+                title="VIDEM - Demostración de Imagen 4K Remux" 
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                allowfullscreen 
+                loading="lazy">
+              </iframe>
+            </div>
+            <div class="demo-card-body" style="padding: 24px 22px; display: flex; flex-direction: column; flex-grow: 1;">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--color-brand-cyan); background: rgba(0, 240, 255, 0.12); padding: 4px 10px; border-radius: 6px; display: inline-flex; align-items: center; gap: 5px;">
+                  💎 Prueba Visual 4K
+                </span>
+                <span style="font-size: 0.8rem; color: var(--text-muted);">80 Mbps Nativos</span>
+              </div>
+              <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 8px; color: var(--text-primary);">
+                Nitidez, Textura y Cero Compresión
+              </h3>
+              <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.55; margin-bottom: 18px; flex-grow: 1;">
+                Mira cómo se revelan los detalles en escenas oscuras sin macrobloques, degradados banding ni pixelado en pantallas de 55" a 85".
+              </p>
+              <div style="display: flex; align-items: center; justify-content: space-between; padding-top: 14px; border-top: 1px solid rgba(255, 255, 255, 0.08);">
+                <span style="font-size: 0.78rem; color: var(--text-muted); display: inline-flex; align-items: center; gap: 6px;">
+                  📺 <em>Pantalla completa a máxima resolución</em>
+                </span>
+                <a href="https://www.youtube.com/watch?v=W0V2G57yNAM" target="_blank" rel="noopener noreferrer" style="font-size: 0.82rem; font-weight: 700; color: var(--color-brand-cyan); text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
+                  Ver en YouTube ↗
+                </a>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION TARIFAS Y PASES VIP EN ESPAÑA -->
+    <section class="section-pricing" id="tarifas">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Transparencia Total</span>
+          <h2 class="section-title">Pases y Membresías VIP para Estados Unidos</h2>
+          <p class="section-desc">
+            Sin contratos de permanencia ni tarifas ocultas. Eliges tu pase en USD, lo disfrutas en tu Smart TV o dispositivo de streaming, y renuevas cuando quieras.
+          </p>
+        </div>
+
+        <div class="pricing-grid-es">
+          
+          <!-- Plan 1 Mes -->
+          <div class="pricing-card-es">
+            <h3 class="pricing-card-title">Pase 1 Mes Flex</h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin: 4px 0 16px;">Ideal para probar en tu sala sin compromiso.</p>
+            
+            <div class="price-value-row">
+              <span class="price-currency">$</span>
+              <span class="price-amount">14</span><span class="price-cents">.99</span>
+              <span class="price-period">/ mes</span>
+            </div>
+            <div class="price-monthly-equiv">Sin permanencia • Pago único en USD</div>
+
+            <ul class="pricing-features-list">
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Acceso completo a estrenos de cine y series</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Calidad 4K Remux, Dolby Vision y Dolby Atmos</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Audio en Español Latino, Castellano y VOSE oficial</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Compatible con Apple TV, Fire TV, Shield y Smart TV</span>
+              </li>
+            </ul>
+
+            <!-- Botones de Acción Pago Tarjeta/PayPal + WhatsApp Concierge -->
+            <a href="https://wa.me/573015568904?text=Hola,%20quiero%20activar%20el%20Pase%201%20Mes%20Flex%20($14.99%20USD)%20para%20USA" target="_blank" rel="noopener noreferrer" class="btn-paypal-checkout" style="display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 14px 20px; background: linear-gradient(135deg, #0070BA 0%, #1546A0 100%); color: #FFF; font-weight: 700; border-radius: 10px; text-decoration: none; box-shadow: 0 4px 15px rgba(0,112,186,0.3); transition: transform 0.2s, box-shadow 0.2s; margin-bottom: 8px;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+              <span>Activar Pase 1 Mes ($14.99 USD)</span>
+            </a>
+            <a href="https://wa.me/573015568904?text=Hola,%20tengo%20dudas%20sobre%20VIDEM%20en%20Estados%20Unidos" target="_blank" rel="noopener noreferrer" style="display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; padding: 8px; color: var(--text-muted); font-size: 0.8rem; text-decoration: none; transition: color 0.2s;">
+              <span>💬 Consultar soporte por WhatsApp</span>
+            </a>
+          </div>
+
+          <!-- Plan 6 Meses -->
+          <div class="pricing-card-es">
+            <h3 class="pricing-card-title">Pase 6 Meses VIP</h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin: 4px 0 16px;">El equilibrio perfecto para la temporada de estrenos.</p>
+            
+            <div class="price-value-row">
+              <span class="price-currency">$</span>
+              <span class="price-amount">69</span><span class="price-cents">.99</span>
+              <span class="price-period">/ 6 meses</span>
+            </div>
+            <div class="price-monthly-equiv">Te sale a sólo ~$11.66 USD / mes</div>
+
+            <ul class="pricing-features-list">
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Todo lo del Pase Flex incluido</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Ancho de banda CDN prioritario (sin buffering)</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Uso simultáneo en todos los televisores de tu hogar</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Soporte técnico directo vía WhatsApp</span>
+              </li>
+            </ul>
+
+            <!-- Botones de Acción Pago Tarjeta/PayPal + WhatsApp Concierge -->
+            <a href="https://wa.me/573015568904?text=Hola,%20quiero%20activar%20el%20Pase%20Semestral%20VIP%20($69.99%20USD)%20para%20USA" target="_blank" rel="noopener noreferrer" class="btn-paypal-checkout" style="display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 14px 20px; background: linear-gradient(135deg, #0070BA 0%, #1546A0 100%); color: #FFF; font-weight: 700; border-radius: 10px; text-decoration: none; box-shadow: 0 4px 15px rgba(0,112,186,0.3); transition: transform 0.2s, box-shadow 0.2s; margin-bottom: 8px;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+              <span>Activar Pase 6 Meses ($69.99 USD)</span>
+            </a>
+            <a href="https://wa.me/573015568904?text=Hola,%20quiero%20más%20info%20del%20Pase%20Semestral%20para%20USA" target="_blank" rel="noopener noreferrer" style="display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; padding: 8px; color: var(--text-muted); font-size: 0.8rem; text-decoration: none; transition: color 0.2s;">
+              <span>💬 O consultar por WhatsApp</span>
+            </a>
+          </div>
+
+          <!-- Plan 12 Meses (EL MÁS ELEGIDO) -->
+          <div class="pricing-card-es pricing-card-featured">
+            <span class="pricing-badge-popular">Best Value</span>
+
+            <h3 class="pricing-card-title">Pase Anual VIP (12 Meses)</h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin: 4px 0 16px;">Máximo ahorro. Cine ilimitado durante todo el año.</p>
+            
+            <div class="price-value-row">
+              <span class="price-currency">$</span>
+              <span class="price-amount">119</span><span class="price-cents">.99</span>
+              <span class="price-period">/ año</span>
+            </div>
+            <div class="price-monthly-equiv">🔥 Sólo ~$9.99 USD / mes (Ahorras más de $1,400 USD vs streaming)</div>
+
+            <ul class="pricing-features-list">
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Acceso VIP anual ininterrumpido sin cortes</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Máxima velocidad CDN garantizada (80+ Mbps)</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Calibración remota asistida para tu Smart TV / Apple TV</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Válido para sala, recámaras y móviles del hogar</span>
+              </li>
+            </ul>
+
+            <!-- Botones de Acción Pago Tarjeta/PayPal + WhatsApp Concierge -->
+            <a href="https://wa.me/573015568904?text=Hola,%20quiero%20activar%20el%20Pase%20Anual%20VIP%20($119.99%20USD)%20para%20USA" target="_blank" rel="noopener noreferrer" class="btn-paypal-checkout" style="display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 15px 20px; background: linear-gradient(135deg, #E50914 0%, #B20710 100%); color: #FFF; font-weight: 800; border-radius: 10px; text-decoration: none; box-shadow: 0 4px 20px rgba(229,9,20,0.4); transition: transform 0.2s, box-shadow 0.2s; margin-bottom: 8px;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+              <span>Activar Pase Anual Best Value ($119.99 USD)</span>
+            </a>
+            <a href="https://wa.me/573015568904?text=Hola,%20quiero%20activar%20el%20Pase%20Anual%20para%20USA" target="_blank" rel="noopener noreferrer" style="display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; padding: 8px; color: var(--text-muted); font-size: 0.8rem; text-decoration: none; transition: color 0.2s;">
+              <span>💬 O consultar por WhatsApp</span>
+            </a>
+          </div>
+
+        </div>
+
+        <!-- MÉTODOS DE PAGO EN USA -->
+        <div class="payment-methods-strip">
+          <span class="payment-methods-label">Métodos de pago aceptados en Estados Unidos:</span>
+          <div class="payment-method-item">
+            <span>📱 <strong>Apple Pay / Google Pay</strong></span>
+          </div>
+          <div class="payment-method-item">
+            <span>💳 <strong>Tarjetas (Visa / Mastercard / AMEX / Discover)</strong></span>
+          </div>
+          <div class="payment-method-item">
+            <span>🏦 <strong>ACH Direct Deposit (Citibank N.A. New York)</strong></span>
+          </div>
+          <div class="payment-method-item">
+            <span>🛡️ <strong>PayPal Checkout Seguro (USD)</strong></span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+      </div>
+    </section>
+
+    <!-- SECTION REQUISITOS Y DIAGNÓSTICO DE COMPATIBILIDAD EN ESPAÑA -->
+    <section class="section-filter" id="requisitos">
+      <div class="container">
+        
+        <div class="filter-card-container">
+          
+          <div class="filter-header text-center">
+            <span class="filter-badge-pill">Filtro de Calidad</span>
+            <h2 class="filter-title">Diagnóstico de Compatibilidad</h2>
+            <p class="filter-intro">
+              Comprueba en 10 segundos si tu televisor y la fibra óptica de tu hogar en España están listos para <img src="assets/images/videm-wordmark-crystal.png?v=3" alt="Videm" class="inline-wordmark" width="82" height="17"> en 4K Remux:
+            </p>
+          </div>
+
+          <!-- Requirements Dual Cards -->
+          <div class="requirements-duo">
+            
+            <!-- Requisito 1 -->
+            <div class="req-box">
+              <div class="req-number">1</div>
+              <div class="req-content">
+                <h4>Smart TV, Fire TV Stick o TV Box</h4>
+                <p>Compatible de forma nativa con los principales televisores del salón y dispositivos de reproducción.</p>
+                <div class="tech-badges-row">
+                  <span class="os-pill">Samsung Tizen</span>
+                  <span class="os-pill">LG WebOS</span>
+                  <span class="os-pill">Fire TV Stick 4K</span>
+                  <span class="os-pill">Google TV / Android TV</span>
+                  <span class="os-pill">Sony / Philips / TCL</span>
+                  <span class="os-pill">Xiaomi TV Box</span>
+                  <span class="os-pill">Apple TV 4K</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Requisito 2 -->
+            <div class="req-box">
+              <div class="req-number">2</div>
+              <div class="req-content">
+                <h4>Fibra óptica en España (&gt; 100 Mbps)</h4>
+                <p>Compatible con cualquier operador (Movistar, Digi, Orange, Vodafone, MásMóvil, Yoigo, O2) mediante enlace CDN cifrado sin P2P.</p>
+                <div class="tech-badges-row">
+                  <span class="os-pill">Fibra Simétrica</span>
+                  <span class="os-pill">&gt; 100 Mbps</span>
+                  <span class="os-pill">Cero Bloqueos P2P</span>
+                  <span class="os-pill">1 Hogar / 1 IP</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Interactive Pre-qualifier Simulator -->
+          <div class="interactive-validator">
+            <div class="val-header">
+              <span class="val-title">Diagnóstico Inmediato de Compatibilidad</span>
+              <span class="val-status-tag" style="font-size:0.75rem; color:var(--text-muted); font-family:var(--font-mono);">
+                Paso 1 de 2
+              </span>
+            </div>
+
+            <div class="val-inputs">
+              <div class="val-group">
+                <label for="qualifierTvSelect">Marca o Dispositivo de tu Salón:</label>
+                <select id="qualifierTvSelect" class="val-select">
+                  <option value="lg" selected>LG Smart TV (WebOS)</option>
+                  <option value="samsung">Samsung Smart TV (Tizen)</option>
+                  <option value="firetv">Amazon Fire TV Stick 4K / Max</option>
+                  <option value="googletv">Google TV / Android TV (Sony, TCL, Philips)</option>
+                  <option value="xiaomi">Xiaomi TV Box S / Mi Stick 4K</option>
+                  <option value="appletv">Apple TV 4K</option>
+                  <option value="shield">Nvidia Shield TV Pro</option>
+                  <option value="other">Otro televisor / Dispositivo</option>
+                </select>
+              </div>
+
+              <div class="val-group">
+                <div class="val-label-row">
+                  <label for="qualifierSpeedSelect">Fibra Óptica Contratada en Casa:</label>
+                  <button type="button" class="btn-speedtest-inline" id="openSpeedtestModalBtn" title="Medir velocidad real">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+                    </svg>
+                    <span>¿No sabes tus Mbps? Medir en Speedtest</span>
+                  </button>
+                </div>
+                <select id="qualifierSpeedSelect" class="val-select">
+                  <option value="300" selected>Fibra 300 Mbps a 600 Mbps (Ideal 4K Remux)</option>
+                  <option value="500">Fibra 600 Mbps a 1 Gbps / 10 Gbps (Máxima Fidelidad)</option>
+                  <option value="150">Fibra 100 - 250 Mbps (Óptimo 4K HDR)</option>
+                  <option value="low">Menos de 100 Mbps (Requiere Evaluación)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Quick Speed Entry from Speedtest -->
+            <div class="speedtest-quick-entry">
+              <span class="quick-entry-label">⚡ O ingresa el resultado de tu prueba en Speedtest:</span>
+              <div class="quick-entry-input-group">
+                <input type="number" id="manualSpeedInput" class="manual-speed-input" placeholder="Ej: 300" min="5" max="10000">
+                <span class="manual-speed-unit">Mbps</span>
+                <button type="button" id="applyManualSpeedBtn" class="btn-apply-speed">Calcular</button>
+              </div>
+            </div>
+
+            <!-- Dynamic Result Notification -->
+            <div class="val-result-box" id="qualifierResultBox">
+              <!-- Dynamically populated by app.js -->
+            </div>
+          </div>
+
+          <!-- Secondary CTA Button -->
+          <div class="filter-action-wrapper">
+            <a 
+              href="https://wa.me/573015568904?text=Hola,%20estoy%20en%20Estados%20Unidos%20y%20quiero%20probar%20VIDEM%20en%20mi%20Smart%20TV" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              class="btn-secondary-wa" 
+              id="secondaryCtaBtn"
+            >
+              <svg class="wa-icon-svg" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.05 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+              </svg>
+              <span>Cumplo los requisitos. Pedir Prueba Gratis (2h)</span>
+            </a>
+            <p class="guarantee-note">
+              Atención directa en España por WhatsApp (+34 746 05 77 76). Sin tarjeta ni permanencia.
+            </p>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION: FICHA TÉCNICA APP VIP MÓVIL (ESPAÑA) -->
+    <section class="section-premium" id="app-clientes" style="padding: 70px 0;">
+      <div class="container">
+        
+        <!-- Header institucional -->
+        <div class="section-header">
+          <span class="section-tag">Ecosistema Móvil VIP</span>
+          <h2 class="section-title">Tu Sala 4K en tus Manos.<br>Ficha Técnica de la App Móvil.</h2>
+          <p class="section-desc">
+            Diseñada como una Progressive Web App (PWA) de nivel cineasta instalable en 1 segundo en tu iPhone o Android. Cero almacenamiento ocupado, cero tiendas de aplicaciones y control total de tu sala.
+          </p>
+        </div>
+
+        <!-- 3 Columnas Ficha Técnica -->
+        <div class="benefits-grid">
+
+          <!-- Ficha 1: Enlace Smart TV -->
+          <article class="benefit-card">
+            <div class="card-icon-container" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect>
+                <polyline points="17 2 12 7 7 2"></polyline>
+              </svg>
+            </div>
+            <h3 class="card-title">Enlace de TV en 1 Toque</h3>
+            <p class="card-text">
+              Introduce el código de 4 o 6 caracteres que muestra tu televisor y sincroniza tu sala 4K al instante sin escribir correos ni contraseñas con el mando a distancia.
+            </p>
+            <div class="card-pill-tag">Pairing Zero-Config</div>
+          </article>
+
+          <!-- Ficha 2: Bóveda Concierge -->
+          <article class="benefit-card">
+            <div class="card-icon-container" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
+                <line x1="7" y1="2" x2="7" y2="22"></line>
+                <line x1="17" y1="2" x2="17" y2="22"></line>
+                <line x1="2" y1="12" x2="22" y2="12"></line>
+              </svg>
+            </div>
+            <h3 class="card-title">Bóveda a la Carta ("Pide tu Título")</h3>
+            <p class="card-text">
+              ¿No encuentras una película clásica o serie especial? Pídela desde el catálogo de la app y el sistema la inyecta automáticamente en 4K Remux a tu sala.
+            </p>
+            <div class="card-pill-tag">Caché Dedicado 10 Gbps</div>
+          </article>
+
+          <!-- Ficha 3: PIN Privado y Membresía -->
+          <article class="benefit-card">
+            <div class="card-icon-container" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+            </div>
+            <h3 class="card-title">PIN Ágil de 4 Dígitos</h3>
+            <p class="card-text">
+              Accede en 1 segundo con tu móvil y tu PIN personal. Consulta tu tiempo restante de membresía, estado CDN en vivo y enlace directo a soporte VIP en España por WhatsApp (+34).
+            </p>
+            <div class="card-pill-tag">Acceso Ultrarrápido</div>
+          </article>
+
+        </div>
+
+        <!-- Ficha de Instalación y Descarga Directa -->
+        <div class="filter-card-container" style="margin-top: 36px; padding: 28px 32px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px;">
+          <div>
+            <div style="font-size: 0.76rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent-primary); margin-bottom: 4px;">Instalación Inmediata PWA</div>
+            <h4 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary); margin-bottom: 6px;">Lleva tu cine privado en el bolsillo</h4>
+            <p style="font-size: 0.88rem; color: var(--text-secondary); max-width: 580px; margin: 0;">
+              Compatible con iPhone (Safari: Compartir &gt; Añadir a pantalla de inicio), Android (Chrome: Instalar app) y Smart TVs.
+            </p>
+          </div>
+          <div>
+            <a href="/app?pais=es" class="btn-app-download" style="padding: 0.95rem 1.8rem; font-size: 0.98rem;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <rect x="5" y="2" width="14" height="20" rx="3" ry="3"></rect>
+                <line x1="12" y1="18" x2="12.01" y2="18"></line>
+              </svg>
+              <span>Abrir App para Clientes</span>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- FAQS ESPECÍFICAS DE ESPAÑA -->
+    <section class="section-faqs" id="faqs" style="padding: 70px 0;">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Dudas Resueltas</span>
+          <h2 class="section-title">Preguntas Frecuentes en España</h2>
+          <p class="section-desc">
+            Claridad absoluta para que disfrutes de tu Smart TV con total tranquilidad.
+          </p>
+        </div>
+
+        <div class="faqs-accordion" id="faqsAccordion">
+          
+          <div class="faq-item">
+            <button type="button" class="faq-question" aria-expanded="false">
+              <span class="faq-q-text">¿Qué diferencia tiene VIDEM frente a soluciones o addons gratuitos de Stremio?</span>
+              <span class="faq-icon-arrow" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </span>
+            </button>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">
+                Stremio es solo un reproductor vacío (como un televisor sin señal). Los addons gratuitos y comunitarios dependen de redes torrent (P2P), que se quedan sin semillas, sufren parones constantes y en España están monitorizadas por las operadoras de internet. <strong>VIDEM te conecta a servidores privados de fibra óptica (CDN) sin torrents</strong>, con más de 80 Mbps continuos, con curaduría de audio en <strong>Castellano oficial y VOSE perfecta</strong>, y entrega lista para usar en 30 segundos sin configurar llaves técnicas.
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button type="button" class="faq-question" aria-expanded="false">
+              <span class="faq-q-text">¿Qué televisores o dispositivos son compatibles?</span>
+              <span class="faq-icon-arrow" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </span>
+            </button>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">
+                Es compatible con prácticamente cualquier televisor del mercado: Smart TVs <strong>Samsung</strong> (Tizen), <strong>LG</strong> (webOS), <strong>Sony, Philips, Xiaomi o TCL</strong> (Android TV / Google TV), <strong>Amazon Fire TV Stick 4K</strong>, Chromecast y Apple TV.
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button type="button" class="faq-question" aria-expanded="false">
+              <span class="faq-q-text">¿Puedo usarlo en varios televisores de mi casa?</span>
+              <span class="faq-icon-arrow" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </span>
+            </button>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">
+                Sí. Puedes configurar VIDEM en todos los televisores y dispositivos de tu hogar (salón, dormitorios, tablet o portátil). Dentro de tu misma red WiFi doméstica podéis ver películas de forma simultánea sin ningún problema.
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button type="button" class="faq-question" aria-expanded="false">
+              <span class="faq-q-text">¿Cómo funciona la prueba gratuita de 2 horas?</span>
+              <span class="faq-icon-arrow" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </span>
+            </button>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">
+                Sin tarjeta de crédito ni datos bancarios. Nos escribes a WhatsApp, instalas la app Stremio en tu Smart TV o Fire Stick, nos pasas el código digital de 4 letras que te aparece en pantalla y te activamos el acceso en 30 segundos para que veas una película entera y compruebes la calidad de imagen antes de decidirte.
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer" id="contacto">
+    <div class="container footer-content">
+      <div class="footer-header-row">
+        <!-- Logo de Videm -->
+        <div class="footer-brand">
+          <div class="footer-logo-row">
+            <img src="assets/images/logo-videm.png" alt="Isotipo Videm" class="footer-logo-img" width="44" height="44">
+            <img src="assets/images/videm-wordmark-crystal.png?v=3" alt="VIDEM" class="footer-wordmark-img" width="155" height="32">
+          </div>
+        </div>
+
+        <!-- Badge de Respaldo Corporativo: Powered by Levanna -->
+        <div class="footer-powered-by">
+          <span class="powered-text">Desarrollado y Respaldado por</span>
+          <div class="powered-logo-wrap">
+            <img src="assets/images/logo-levanna-light.png" alt="LEVANNA" class="levanna-logo-light" style="height: 48px; width: auto; object-fit: contain;">
+            <img src="assets/images/logo-levanna-dark.png" alt="LEVANNA" class="levanna-logo-dark" style="height: 48px; width: auto; object-fit: contain; display: none;">
+          </div>
+        </div>
+      </div>
+
+      
+      <p class="legal-disclaimer">
+        <strong>Aviso Legal y Operativo:</strong> VIDEM es una marca comercial y unidad de negocio operada internacionalmente por Levanna S.A.S., sociedad legalmente constituida dedicada a la prestación de servicios de consultoría técnica, asistencia en configuración telemática y optimización de dispositivos multimedia de reproducción para el hogar. VIDEM no aloja, comercializa, transcodifica ni almacena contenido audiovisual protegido por derechos de autor. Las marcas comerciales citadas (Samsung, LG, Google TV, Apple TV, Fire TV, Stremio) pertenecen a sus respectivos titulares y se mencionan exclusivamente con fines de compatibilidad técnica.
+      </p>
+
+      <div class="copyright-text">
+        © 2026 Levanna S.A.S. • Marca Operativa VIDEM • United States & North America • Atención WhatsApp VIP: <a href="https://wa.me/573015568904" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: underline;">+57 310 331 1543</a>. Todos los derechos reservados.
+      </div>
+    </div>
+  </footer>
+
+  <!-- MODAL SPEEDTEST HELPER -->
+  <div class="modal-backdrop" id="speedtestModal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <button type="button" class="modal-close-btn" id="closeSpeedtestModalBtn" aria-label="Cerrar ventana">
+        &times;
+      </button>
+
+      <div class="modal-header">
+        <div class="modal-icon-badge">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8Z"/>
+            <path d="m14 10 4-4"/>
+            <circle cx="12" cy="12" r="2"/>
+          </svg>
+        </div>
+        <h3 class="modal-title">Medidor Rápido de Conexión</h3>
+        <p class="modal-desc">
+          Para garantizar que tu Smart TV disfrute de películas 4K Remux sin buffering, mide la velocidad real de descarga de tu hogar.
+        </p>
+      </div>
+
+      <div class="modal-steps">
+        <div class="modal-step-item">
+          <span class="step-num">1</span>
+          <div class="step-body">
+            <strong>Abre el test oficial de Speedtest.net</strong>
+            <p>Se abrirá en una nueva pestaña. Presiona el botón circular <em>«INICIO»</em> y espera 15 segundos.</p>
+            <a 
+              href="https://www.speedtest.net/es" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              class="btn-open-speedtest"
+            >
+              <span>Abrir Speedtest.net Oficial</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <line x1="10" y1="14" x2="21" y2="3"></line>
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="modal-step-item">
+          <span class="step-num">2</span>
+          <div class="step-body">
+            <strong>Fíjate en el valor de Descarga (Mbps)</strong>
+            <p>No te preocupes por el "Ping": si es menor a 40 ms, tu inicio de video será instantáneo.</p>
+            
+            <div class="step-interactive-grid">
+              <div class="modal-input-col">
+                <label for="modalMbpsInput">Ingresa tu número de Descarga:</label>
+                <div class="modal-input-wrap">
+                  <input type="number" id="modalMbpsInput" placeholder="Ej: 300" min="5" max="10000">
+                  <span>Mbps</span>
+                  <button type="button" id="confirmModalSpeedBtn" class="btn-confirm-speed">Aplicar Evaluación</button>
+                </div>
+              </div>
+
+              <div class="speedtest-sample-badge" aria-label="Muestra visual de Speedtest">
+                <div class="sample-badge-top">
+                  <span class="sample-tag">Ejemplo Ookla</span>
+                  <span class="sample-radar-dot"></span>
+                </div>
+                <div class="sample-type-label">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M12 5v14M19 12l-7 7-7-7"/>
+                  </svg>
+                  <span>DESCARGA Mbps</span>
+                </div>
+                <div class="sample-val-display">
+                  <span class="sample-val-int">300</span><span class="sample-val-dec">.00</span>
+                </div>
+                <div class="sample-badge-hint">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                  </svg>
+                  <span>Copia este número</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer-note">
+        💡 Nota técnica: Videm requiere al menos 100 Mbps para flujos 4K Remux con Dolby Vision y Dolby Atmos sin compresión.
+      </div>
+    </div>
+  </div>
+
+  <script src="js/app.js?v=20261105-2"></script>
+</body>
+</html>

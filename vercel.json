@@ -79,6 +79,14 @@
       "destination": "/es.html"
     },
     {
+      "source": "/us",
+      "destination": "/us.html"
+    },
+    {
+      "source": "/usa",
+      "destination": "/us.html"
+    },
+    {
       "source": "/admin",
       "destination": "/admin.html"
     },

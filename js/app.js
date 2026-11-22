@@ -40,6 +40,7 @@ function buildWhatsAppUrl(message) {
 document.addEventListener('DOMContentLoaded', () => {
   initWhatsAppLinks();
   initMobileMenu();
+  initRegionSelector();
   initInteractiveQualifier();
   initSpeedtestModal();
   initFaqsAccordion();
@@ -122,6 +123,38 @@ function initMobileMenu() {
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       closeMenu();
+    }
+  });
+}
+
+/**
+ * Region Selector Controller
+ */
+function initRegionSelector() {
+  const regionBtn = document.getElementById('regionBtn');
+  const regionMenu = document.getElementById('regionMenu');
+  if (!regionBtn || !regionMenu) return;
+
+  function closeRegionMenu() {
+    regionMenu.classList.remove('is-open');
+    regionBtn.setAttribute('aria-expanded', 'false');
+  }
+
+  regionBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isOpen = regionMenu.classList.toggle('is-open');
+    regionBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!regionBtn.contains(e.target) && !regionMenu.contains(e.target)) {
+      closeRegionMenu();
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeRegionMenu();
     }
   });
 }

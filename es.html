@@ -523,6 +523,40 @@
         </nav>
 
         <div class="nav-controls-right">
+          <!-- Region / Country Selector -->
+          <div class="region-selector-wrapper">
+            <button type="button" class="region-selector-btn" id="regionBtn" aria-expanded="false" aria-label="Seleccionar región">
+              <span class="region-flag">🇪🇸</span>
+              <span class="region-code">ESP</span>
+              <svg class="region-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+            <div class="region-dropdown-menu" id="regionMenu" aria-hidden="true">
+              <a href="/" class="region-item">
+                <span class="region-item-flag">🇨🇴</span>
+                <div class="region-item-info">
+                  <span class="region-item-name">Colombia & Latam</span>
+                  <span class="region-item-curr">COP ($)</span>
+                </div>
+              </a>
+              <a href="/es" class="region-item active">
+                <span class="region-item-flag">🇪🇸</span>
+                <div class="region-item-info">
+                  <span class="region-item-name">España & Europa</span>
+                  <span class="region-item-curr">EUR (€)</span>
+                </div>
+              </a>
+              <a href="/us" class="region-item">
+                <span class="region-item-flag">🇺🇸</span>
+                <div class="region-item-info">
+                  <span class="region-item-name">United States</span>
+                  <span class="region-item-curr">USD ($)</span>
+                </div>
+              </a>
+            </div>
+          </div>
+
           <button type="button" class="theme-toggle-btn" id="themeToggleBtn" aria-label="Cambiar tema">
             <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true">
               <circle cx="12" cy="12" r="4"></circle>

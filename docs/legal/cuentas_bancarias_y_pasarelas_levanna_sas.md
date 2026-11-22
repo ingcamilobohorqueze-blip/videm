@@ -128,7 +128,7 @@ Envíanos el comprobante por aquí para agendar tu calibración de inmediato.
 #### 🇪🇸 VIDEM ESPAÑA (EUR - Liquidación Banking Circle Luxemburgo):
 - **1 Mes Flex (9,99 €):** `https://buy.stripe.com/4gMfZh9bt5R96YFfTd3VC05`
 - **6 Meses VIP (49,99 €):** `https://buy.stripe.com/9B628r4Vd4N5aaR4av3VC04`
-- **12 Meses Anual VIP (89,99 €):** `https://buy.stripe.com/7sYdR94Vd4N5aaReP93VC03`
+- **12 Meses Anual VIP (89,99 €):** `https://buy.stripe.com/00wbJ1evN93l82JfTd3VC06`
 
 ---
 

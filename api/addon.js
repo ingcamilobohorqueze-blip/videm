@@ -402,14 +402,24 @@ module.exports = async (req, res) => {
         const hasRussian = hasCyrillicOrRusStudio || /\brus\b/i.test(text) || displayTitle.includes('🇷🇺');
         const hasChineseHardsub = /中字|dygangs|1lou|qqhdtv|国英韩/i.test(text);
 
-        // 1. Detección estricta de Audio Español Latino vs Falsos Latinos (Solo subtítulos)
+        // 1. Detección previa de idiomas extranjeros para evitar falsos positivos
+        const hasFrench = /french|français|\bfr\b|\bvfi\b|\bvfq\b|\bvff\b|torrent9|vostfr|truefrench/i.test(lower) || displayTitle.includes('🇫🇷');
+        const hasPolish = /polish|lektor|polski|\bpl\b|besttorrents|\bcz\b|sktorrent|-colo\b/i.test(lower) || displayTitle.includes('🇵🇱');
+        const hasItalian = /italian|\bita\b|mircrew|corsarone|avvocata|\bdlmux\b|licdom/i.test(lower) || displayTitle.includes('🇮🇹');
+        const hasPortuguese = /portugu|dublado|dual[\s.-]*pt|\bpt-br\b|\bpor\b|o\.grande\.mestre|bludv|comandotorrents|guyzo|ricksz/i.test(lower) || displayTitle.includes('🇧🇷') || displayTitle.includes('🇵🇹');
+        const hasTurkish = /\bturkish\b|\btur\b/i.test(lower) || displayTitle.includes('🇹🇷');
+        const hasHindi = /hindi|tamil|telugu/i.test(lower) || displayTitle.includes('🇮🇳');
+        const hasGerman = /german|deutsch|\bger\b/i.test(lower) || displayTitle.includes('🇩🇪');
+
+        // 2. Detección estricta de Audio Español Latino vs Falsos Latinos (Solo subtítulos o Multi-Audio extranjero)
         const isFromLatamWeb = (stream.name || '') === 'Addon Latam';
         const isLatamWebSubtitled = isFromLatamWeb && /\bsubtitulado\b/i.test(displayTitle);
         const isLatamWebUnconfirmed = isFromLatamWeb && /idioma sin confirmar/i.test(displayTitle);
 
-        // Tags explícitos de audio latino real / confirmado (Doblaje, Dual, DDP, AC3, trackers especializados)
+        // Tags explícitos de audio latino real / confirmado (Doblaje, Dual Lat, DDP Latino, trackers especializados)
+        // OJO: multi-audio o dual-audio sin 'lat' NO es latino (suele ser francés, ruso o streaming general)
         const hasExplicitAudioLatinoTrack = (
-          /audio[\s:._-]*lat|latino[\s:._-]*audio|dual[\s:._-]*audio|multi[\s:._-]*audio|doblaje[\s:._-]*lat|latino[\s:._-]*ddp|latino[\s:._-]*ac3|latino[\s:._-]*5\.1|latino[\s:._-]*eac3|cinecalidad|pelisenhd|hackstore|mega1080p|compucalitv|yaske/i.test(lower) ||
+          /audio[\s:._-]*lat|latino[\s:._-]*audio|dual[\s:._-]*(?:audio[\s:._-]*)?lat|multi[\s:._-]*(?:audio[\s:._-]*)?lat|doblaje[\s:._-]*lat|latino[\s:._-]*ddp|latino[\s:._-]*ac3|latino[\s:._-]*5\.1|latino[\s:._-]*eac3|cinecalidad|pelisenhd|hackstore|mega1080p|compucalitv|yaske|pedrop/i.test(lower) ||
           (/dual[\s:._-]*lat/i.test(lower) && !/sub/i.test(lower))
         );
 
@@ -426,20 +436,14 @@ module.exports = async (req, res) => {
         const hasLatinoFlag = displayTitle.includes('🇲🇽') || displayTitle.includes('🇨🇴') || displayTitle.includes('🇦🇷') || displayTitle.includes('🇨🇱') || displayTitle.includes('🇵🇪') || displayTitle.includes('💃');
         const hasExplicitLatinoWord = /latino|audio[\s.-]*lat|dual[\s.-]*lat|es-419|es-la|latin[\s.-]*america|\blat\b|cinecalidad|pelisenhd|hackstore|latinoamerica|mega1080p/i.test(lower);
         
-        // Solo es audio latino si NO es un release de puros subtítulos
-        const isLatinoAny = !hasCyrillicOrRusStudio && !isOnlySubtitledLatino && (hasExplicitAudioLatinoTrack || hasLatinoFlag || hasExplicitLatinoWord);
+        // Conflicto de idioma extranjero: Si es marcadamente francés (VFQ/Torrent9), italiano, alemán, portugués, ruso o polaco y NO tiene tag latino explícito, se descarta de latino
+        const hasForeignAudioConflict = (hasFrench || hasItalian || hasGerman || hasPortuguese || hasRussian || hasPolish || hasHindi) && !hasExplicitAudioLatinoTrack;
 
-        // 2. Detección de otros idiomas regionales europeos y extranjeros
-        const hasFrench = /french|français|\bfr\b|\bvfi\b|\bvfq\b|\bvff\b|torrent9|vostfr|truefrench/i.test(lower) || displayTitle.includes('🇫🇷');
-        const hasPolish = /polish|lektor|polski|\bpl\b|besttorrents|\bcz\b|sktorrent|-colo\b/i.test(lower) || displayTitle.includes('🇵🇱');
-        const hasItalian = /italian|\bita\b|mircrew|corsarone|avvocata|\bdlmux\b|licdom/i.test(lower) || displayTitle.includes('🇮🇹');
-        const hasPortuguese = /portugu|dublado|dual[\s.-]*pt|\bpt-br\b|\bpor\b|o\.grande\.mestre|bludv|comandotorrents|guyzo|ricksz/i.test(lower) || displayTitle.includes('🇧🇷') || displayTitle.includes('🇵🇹');
-        const hasTurkish = /\bturkish\b|\btur\b/i.test(lower) || displayTitle.includes('🇹🇷');
-        const hasHindi = /hindi|tamil|telugu/i.test(lower) || displayTitle.includes('🇮🇳');
-        const hasGerman = /german|deutsch|\bger\b/i.test(lower) || displayTitle.includes('🇩🇪');
+        // Solo es audio latino si NO es subtitulado, NO tiene conflicto extranjero y está confirmado
+        const isLatinoAny = !hasCyrillicOrRusStudio && !isOnlySubtitledLatino && !hasForeignAudioConflict && (hasExplicitAudioLatinoTrack || hasLatinoFlag || hasExplicitLatinoWord);
 
         // Distinguir entre Latino Directo (Pista 1 = Español Latino) vs Pack Multi-Pista Global (ej. BEN.THE.MEN con 10 idiomas incluido Latino)
-        const isNativeLatino = isLatinoAny && !hasRussian && !hasPolish && !hasItalian && !hasGerman;
+        const isNativeLatino = isLatinoAny && !hasRussian && !hasPolish && !hasItalian && !hasGerman && !hasFrench && !hasPortuguese;
         const isMultiTrackLatino = isLatinoAny && !isNativeLatino;
 
         // 3. Detección de Español de España / Castellano (incluye -DDR Blu-ray europeos que traen Castellano y no Latino)
@@ -457,11 +461,16 @@ module.exports = async (req, res) => {
         let customNote = '';
 
         if (isNativeLatino) {
-          if (hasExplicitAudioLatinoTrack || isFromLatamWeb) {
+          if (hasExplicitAudioLatinoTrack) {
             langTag = '🇲🇽 AUDIO LATINO';
-            priority = region === 'es' ? 100 : 350; // Prioridad Máxima absoluta para audio latino confirmado
+            priority = region === 'es' ? 100 : 380; // Prioridad Máxima absoluta para audio latino confirmado en Debrid
             bucket = 'latino';
             customNote = '🇲🇽 Audio en Español Latino Confirmado (Reproducción Directa)';
+          } else if (isFromLatamWeb) {
+            langTag = '🇲🇽 AUDIO LATINO';
+            priority = region === 'es' ? 95 : 290; // Enlaces de streaming web van después de los torrents verificados Debrid
+            bucket = 'latino';
+            customNote = '🇲🇽 Audio en Español Latino (Servidor Web Alternativo)';
           } else {
             langTag = '🇲🇽 AUDIO LATINO';
             priority = region === 'es' ? 95 : 300;

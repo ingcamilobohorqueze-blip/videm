@@ -415,8 +415,9 @@ module.exports = async (req, res) => {
 
         // Detección de Falso Latino: cuando el release tiene 'latino' pero solo en los subtítulos
         const isOnlySubtitledLatino = (
-          /(?:sub(?:s|title|titles|titul(?:o|os|ado|ada))?(?:[\s._-]|al)*latino|latino(?:[\s._-]|al)*sub(?:s|title|titles|titul(?:o|os|ado))?|sub(?:s|title|titles)?[\s:._-]*es-?419|vose[\s._-]*latino|sub[\s._-]*spa|\[sub[\s._-]*lat\]|\.lat\.sub|\blat[\s._-]*sub\b|lat-eng\s*sub)/i.test(lower) ||
+          /(?:sub(?:s|title|titles|titul(?:o|os|ado|ada))?(?:[\s._-]|al)*latino|latino(?:[\s._-]|al)*sub(?:s|title|titles|titul(?:o|os|ado))?|sub(?:s|title|titles)?[\s:._-]*es-?419|vose[\s._-]*latino|softsub[\s._-]*lat|sub[\s._-]*spa|\[sub[\s._-]*lat\]|\.lat\.sub|\blat[\s._-]*sub\b|lat-eng\s*sub)/i.test(lower) ||
           (lower.includes('subtitul') && lower.includes('latino') && !hasExplicitAudioLatinoTrack) ||
+          (lower.includes('softsub') && lower.includes('latino') && !hasExplicitAudioLatinoTrack) ||
           lower.includes('latino.sub') ||
           lower.includes('latino-sub') ||
           isLatamWebSubtitled

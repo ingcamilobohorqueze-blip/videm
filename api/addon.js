@@ -402,13 +402,31 @@ module.exports = async (req, res) => {
         const hasRussian = hasCyrillicOrRusStudio || /\brus\b/i.test(text) || displayTitle.includes('🇷🇺');
         const hasChineseHardsub = /中字|dygangs|1lou|qqhdtv|国英韩/i.test(text);
 
-        // 1. Detección estricta de Audio Español Latino (incluye banderas LATAM, emoji 💃, Addon Latam y trackers latinos)
+        // 1. Detección estricta de Audio Español Latino vs Falsos Latinos (Solo subtítulos)
         const isFromLatamWeb = (stream.name || '') === 'Addon Latam';
         const isLatamWebSubtitled = isFromLatamWeb && /\bsubtitulado\b/i.test(displayTitle);
         const isLatamWebUnconfirmed = isFromLatamWeb && /idioma sin confirmar/i.test(displayTitle);
+
+        // Tags explícitos de audio latino real / confirmado (Doblaje, Dual, DDP, AC3, trackers especializados)
+        const hasExplicitAudioLatinoTrack = (
+          /audio[\s:._-]*lat|latino[\s:._-]*audio|dual[\s:._-]*audio|multi[\s:._-]*audio|doblaje[\s:._-]*lat|latino[\s:._-]*ddp|latino[\s:._-]*ac3|latino[\s:._-]*5\.1|latino[\s:._-]*eac3|cinecalidad|pelisenhd|hackstore|mega1080p|compucalitv|yaske/i.test(lower) ||
+          (/dual[\s:._-]*lat/i.test(lower) && !/sub/i.test(lower))
+        );
+
+        // Detección de Falso Latino: cuando el release tiene 'latino' pero solo en los subtítulos
+        const isOnlySubtitledLatino = (
+          /(?:sub(?:s|title|titles|titul(?:o|os|ado|ada))?(?:[\s._-]|al)*latino|latino(?:[\s._-]|al)*sub(?:s|title|titles|titul(?:o|os|ado))?|sub(?:s|title|titles)?[\s:._-]*es-?419|vose[\s._-]*latino|sub[\s._-]*spa|\[sub[\s._-]*lat\]|\.lat\.sub|\blat[\s._-]*sub\b|lat-eng\s*sub)/i.test(lower) ||
+          (lower.includes('subtitul') && lower.includes('latino') && !hasExplicitAudioLatinoTrack) ||
+          lower.includes('latino.sub') ||
+          lower.includes('latino-sub') ||
+          isLatamWebSubtitled
+        ) && !hasExplicitAudioLatinoTrack;
+
         const hasLatinoFlag = displayTitle.includes('🇲🇽') || displayTitle.includes('🇨🇴') || displayTitle.includes('🇦🇷') || displayTitle.includes('🇨🇱') || displayTitle.includes('🇵🇪') || displayTitle.includes('💃');
         const hasExplicitLatinoWord = /latino|audio[\s.-]*lat|dual[\s.-]*lat|es-419|es-la|latin[\s.-]*america|\blat\b|cinecalidad|pelisenhd|hackstore|latinoamerica|mega1080p/i.test(lower);
-        const isLatinoAny = !hasCyrillicOrRusStudio && !isLatamWebSubtitled && (hasLatinoFlag || hasExplicitLatinoWord);
+        
+        // Solo es audio latino si NO es un release de puros subtítulos
+        const isLatinoAny = !hasCyrillicOrRusStudio && !isOnlySubtitledLatino && (hasExplicitAudioLatinoTrack || hasLatinoFlag || hasExplicitLatinoWord);
 
         // 2. Detección de otros idiomas regionales europeos y extranjeros
         const hasFrench = /french|français|\bfr\b|\bvfi\b|\bvfq\b|\bvff\b|torrent9|vostfr|truefrench/i.test(lower) || displayTitle.includes('🇫🇷');
@@ -426,7 +444,8 @@ module.exports = async (req, res) => {
         // 3. Detección de Español de España / Castellano (incluye -DDR Blu-ray europeos que traen Castellano y no Latino)
         const hasSpainFlag = displayTitle.includes('🇪🇸');
         const hasSpainTrackerOrTag = /castellano|\bcast\b|es-es|\bspa\b|\besp\b|\[es\]|mejortorrent|estrenosdtl|wolfmax|newpct|dontorrent|grantorrent|elitetorrent|sinsitio|zonapelis|maxitorrent|atomohd|atomixhq|pctmix|descargas2020|\bbddr\b|-ddr\b/i.test(lower);
-        const isCastellano = !hasCyrillicOrRusStudio && !isLatinoAny && (hasSpainFlag || hasSpainTrackerOrTag || /spanish|español/i.test(lower));
+        const isOnlySubtitledCastellano = /vose|vostfr|sub[\s._-]*castellano|castellano[\s._-]*sub/i.test(lower) && !/dual|multi|audio[\s:._-]*castellano|doblaje[\s:._-]*castellano/i.test(lower);
+        const isCastellano = !hasCyrillicOrRusStudio && !isLatinoAny && !isOnlySubtitledLatino && !isOnlySubtitledCastellano && (hasSpainFlag || hasSpainTrackerOrTag || /spanish|español/i.test(lower));
 
         // 4. Detección de Multi-Audio de plataformas de streaming (Netflix / Amazon WEB-DL)
         const isStreamingMulti = /nf\.web|amzn\.web|atvp\.web|dsnp\.web/i.test(lower) && (/multi|dual/i.test(lower) || displayTitle.includes('🌎')) && !isLatinoAny && !isCastellano && !hasRussian && !hasPolish && !hasItalian && !hasFrench && !hasGerman && !hasPortuguese && !hasHindi && !hasChineseHardsub;
@@ -437,10 +456,17 @@ module.exports = async (req, res) => {
         let customNote = '';
 
         if (isNativeLatino) {
-          langTag = '🇲🇽 AUDIO LATINO';
-          priority = region === 'es' ? 95 : 300;
-          bucket = 'latino';
-          customNote = '🇲🇽 Audio en Español Latino (Reproducción Directa)';
+          if (hasExplicitAudioLatinoTrack || isFromLatamWeb) {
+            langTag = '🇲🇽 AUDIO LATINO';
+            priority = region === 'es' ? 100 : 350; // Prioridad Máxima absoluta para audio latino confirmado
+            bucket = 'latino';
+            customNote = '🇲🇽 Audio en Español Latino Confirmado (Reproducción Directa)';
+          } else {
+            langTag = '🇲🇽 AUDIO LATINO';
+            priority = region === 'es' ? 95 : 300;
+            bucket = 'latino';
+            customNote = '🇲🇽 Audio en Español Latino';
+          }
           if (/la\.casa\.de\.la\.pradera/i.test(lower)) {
             langTag = '🇲🇽 OTRO TÍTULO';
             priority = 20;
@@ -451,6 +477,17 @@ module.exports = async (req, res) => {
           priority = region === 'es' ? 90 : 255;
           bucket = 'latino';
           customNote = '🔊 Incluye Español Latino (Si inicia en inglés, elige Español Latino en el ícono de audio)';
+        } else if (isOnlySubtitledLatino) {
+          // Reclasificado de forma transparente: NO es audio latino, es Versión Original Subtitulada en Latino
+          langTag = '🇺🇸 ORIGINAL (SUBTITULADA LATINO)';
+          priority = 160;
+          bucket = 'original';
+          customNote = '💬 Audio Original en Inglés • Incluye Subtítulos en Español Latino';
+        } else if (isOnlySubtitledCastellano) {
+          langTag = '🇪🇸 VOSE (SUBTITULADA)';
+          priority = region === 'es' ? 220 : 155;
+          bucket = 'original';
+          customNote = '💬 Versión Original con Subtítulos en Castellano (VOSE)';
         } else if (isCastellano) {
           langTag = region === 'es' ? '🇪🇸 CASTELLANO' : '⚠️ AUDIO ESPAÑA';
           priority = region === 'es' ? 300 : 75;

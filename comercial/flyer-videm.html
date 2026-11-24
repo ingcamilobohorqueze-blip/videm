@@ -213,14 +213,14 @@
       height: 42px;
       width: auto;
       object-fit: contain;
-      filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 16px rgba(0, 240, 255, 0.65));
+      filter: none;
     }
 
     .brand-wordmark-float {
       height: 32px;
       width: auto;
       object-fit: contain;
-      filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 18px rgba(0, 240, 255, 0.7));
+      filter: none;
     }
 
     .front-headline-wrap {
@@ -778,9 +778,11 @@
       /* Escalado armónico para que nada desborde en el tamaño físico A6 */
       .brand-icon-img {
         height: 36px !important;
+        filter: none !important;
       }
       .brand-wordmark-float {
         height: 28px !important;
+        filter: none !important;
       }
       .front-headline {
         font-size: 1.08rem !important;

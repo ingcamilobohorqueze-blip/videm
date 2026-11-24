@@ -543,6 +543,7 @@
       background: linear-gradient(180deg, #FFFFFF 0%, #FEF9C3 100%);
       border: 1.8px solid #D97706;
       box-shadow: 0 8px 22px rgba(217, 119, 6, 0.20);
+      z-index: 5;
     }
 
     .plan-card-warm .feat-badge-top {
@@ -552,13 +553,14 @@
       transform: translateX(-50%);
       background: linear-gradient(135deg, #EF4444 0%, #B91C1C 100%);
       color: #FFF;
-      font-size: 0.52rem;
+      font-size: 0.48rem;
       font-weight: 900;
-      letter-spacing: 0.04em;
-      padding: 2px 9px;
+      letter-spacing: 0.02em;
+      padding: 2px 8px;
       border-radius: 999px;
       white-space: nowrap;
       box-shadow: 0 2px 8px rgba(239, 68, 68, 0.35);
+      z-index: 20;
     }
 
     .p-warm-header {
@@ -960,6 +962,15 @@
         padding: 4px 6px 4px !important;
         border-radius: 6px !important;
       }
+      .plan-card-warm.featured {
+        z-index: 5 !important;
+      }
+      .plan-card-warm .feat-badge-top {
+        font-size: 0.44rem !important;
+        padding: 1.5px 6px !important;
+        top: -7px !important;
+        z-index: 20 !important;
+      }
       .p-warm-title {
         font-size: 0.64rem !important;
       }
@@ -1231,7 +1242,7 @@
 
         <!-- Ficha 2: Pase Anual (12 Meses) - DESTACADA -->
         <div class="plan-card-warm featured">
-          <span class="feat-badge-top">🔥 LA OPCIÓN DE MAYOR AHORRO • BONO 12+1</span>
+          <span class="feat-badge-top">🔥 MÁXIMO AHORRO • BONO 12+1</span>
           <div class="p-warm-header">
             <span class="p-warm-title">Pase Anual VIP (12 Meses)</span>
           </div>

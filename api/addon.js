@@ -12,7 +12,7 @@ let lastCheckTime = 0;
 
 const MANIFEST = {
   id: "tv.videm.cinema",
-  version: "1.6.0",
+  version: "1.6.1",
   name: "VIDEM 4K Cinema",
   description: "Infraestructura privada VIDEM en ultra alta definición 4K Remux Dolby Atmos (Curaduría VIP Latino, K-Dramas, Smart TV Friendly & Metadatos Actualizados)",
   resources: [
@@ -217,9 +217,9 @@ async function fetchMultiEngineStreams(type, rawId, rdToken, region = 'latam') {
     // Exigir URL HTTP directa en caché CDN (descartar torrents P2P crudos o [RD download] sin semillas que no cargan)
     if (!s || !s.url || /\[rd\s*download\]/i.test(s.name || '')) continue;
 
-    // Limpiar colas HTML malformadas en enlaces directos y descartar enlaces okcdn.ru atados a IP de servidor
+    // Limpiar colas HTML malformadas en enlaces directos y descartar mirrors rotos (okcdn.ru atados a IP y Rumble con audio mutilado/mudo)
     s.url = String(s.url).split(/&quot;|"|'/)[0].trim();
-    if (/okcdn\.ru\/.*\/srcIp\//i.test(s.url)) continue;
+    if (/okcdn\.ru\/.*\/srcIp\/|cdn\.rumble\.cloud|1a-1791\.com/i.test(s.url)) continue;
 
     const fullText = `${s.name || ''} ${s.title || ''} ${s.description || ''} ${s.behaviorHints?.filename || ''}`;
     // Si estamos consultando una película, descartar packs de series infiltrados por palabra clave (ej. "DRAGON BALL Z: Complete 1989-2019 Series" en "Red Dragon")
@@ -716,10 +716,21 @@ module.exports = async (req, res) => {
         // Si hay Español Latino verificado (Debrid o MKV directo): Hasta 3 en Latino + 2 en Original
         // Si NO hay Latino verificado: 3 en Original (Smart TV + Calidad Media + 4K) + máximo 1 en Castellano advertido + máximo 1 fallback web si existe
         if (latinoList.length > 0) {
-          curated = [
-            ...pickDiverseResolutions(latinoList, 3),
-            ...pickDiverseResolutions(originalList, 2)
-          ];
+          // Si los únicos enlaces latinos son de servidores web externos (Addon Latam, no Real-Debrid),
+          // mostrar máximo 1 opción web Latino (evitando llenar el Top 3 con mirrors piratas) + 3 opciones Real-Debrid limpias
+          const debridLatino = latinoList.filter(s => (s.name || '').indexOf('(WEB)') === -1);
+          if (debridLatino.length > 0) {
+            curated = [
+              ...pickDiverseResolutions(debridLatino, 3),
+              ...pickDiverseResolutions(originalList, 2)
+            ];
+          } else {
+            curated = [
+              ...latinoList.slice(0, 1),
+              ...pickDiverseResolutions(originalList, 3),
+              ...spainList.slice(0, 1)
+            ];
+          }
         } else {
           curated = [
             ...pickDiverseResolutions(originalList, 3),

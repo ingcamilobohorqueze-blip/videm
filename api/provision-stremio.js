@@ -56,7 +56,7 @@ module.exports = async (req, res) => {
     const manifestUrl = `https://videm.tv/api/addon/${encodeURIComponent(tokenPath)}/manifest.json`;
     const videmManifest = {
       id: 'tv.videm.cinema',
-      version: '1.5.0',
+      version: '1.6.0',
       name: isSpain ? 'VIDEM 4K Cinema (España)' : 'VIDEM 4K Cinema',
       description: isSpain
         ? 'Infraestructura privada VIDEM en ultra alta definición 4K Remux Dolby Atmos (Castellano, VOSE, Multi-Audio & Global)'

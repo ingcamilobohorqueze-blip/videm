@@ -14,7 +14,7 @@ const LATAM_CACHE_TTL = 20 * 60 * 1000;
 
 const MANIFEST = {
   id: "tv.videm.cinema",
-  version: "1.7.0",
+  version: "1.7.1",
   name: "VIDEM 4K Cinema",
   description: "Infraestructura privada VIDEM en ultra alta definición 4K Remux Dolby Atmos (Audio Latino, Subtítulos Sincronizados, Smart TV Friendly & Metadatos Actualizados)",
   resources: [
@@ -219,11 +219,11 @@ async function fetchMultiEngineStreams(type, rawId, rdToken, region = 'latam') {
     ...(resTdb.streams || [])
   ];
 
-  // Fallback si por alguna razón todos los filtros devolvieron vacío
-  if (combined.length === 0) {
+  // Fallback si los filtros devolvieron muy pocas opciones (<3), evitando que el cliente quede atrapado con 1 enlace malo si Comet/Latam hizo timeout
+  if (combined.length < 4) {
     const urlGlobal = `https://torrentio.strem.fun/qualityfilter=cam,scr%7Cdebridoptions=nodownloadlinks%7Crealdebrid=${token}/stream/${type}/${id}`;
     const resGlobal = await queryJsonUrl(urlGlobal, 5500);
-    combined = resGlobal.streams || [];
+    combined = [...combined, ...(resGlobal.streams || [])];
   }
 
   // Deduplicar enlaces equivalentes y filtrar contaminación de packs de series cuando se consulta una película
@@ -530,8 +530,8 @@ module.exports = async (req, res) => {
         const isInternationalSceneRemux = /criterion|cinephiles|framestor|epsilon|bluranium|playbd|wildcat|sm737|sphd/i.test(filenameLower);
         const isLikelySubOnlySpainFlag = hasSpainFlag && !hasSpainTrackerOrTag && !hasSpanishWordInFilename && (isInternationalSceneRemux || /remux|uhd[\s._-]*bluray/i.test(filenameLower));
 
-        const isOnlySubtitledCastellano = (
-          (/vose|vostfr|sub[\s._-]*castellano|castellano[\s._-]*sub/i.test(lower) && !/dual|multi|audio[\s:._-]*castellano|doblaje[\s:._-]*castellano/i.test(lower)) ||
+        const isOnlySubtitledCastellano = !hasFrench && !hasRussian && !hasGerman && !hasItalian && !hasPolish && (
+          (/vose|sub[\s._-]*castellano|castellano[\s._-]*sub/i.test(lower) && !/dual|multi|audio[\s:._-]*castellano|doblaje[\s:._-]*castellano/i.test(lower)) ||
           isLikelySubOnlySpainFlag
         );
         const isCastellano = !hasCyrillicOrRusStudio && !isLatinoAny && !isOnlySubtitledLatino && !isOnlySubtitledCastellano && (

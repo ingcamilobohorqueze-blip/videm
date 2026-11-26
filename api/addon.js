@@ -29,7 +29,7 @@ const MANIFEST = {
   types: ["movie", "series", "anime"],
   idPrefixes: ["tt", "kitsu", "tmdb:"],
   catalogs: [],
-  background: "https://videm.tv/assets/images/plan_lluvia_bogota_cine.jpg",
+  background: "https://videm.tv/assets/images/hero-home-theater.jpeg",
   logo: "https://videm.tv/assets/icons/icon-192.png",
   behaviorHints: {
     configurable: false,

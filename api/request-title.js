@@ -113,16 +113,18 @@ module.exports = async (req, res) => {
       const langPrimary = isSpain ? 'spanish,latino' : 'latino';
       const peerflixLang = isSpain ? 'es-ES,es-419' : 'es-419';
 
-      const [tLat, pLat, tEsp] = await Promise.all([
-        queryJson(`https://torrentio.strem.fun/language=${langPrimary}%7Cqualityfilter=cam,scr/stream/${mediaType}/${streamId}.json`, 5500),
-        queryJson(`https://addon.peerflix.mov/language=${peerflixLang}/stream/${mediaType}/${streamId}.json`, 5500),
-        queryJson(`https://torrentio.strem.fun/language=latino,spanish%7Cqualityfilter=cam,scr/stream/${mediaType}/${streamId}.json`, 5500)
+      const [tLat, pLat, tEsp, tDb] = await Promise.all([
+        queryJson(`https://torrentio.strem.fun/language=${langPrimary}%7Cqualityfilter=cam,scr/stream/${mediaType}/${streamId}.json`, 4000),
+        queryJson(`https://addon.peerflix.mov/language=${peerflixLang}/stream/${mediaType}/${streamId}.json`, 4000),
+        queryJson(`https://torrentio.strem.fun/language=latino,spanish%7Cqualityfilter=cam,scr/stream/${mediaType}/${streamId}.json`, 4000),
+        queryJson(`https://torrentsdb.com/stream/${mediaType}/${streamId}.json`, 3800)
       ]);
 
       const allCandidates = [
         ...(tLat?.streams || []),
         ...(pLat?.streams || []),
-        ...(tEsp?.streams || [])
+        ...(tEsp?.streams || []),
+        ...(tDb?.streams || [])
       ].filter(s => s && s.infoHash);
 
       // Calificar candidatos: priorizar Audio Latino / Dual-Lat real y descartar francés/ruso/VOSTFR

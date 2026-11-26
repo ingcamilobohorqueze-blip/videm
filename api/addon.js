@@ -14,7 +14,7 @@ const LATAM_CACHE_TTL = 20 * 60 * 1000;
 
 const MANIFEST = {
   id: "tv.videm.cinema",
-  version: "1.7.1",
+  version: "1.7.2",
   name: "VIDEM 4K Cinema",
   description: "Infraestructura privada VIDEM en ultra alta definición 4K Remux Dolby Atmos (Audio Latino, Subtítulos Sincronizados, Smart TV Friendly & Metadatos Actualizados)",
   resources: [
@@ -184,13 +184,13 @@ async function fetchMultiEngineStreams(type, rawId, rdToken, region = 'latam') {
   const urlCometDmm = `https://comet.elfhosted.com/${cometB64}/stream/${type}/${id}`;
   // 5. TorrentsDB RD (Trackers asiáticos 1lou, Knaben, ilCorSaRoNeRo, EZTV)
   const urlTorrentsDb = `https://torrentsdb.com/realdebrid=${token}/stream/${type}/${id}`;
-  // 6. Addon Latam (con caché en memoria de 20 min para evitar timeouts de duckdns en consultas consecutivas)
+  // 6. Addon Latam (caché 20 min + timeout estricto de 3.5s para no colgar Stremio ni Vercel cuando duckdns está lento)
   const urlAddonLatam = `${ADDON_LATAM_BASE}/stream/${type}/${id}`;
   const queryAddonLatamCached = async () => {
     const cacheKey = `${type}:${id}`;
     const hit = latamCache.get(cacheKey);
     if (hit && Date.now() - hit.ts < LATAM_CACHE_TTL) return hit.data;
-    const data = await queryJsonUrl(urlAddonLatam, 9500);
+    const data = await queryJsonUrl(urlAddonLatam, 3500);
     if (data && Array.isArray(data.streams) && data.streams.length > 0) {
       latamCache.set(cacheKey, { ts: Date.now(), data });
       if (latamCache.size > 200) {
@@ -201,13 +201,17 @@ async function fetchMultiEngineStreams(type, rawId, rdToken, region = 'latam') {
     return data;
   };
 
-  const [resTPrimary, resTSecondary, resPeerflix, resComet, resTdb, resLatam] = await Promise.all([
-    queryJsonUrl(urlTorrentioPrimary, 5000),
-    queryJsonUrl(urlTorrentioSecondary, 5500),
-    queryJsonUrl(urlPeerflix, 5000),
-    queryJsonUrl(urlCometDmm, 5500),
-    queryJsonUrl(urlTorrentsDb, 5000),
-    region === 'latam' ? queryAddonLatamCached() : Promise.resolve({ streams: [] })
+  // 7. Torrentio Global en paralelo (0ms de espera extra; garantiza siempre copias 4K/1080p Real-Debrid sin riesgo de timeout)
+  const urlTorrentioGlobal = `https://torrentio.strem.fun/qualityfilter=cam,scr%7Cdebridoptions=nodownloadlinks%7Crealdebrid=${token}/stream/${type}/${id}`;
+
+  const [resTPrimary, resTSecondary, resPeerflix, resComet, resTdb, resLatam, resTGlobal] = await Promise.all([
+    queryJsonUrl(urlTorrentioPrimary, 4000),
+    queryJsonUrl(urlTorrentioSecondary, 4000),
+    queryJsonUrl(urlPeerflix, 4000),
+    queryJsonUrl(urlCometDmm, 4500),
+    queryJsonUrl(urlTorrentsDb, 3800),
+    region === 'latam' ? queryAddonLatamCached() : Promise.resolve({ streams: [] }),
+    region === 'latam' ? queryJsonUrl(urlTorrentioGlobal, 4000) : Promise.resolve({ streams: [] })
   ]);
 
   let combined = [
@@ -216,15 +220,9 @@ async function fetchMultiEngineStreams(type, rawId, rdToken, region = 'latam') {
     ...(resTSecondary.streams || []),
     ...(resPeerflix.streams || []),
     ...(resComet.streams || []),
-    ...(resTdb.streams || [])
+    ...(resTdb.streams || []),
+    ...(resTGlobal.streams || [])
   ];
-
-  // Fallback si los filtros devolvieron muy pocas opciones (<3), evitando que el cliente quede atrapado con 1 enlace malo si Comet/Latam hizo timeout
-  if (combined.length < 4) {
-    const urlGlobal = `https://torrentio.strem.fun/qualityfilter=cam,scr%7Cdebridoptions=nodownloadlinks%7Crealdebrid=${token}/stream/${type}/${id}`;
-    const resGlobal = await queryJsonUrl(urlGlobal, 5500);
-    combined = [...combined, ...(resGlobal.streams || [])];
-  }
 
   // Deduplicar enlaces equivalentes y filtrar contaminación de packs de series cuando se consulta una película
   const seenKeys = new Set();

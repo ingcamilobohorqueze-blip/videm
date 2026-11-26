@@ -14,7 +14,7 @@ const LATAM_CACHE_TTL = 20 * 60 * 1000;
 
 const MANIFEST = {
   id: "tv.videm.cinema",
-  version: "1.7.2",
+  version: "1.7.3",
   name: "VIDEM 4K Cinema",
   description: "Infraestructura privada VIDEM en ultra alta definición 4K Remux Dolby Atmos (Audio Latino, Subtítulos Sincronizados, Smart TV Friendly & Metadatos Actualizados)",
   resources: [
@@ -125,37 +125,12 @@ async function resolveImdbIdIfNeeded(type, rawId) {
 }
 
 function buildCometConfigBase64(token, region = 'latam') {
-  const preferredLangs = region === 'es'
-    ? ["es", "multi", "es-419", "en"]
-    : ["es-419", "la", "multi", "en", "pt", "ko", "ja"];
-
+  // Configuración compacta para mantener URLs de Comet cortas (<900 chars) y 100% compatibles con Stremio Android TV / Desktop
   const cometConfigObj = {
-    maxResultsPerResolution: 0,
-    maxSize: 0,
-    cachedOnly: true,
-    removeTrash: true,
-    resultFormat: ["all"],
     debridService: "realdebrid",
     debridApiKey: token,
-    debridStreamProxyPassword: "",
-    languages: {
-      required: [],
-      exclude: [],
-      preferred: preferredLangs
-    },
-    resolutions: {
-      r2160p: true,
-      r1080p: true,
-      r720p: true,
-      r480p: false,
-      r360p: false,
-      unknown: true
-    },
-    options: {
-      remove_ranks_under: -10000000000,
-      allow_english_in_languages: true,
-      remove_unknown_languages: false
-    }
+    cachedOnly: true,
+    removeTrash: true
   };
   return Buffer.from(JSON.stringify(cometConfigObj)).toString('base64');
 }
@@ -831,7 +806,7 @@ module.exports = async (req, res) => {
         return;
       }
 
-      const brandedStreams = curated.map(({ _priority, _bucket, _res, _smartTvFriendly, _compatLight, _isRemuxOrHeavy, ...s }) => s);
+      const brandedStreams = curated.map(({ _priority, _bucket, _res, _smartTvFriendly, _compatLight, _isRemuxOrHeavy, description, ...s }) => s);
 
       sendJson(200, { streams: brandedStreams });
     } catch (err) {

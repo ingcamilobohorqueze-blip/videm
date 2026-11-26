@@ -9,14 +9,17 @@ const ADDON_LATAM_BASE = 'https://addonlatam.duckdns.org/FaIqffOcY0y_S5WfVLrsXq6
 // Caché en memoria para respuesta ultra rápida (<20ms)
 let cachedStatus = 'demo_active';
 let lastCheckTime = 0;
+const latamCache = new Map(); // Caché de 20 min para Addon Latam (evita timeouts repetidos de duckdns)
+const LATAM_CACHE_TTL = 20 * 60 * 1000;
 
 const MANIFEST = {
   id: "tv.videm.cinema",
-  version: "1.6.1",
+  version: "1.7.0",
   name: "VIDEM 4K Cinema",
-  description: "Infraestructura privada VIDEM en ultra alta definición 4K Remux Dolby Atmos (Curaduría VIP Latino, K-Dramas, Smart TV Friendly & Metadatos Actualizados)",
+  description: "Infraestructura privada VIDEM en ultra alta definición 4K Remux Dolby Atmos (Audio Latino, Subtítulos Sincronizados, Smart TV Friendly & Metadatos Actualizados)",
   resources: [
     "stream",
+    "subtitles",
     {
       name: "meta",
       types: ["series", "movie"],
@@ -181,8 +184,22 @@ async function fetchMultiEngineStreams(type, rawId, rdToken, region = 'latam') {
   const urlCometDmm = `https://comet.elfhosted.com/${cometB64}/stream/${type}/${id}`;
   // 5. TorrentsDB RD (Trackers asiáticos 1lou, Knaben, ilCorSaRoNeRo, EZTV)
   const urlTorrentsDb = `https://torrentsdb.com/realdebrid=${token}/stream/${type}/${id}`;
-  // 6. Addon Latam (34 sitios web hispanos en Español Latino para películas clásicas, novelas, doramas y anime)
+  // 6. Addon Latam (con caché en memoria de 20 min para evitar timeouts de duckdns en consultas consecutivas)
   const urlAddonLatam = `${ADDON_LATAM_BASE}/stream/${type}/${id}`;
+  const queryAddonLatamCached = async () => {
+    const cacheKey = `${type}:${id}`;
+    const hit = latamCache.get(cacheKey);
+    if (hit && Date.now() - hit.ts < LATAM_CACHE_TTL) return hit.data;
+    const data = await queryJsonUrl(urlAddonLatam, 9500);
+    if (data && Array.isArray(data.streams) && data.streams.length > 0) {
+      latamCache.set(cacheKey, { ts: Date.now(), data });
+      if (latamCache.size > 200) {
+        const firstKey = latamCache.keys().next().value;
+        latamCache.delete(firstKey);
+      }
+    }
+    return data;
+  };
 
   const [resTPrimary, resTSecondary, resPeerflix, resComet, resTdb, resLatam] = await Promise.all([
     queryJsonUrl(urlTorrentioPrimary, 5000),
@@ -190,7 +207,7 @@ async function fetchMultiEngineStreams(type, rawId, rdToken, region = 'latam') {
     queryJsonUrl(urlPeerflix, 5000),
     queryJsonUrl(urlCometDmm, 5500),
     queryJsonUrl(urlTorrentsDb, 5000),
-    region === 'latam' ? queryJsonUrl(urlAddonLatam, 8000) : Promise.resolve({ streams: [] })
+    region === 'latam' ? queryAddonLatamCached() : Promise.resolve({ streams: [] })
   ]);
 
   let combined = [
@@ -365,6 +382,53 @@ module.exports = async (req, res) => {
       sendJson(200, { meta });
     } catch (e) {
       sendJson(200, { meta: {} });
+    }
+    return;
+  }
+
+  // 1.8. Endpoint de Subtítulos Sincronizados (/subtitles/:type/:id/:extra?.json)
+  // Garantiza subtítulos en Español (priorizando coincidencia exacta por videoHash/videoSize) en TODAS las pantallas
+  const subMatch = urlPath.match(/subtitles\/([^\/]+)\/([^\/]+)(?:\/(.+))?/) || rawUrl.match(/subtitles\/([^\/]+)\/([^\/]+)(?:\/(.+))?/);
+  if (subMatch) {
+    const type = subMatch[1];
+    const rawSubId = subMatch[2].replace(/\.json$/i, '');
+    const rawExtra = subMatch[3] ? subMatch[3].replace(/\.json$/i, '') : '';
+    try {
+      const resolvedId = (await resolveImdbIdIfNeeded(type, rawSubId)).replace(/\.json$/i, '');
+      const hashUrl = rawExtra
+        ? `https://opensubtitles-v3.strem.io/subtitles/${type}/${resolvedId}/${rawExtra}.json`
+        : `https://opensubtitles-v3.strem.io/subtitles/${type}/${resolvedId}.json`;
+      const baseUrl = `https://opensubtitles-v3.strem.io/subtitles/${type}/${resolvedId}.json`;
+
+      const [resHash, resBase] = await Promise.all([
+        fetchRawJson(hashUrl, 4500),
+        rawExtra ? fetchRawJson(baseUrl, 4500) : Promise.resolve(null)
+      ]);
+
+      const combinedSubs = [
+        ...(resHash?.subtitles || []),
+        ...(resBase?.subtitles || [])
+      ];
+
+      const seenSubUrls = new Set();
+      const spanishSubs = [];
+      const englishSubs = [];
+
+      for (const sub of combinedSubs) {
+        if (!sub || !sub.url || seenSubUrls.has(sub.url)) continue;
+        seenSubUrls.add(sub.url);
+        const lang = String(sub.lang || '').toLowerCase();
+        if (lang === 'spa' || lang === 'es' || lang === 'es-419' || lang === 'es-es' || lang.includes('spanish')) {
+          spanishSubs.push({ ...sub, lang: 'spa' });
+        } else if (lang === 'eng' || lang === 'en') {
+          englishSubs.push(sub);
+        }
+      }
+
+      // Devolver primero hasta 12 subtítulos en Español (hash exacto primero) + 2 en Inglés de respaldo
+      sendJson(200, { subtitles: [...spanishSubs.slice(0, 12), ...englishSubs.slice(0, 2)] });
+    } catch (e) {
+      sendJson(200, { subtitles: [] });
     }
     return;
   }
@@ -634,6 +698,11 @@ module.exports = async (req, res) => {
 
         const isInstantCached = /\[rd\+\]|\[rd⚡\]/i.test(stream.name || '');
         if (isInstantCached) priority += 15;
+        if (isFromLatamWeb) {
+          // Priorizar CDNs estables (Cloudflare Workers / Google Drive Index / cdn.vids.st) sobre /redirect/ que suelen cortarse
+          if (/workers\.dev|cdn\.vids\.st/i.test(streamUrl)) priority += 35;
+          else if (/addonlatam\.duckdns\.org\/px\/|pluto\.tv/i.test(streamUrl)) priority += 15;
+        }
         if (isLatamWebUnconfirmed) priority -= 25;
 
         // Añadir indicador transparente cuando el archivo es Remux/exigente o cuando es alta compatibilidad
@@ -726,8 +795,8 @@ module.exports = async (req, res) => {
             ];
           } else {
             curated = [
-              ...latinoList.slice(0, 1),
-              ...pickDiverseResolutions(originalList, 3),
+              ...latinoList.slice(0, 2),
+              ...pickDiverseResolutions(originalList, 2),
               ...spainList.slice(0, 1)
             ];
           }

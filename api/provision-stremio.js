@@ -56,13 +56,14 @@ module.exports = async (req, res) => {
     const manifestUrl = `https://videm.tv/api/addon/${encodeURIComponent(tokenPath)}/manifest.json`;
     const videmManifest = {
       id: 'tv.videm.cinema',
-      version: '1.6.0',
+      version: '1.7.0',
       name: isSpain ? 'VIDEM 4K Cinema (España)' : 'VIDEM 4K Cinema',
       description: isSpain
-        ? 'Infraestructura privada VIDEM en ultra alta definición 4K Remux Dolby Atmos (Castellano, VOSE, Multi-Audio & Global)'
-        : 'Infraestructura privada VIDEM en ultra alta definición 4K Remux Dolby Atmos (Curaduría VIP Latino, K-Dramas & Metadatos Actualizados)',
+        ? 'Infraestructura privada VIDEM en ultra alta definición 4K Remux Dolby Atmos (Castellano, VOSE, Multi-Audio & Subtítulos Sincronizados)'
+        : 'Infraestructura privada VIDEM en ultra alta definición 4K Remux Dolby Atmos (Audio Latino, Subtítulos Sincronizados, Smart TV Friendly & Metadatos Actualizados)',
       resources: [
         'stream',
+        'subtitles',
         { name: 'meta', types: ['series', 'movie'], idPrefixes: ['tt'] }
       ],
       types: ['movie', 'series', 'anime'],

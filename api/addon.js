@@ -14,7 +14,7 @@ const LATAM_CACHE_TTL = 20 * 60 * 1000;
 
 const MANIFEST = {
   id: "tv.videm.cinema",
-  version: "1.7.3",
+  version: "1.7.4",
   name: "VIDEM 4K Cinema",
   description: "Infraestructura privada VIDEM en ultra alta definición 4K Remux Dolby Atmos (Audio Latino, Subtítulos Sincronizados, Smart TV Friendly & Metadatos Actualizados)",
   resources: [
@@ -189,12 +189,36 @@ async function fetchMultiEngineStreams(type, rawId, rdToken, region = 'latam') {
     region === 'latam' ? queryJsonUrl(urlTorrentioGlobal, 4000) : Promise.resolve({ streams: [] })
   ]);
 
+  // Extraer hashes confirmados en caché Real-Debrid desde Comet (cachedOnly: true)
+  // CRÍTICO: Nunca devolvemos URLs crudas de comet.elfhosted.com/playback/... porque ElfHosted bloquea por IP
+  // ("Opened on a different connection: Expected IP = IP de Vercel"). Usamos Comet solo como verificador de caché RD para Peerflix.
+  const cometCachedHashes = new Set();
+  for (const cs of (resComet.streams || [])) {
+    const bgMatch = String(cs?.behaviorHints?.bingeGroup || '').match(/([a-fA-F0-9]{40})/);
+    if (bgMatch) {
+      cometCachedHashes.add(bgMatch[1].toLowerCase());
+    }
+  }
+
+  // Enriquecer Peerflix: Peerflix etiqueta todo como "[RD download]" desde que RD quitó instantAvailability,
+  // aunque el torrent esté 100% cacheado (y resuelve directo a *.download.real-debrid.com sin bloqueo de IP).
+  const normalizedPeerflixStreams = (resPeerflix.streams || []).map(ps => {
+    const hashMatch = String(ps?.url || '').match(/\/([a-fA-F0-9]{40})\//);
+    const isCachedInComet = hashMatch && cometCachedHashes.has(hashMatch[1].toLowerCase());
+    if (isCachedInComet && /\[rd\s*download\]/i.test(ps.name || '')) {
+      return {
+        ...ps,
+        name: ps.name.replace(/\[rd\s*download\]/i, '[RD+]')
+      };
+    }
+    return ps;
+  });
+
   let combined = [
     ...(resTPrimary.streams || []),
+    ...(normalizedPeerflixStreams),
     ...(resLatam.streams || []),
     ...(resTSecondary.streams || []),
-    ...(resPeerflix.streams || []),
-    ...(resComet.streams || []),
     ...(resTdb.streams || []),
     ...(resTGlobal.streams || [])
   ];
@@ -204,8 +228,10 @@ async function fetchMultiEngineStreams(type, rawId, rdToken, region = 'latam') {
   const uniqueStreams = [];
 
   for (const s of combined) {
-    // Exigir URL HTTP directa en caché CDN (descartar torrents P2P crudos o [RD download] sin semillas que no cargan)
-    if (!s || !s.url || /\[rd\s*download\]/i.test(s.name || '')) continue;
+    // Exigir URL HTTP directa en caché CDN (descartar torrents P2P crudos, enlaces IP-locked de ElfHosted Comet,
+    // y [RD download] de Torrentio sin caché, pero permitir Peerflix /realdebrid/ ya que Peerflix etiqueta todos sus enlaces RD como [RD download])
+    const isPeerflixRd = /addon\.peerflix\.mov\/realdebrid\//i.test(s?.url || '');
+    if (!s || !s.url || /comet\.elfhosted\.com\/playback\//i.test(s.url) || (!isPeerflixRd && /\[rd\s*download\]/i.test(s.name || ''))) continue;
 
     // Limpiar colas HTML malformadas en enlaces directos y descartar mirrors rotos (okcdn.ru atados a IP y Rumble con audio mutilado/mudo)
     s.url = String(s.url).split(/&quot;|"|'/)[0].trim();
@@ -222,7 +248,8 @@ async function fetchMultiEngineStreams(type, rawId, rdToken, region = 'latam') {
     }
 
     const isFromLatamWeb = (s.name || '') === 'Addon Latam';
-    const hashMatch = (s.url || '').match(/\/([a-fA-F0-9]{40})\//);
+    const hashMatch = (s.url || '').match(/\/([a-fA-F0-9]{40})(?:\/|\?|$)/);
+    const effectiveHash = s._cometHash || (hashMatch ? hashMatch[1].toLowerCase() : null);
     const rawFirstLine = ((s.title || s.description || '').split('\n')[0] || '').replace(/^📄\s*/, '').trim();
     const normalizeReleaseKey = (str) => String(str || '')
       .toLowerCase()
@@ -233,7 +260,7 @@ async function fetchMultiEngineStreams(type, rawId, rdToken, region = 'latam') {
     const fileHint = normalizeReleaseKey(s.behaviorHints?.filename || rawFirstLine);
     const dedupKey = isFromLatamWeb
       ? s.url
-      : (hashMatch ? `${hashMatch[1].toLowerCase()}` : (fileHint || s.url || s.infoHash));
+      : (effectiveHash || fileHint || s.url || s.infoHash);
 
     if (seenKeys.has(dedupKey) || (!isFromLatamWeb && firstLineTitle.length > 12 && seenKeys.has(firstLineTitle)) || (!isFromLatamWeb && fileHint.length > 12 && seenKeys.has(fileHint))) continue;
     seenKeys.add(dedupKey);
@@ -644,8 +671,8 @@ module.exports = async (req, res) => {
         const isCompatLight = (resBadge === '1080p' || resBadge === '720p' || resBadge === 'SD/720p') && isSmartTvFriendly && (!videoSizeBytes || videoSizeBytes <= 8 * 1024 * 1024 * 1024);
 
         if (isSmartTvFriendly) priority += 18;
-        if (isDirectRdResolver) priority += 10;
-        if (isCometProxy) priority -= 6; // Comet proxy puede perder seeking/memoria en LG webOS frente a enlace directo RD
+        if (isDirectRdResolver) priority += 12;
+        if (isCometProxy) priority -= 50; // Nunca preferir proxy IP-locked de Comet
         if (isWebDlOrBluray) priority += 4;
 
         // Penalizar códecs que bloquean LG webOS para que no queden solos en Opción #1
@@ -806,7 +833,7 @@ module.exports = async (req, res) => {
         return;
       }
 
-      const brandedStreams = curated.map(({ _priority, _bucket, _res, _smartTvFriendly, _compatLight, _isRemuxOrHeavy, description, ...s }) => s);
+      const brandedStreams = curated.map(({ _priority, _bucket, _res, _smartTvFriendly, _compatLight, _isRemuxOrHeavy, _cometHash, description, ...s }) => s);
 
       sendJson(200, { streams: brandedStreams });
     } catch (err) {

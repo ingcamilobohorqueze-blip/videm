@@ -60,7 +60,7 @@ module.exports = async (req, res) => {
   if (req.method === 'OPTIONS') return res.status(200).end();
 
   try {
-    const { action, query, imdbId, type, rdToken, titleName } = req.body || req.query || {};
+    const { action, query, imdbId, type, rdToken, titleName, season, episode, preferredAudio, phone } = req.body || req.query || {};
     const effectiveToken = rdToken || DEMO_RD_TOKEN;
 
     // 1. BUSCADOR DE TÍTULOS CON CARÁTULAS EN ESPAÑOL (TMDB Discover)
@@ -81,17 +81,21 @@ module.exports = async (req, res) => {
           originalTitle: item.original_title || item.original_name || '',
           year: (item.release_date || item.first_air_date || '').slice(0, 4),
           overview: item.overview || 'Sinopsis disponible en la Bóveda VIP.',
-          poster: item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : 'https://videm.tv/assets/images/plan_lluvia_bogota_cine.jpg',
+          poster: item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : 'https://videm.tv/assets/images/hero-home-theater.jpeg',
           rating: item.vote_average ? item.vote_average.toFixed(1) : '8.5'
         }));
 
       return res.status(200).json({ results: list });
     }
 
-    // 2. INYECCIÓN AUTOMÁTICA EN LA BÓVEDA REAL-DEBRID DEL CLIENTE
-    if (action === 'request_vault') {
+    // 2. INYECCIÓN AUTOMÁTICA EN LA BÓVEDA REAL-DEBRID (AUTO-CACHÉ AUDIO LATINO / 4K)
+    if (action === 'request_vault' || action === 'request_audio') {
       let targetId = imdbId;
       const mediaType = type === 'series' || type === 'tv' ? 'series' : 'movie';
+      const seasonNum = Math.max(1, parseInt(season, 10) || 1);
+      const episodeNum = Math.max(1, parseInt(episode, 10) || 1);
+      const isSpain = preferredAudio === 'castellano' || (phone && /^(\+?34)/.test(String(phone).trim()));
+      const seasonLabel = mediaType === 'series' ? ` (Temporada ${seasonNum})` : '';
 
       // Si recibimos tmdbId en vez de imdbId, resolvemos su IMDb ID
       if (!targetId && req.body.tmdbId) {
@@ -104,36 +108,68 @@ module.exports = async (req, res) => {
         return res.status(400).json({ success: false, error: 'No se pudo identificar el código de la película o serie.' });
       }
 
-      // Buscar torrents en español latino / Remux en Torrentio
-      const streamId = mediaType === 'series' ? `${targetId}:1:1` : targetId;
-      const torrentioUrl = `https://torrentio.strem.fun/language=latino,spanish%7Cqualityfilter=cam,scr/stream/${mediaType}/${streamId}.json`;
-      const tData = await queryJson(torrentioUrl, 5000);
+      // Buscar torrents en Audio Latino / Dual en múltiples scrapers (incluyendo los no cacheados para forzar caché en Real-Debrid)
+      const streamId = mediaType === 'series' ? `${targetId}:${seasonNum}:${episodeNum}` : targetId;
+      const langPrimary = isSpain ? 'spanish,latino' : 'latino';
+      const peerflixLang = isSpain ? 'es-ES,es-419' : 'es-419';
 
-      const candidate = (tData?.streams || []).find(s => s.infoHash);
+      const [tLat, pLat, tEsp] = await Promise.all([
+        queryJson(`https://torrentio.strem.fun/language=${langPrimary}%7Cqualityfilter=cam,scr/stream/${mediaType}/${streamId}.json`, 5500),
+        queryJson(`https://addon.peerflix.mov/language=${peerflixLang}/stream/${mediaType}/${streamId}.json`, 5500),
+        queryJson(`https://torrentio.strem.fun/language=latino,spanish%7Cqualityfilter=cam,scr/stream/${mediaType}/${streamId}.json`, 5500)
+      ]);
 
-      if (candidate && candidate.infoHash) {
-        // Inyectar magnet a Real-Debrid
-        const magnet = `magnet:?xt=urn:btih:${candidate.infoHash}&dn=${encodeURIComponent(titleName || 'VIDEM_VIP_VAULT')}`;
+      const allCandidates = [
+        ...(tLat?.streams || []),
+        ...(pLat?.streams || []),
+        ...(tEsp?.streams || [])
+      ].filter(s => s && s.infoHash);
+
+      // Calificar candidatos: priorizar Audio Latino / Dual-Lat real y descartar francés/ruso/VOSTFR
+      const scored = allCandidates.map(s => {
+        const text = `${s.name || ''} ${s.title || ''} ${s.description || ''}`.toLowerCase();
+        let score = 0;
+        const isBadLang = /[а-яА-ЯёЁ]|rutracker|vostfr|\bfrench\b|truefrench/i.test(text);
+        if (isBadLang) return { s, score: -999 };
+
+        if (/dual[\s._-]*lat|audio[\s._-]*lat|latino|es-419|cinecalidad|pelisenhd|hackstore/i.test(text)) score += 100;
+        else if (isSpain && /castellano|es-es|\besp\b|mejortorrent|wolfmax|dontorrent/i.test(text)) score += 100;
+        else if (/multi|dual/i.test(text)) score += 35;
+
+        if (/2160p|\b4k\b/i.test(text)) score += 15;
+        else if (/1080p/i.test(text)) score += 12;
+        if (/complete|season|temporada|s0\d|s\d\d/i.test(text) && mediaType === 'series') score += 10;
+
+        return { s, score };
+      }).filter(x => x.score > 0).sort((a, b) => b.score - a.score);
+
+      const best = scored[0]?.s;
+
+      if (best && best.infoHash) {
+        const magnet = `magnet:?xt=urn:btih:${best.infoHash}&dn=${encodeURIComponent(titleName || 'VIDEM_VIP_VAULT')}`;
         const addRes = await postForm('https://api.real-debrid.com/rest/1.0/torrents/addMagnet', { magnet }, effectiveToken);
 
         if (addRes && addRes.id) {
-          // Seleccionar todos los archivos para descarga instantánea en la nube
           await postForm(`https://api.real-debrid.com/rest/1.0/torrents/selectFiles/${addRes.id}`, { files: 'all' }, effectiveToken);
 
+          const audioLabel = isSpain ? 'Castellano' : 'Audio Latino';
           return res.status(200).json({
             success: true,
             status: 'cached',
-            message: `🎬 "${titleName || 'Título'}" ha sido cargada con éxito a tu Bóveda Privada. Ya puedes verla en tu Smart TV en resolución 4K / Latino.`,
+            message: `🔊 ¡${audioLabel} activado para "${titleName || 'Título'}"${seasonLabel}! Se está guardando en nuestra nube 10 Gbps (estará listo en tu Smart TV en 1–3 minutos).`,
             torrentId: addRes.id
           });
         }
       }
 
-      // Si no hay torrent directo, registrar la orden como solicitud prioritaria de Conserje
+      // Si no hay torrent Latino directo disponible, entregar enlace de reporte prioritario al Conserje
+      const waPhone = isSpain ? '34746057776' : '573015568904';
+      const waText = `Hola VIDEM VIP, solicito activar Audio ${isSpain ? 'Castellano' : 'Latino'} en alta velocidad para: "${titleName || 'Título'}"${seasonLabel} (ID: ${targetId}).`;
       return res.status(200).json({
         success: true,
         status: 'queued',
-        message: `🎩 Tu solicitud de "${titleName || 'Película'}" fue recibida con prioridad VIP. Nuestro equipo la cargará en tu televisor en breve.`
+        waUrl: `https://wa.me/${waPhone}?text=${encodeURIComponent(waText)}`,
+        message: `🎩 No encontramos paquete automático en Audio ${isSpain ? 'Castellano' : 'Latino'} para "${titleName || 'Título'}"${seasonLabel}. Pulsa "Reportar" para que nuestro Conserje lo cargue manualmente.`
       });
     }
 

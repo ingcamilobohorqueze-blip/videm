@@ -360,7 +360,15 @@ async function searchVaultTitles(query) {
       return;
     }
 
-    container.innerHTML = results.map(item => `
+    container.innerHTML = results.map(item => {
+      const safeTitle = item.title.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+      const seasonSelectHtml = item.type === 'series'
+        ? `<select id="seasonSel_${item.tmdbId}" aria-label="Temporada" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(0,240,255,0.3); color: #fff; border-radius: 8px; padding: 6px 8px; font-size: 0.76rem; font-weight: 600; margin-bottom: 6px; width: 100%; cursor: pointer;">
+            ${[1,2,3,4,5,6,7,8,9,10].map(n => `<option value="${n}" style="background:#0B0F17;color:#fff;">Temporada ${n}</option>`).join('')}
+          </select>`
+        : '';
+
+      return `
       <div class="vault-item-card">
         <img src="${item.poster}" alt="${item.title}" class="vault-poster" loading="lazy">
         <div class="vault-info">
@@ -370,42 +378,86 @@ async function searchVaultTitles(query) {
             <span>⭐ ${item.rating}</span>
             <span>${item.type === 'series' ? '📺 Serie' : '🎬 Película'}</span>
           </div>
-          <button class="btn-inject-title" onclick="requestTitleToVault('${item.tmdbId}', '${item.type}', '${item.title.replace(/'/g, "\\'")}')">
-            <span>⚡ Añadir a mi TV</span>
-          </button>
+          ${seasonSelectHtml}
+          <div style="display:flex; gap:6px; flex-wrap:wrap;">
+            <button id="btnVault_${item.tmdbId}" class="btn-inject-title" style="flex:1;" onclick="requestTitleToVault('${item.tmdbId}', '${item.type}', '${safeTitle}')">
+              <span>🔊 Activar Audio Latino</span>
+            </button>
+            <button type="button" onclick="reportTitleIssue('${item.tmdbId}', '${item.type}', '${safeTitle}')" title="Reportar problema de audio o subtítulos al Conserje" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.14); color: var(--text-muted); border-radius: 8px; padding: 6px 10px; font-size: 0.74rem; font-weight: 600; cursor: pointer;">
+              ⚠️ Reportar
+            </button>
+          </div>
         </div>
       </div>
-    `).join('');
+    `;
+    }).join('');
   } catch (err) {
     container.innerHTML = '<div style="text-align:center; padding: 18px; color: var(--danger);">Error cargando catálogo.</div>';
   }
 }
 
+function reportTitleIssue(tmdbId, type, titleName) {
+  const seasonSel = document.getElementById(`seasonSel_${tmdbId}`);
+  const seasonTxt = (type === 'series' && seasonSel) ? ` (Temporada ${seasonSel.value})` : '';
+  const isClientSpain = (
+    (activeClient?.phone && String(activeClient.phone).startsWith('34')) ||
+    (activeClient?.plan && activeClient.plan.includes('€'))
+  );
+  const waDest = isClientSpain ? '34746057776' : '573015568904';
+  const msg = `Hola VIDEM VIP, quiero reportar un tema de audio/subtítulos o solicitar doblaje para: "${titleName}"${seasonTxt} (${type === 'series' ? 'Serie' : 'Película'}).`;
+  window.open(`https://wa.me/${waDest}?text=${encodeURIComponent(msg)}`, '_blank');
+}
+
 async function requestTitleToVault(tmdbId, type, titleName) {
-  const toast = document.getElementById('vaultToast');
-  showAppToast(`⏳ Procesando "${titleName}" en tu Bóveda Privada...`);
+  const seasonSel = document.getElementById(`seasonSel_${tmdbId}`);
+  const season = (type === 'series' && seasonSel) ? parseInt(seasonSel.value, 10) : 1;
+  const seasonLabel = type === 'series' ? ` T${season}` : '';
+  const btn = document.getElementById(`btnVault_${tmdbId}`);
+
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<span>⏳ Buscando Audio Latino...</span>';
+  }
+  showAppToast(`⏳ Buscando Audio Latino en 10 Gbps para "${titleName}${seasonLabel}"...`);
 
   try {
     const res = await fetch('/api/request-title', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        action: 'request_vault',
+        action: 'request_audio',
         tmdbId,
         type,
+        season,
         titleName,
+        phone: activeClient?.phone,
         rdToken: activeClient?.rdToken
       })
     });
     const data = await res.json();
 
-    if (data.success) {
-      showAppToast(data.message || `🎉 "${titleName}" quedó disponible en tu Smart TV.`);
+    if (data.success && data.status === 'cached') {
+      if (btn) btn.innerHTML = '<span>✅ Activado en Nube</span>';
+      showAppToast(data.message || `🔊 "${titleName}${seasonLabel}" activado en Audio Latino.`);
+    } else if (data.success) {
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<span>🎩 Pedir a Conserje</span>';
+      }
+      showAppToast(data.message || `🎩 Solicitud enviada a tu Conserje.`);
     } else {
-      showAppToast('⚠️ ' + (data.error || 'No se pudo procesar automáticamente. Conserje notificado.'));
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<span>🔊 Activar Audio Latino</span>';
+      }
+      showAppToast('⚠️ ' + (data.error || 'No se pudo procesar automáticamente. Usa el botón Reportar.'));
     }
   } catch (e) {
-    showAppToast('⚠️ Solicitud enviada a tu Conserje vía WhatsApp.');
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '<span>🔊 Activar Audio Latino</span>';
+    }
+    showAppToast('⚠️ Error de conexión. Usa el botón ⚠️ Reportar para avisar al Conserje.');
   }
 }
 
@@ -433,6 +485,6 @@ function showAppToast(msg) {
   }
   toast.textContent = msg;
   toast.style.display = 'block';
-  setTimeout(() => { toast.style.display = 'none'; }, 4500);
+  setTimeout(() => { toast.style.display = 'none'; }, 6500);
 }
 

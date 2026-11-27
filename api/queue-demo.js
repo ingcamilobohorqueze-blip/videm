@@ -300,6 +300,16 @@ module.exports = async (req, res) => {
     const cleanCode = String(tv_code).trim().toUpperCase();
     const cleanPhone = String(phone).replace(/[^0-9]/g, '');
 
+    function formatLocalTime(dateObj) {
+      if (cleanPhone.startsWith('34')) {
+        return dateObj.toLocaleTimeString('es-ES', { timeZone: 'Europe/Madrid', hour: '2-digit', minute: '2-digit', hour12: false }) + ' (hora España)';
+      }
+      if (cleanPhone.startsWith('1') && cleanPhone.length === 11) {
+        return dateObj.toLocaleTimeString('en-US', { timeZone: 'America/New_York', hour: '2-digit', minute: '2-digit', hour12: true }) + ' ET';
+      }
+      return dateObj.toLocaleTimeString('es-CO', { timeZone: 'America/Bogota', hour: '2-digit', minute: '2-digit', hour12: true });
+    }
+
     // 1. Upsert Usuario en Supabase
     await supabaseRequest('/rest/v1/users', 'POST', {
       phone: cleanPhone,
@@ -317,7 +327,7 @@ module.exports = async (req, res) => {
     const pastCompleted = prevSessions.find(s => s.status === 'completed' || s.status === 'expired' || s.status === 'cut' || s.status === 'cancelled' || (s.status === 'active' && new Date(s.scheduled_end) <= now));
 
     if (activePrev) {
-      const expHour = new Date(activePrev.scheduled_end).toLocaleTimeString('es-CO', { timeZone: 'America/Bogota', hour: '2-digit', minute: '2-digit', hour12: true });
+      const expHour = formatLocalTime(new Date(activePrev.scheduled_end));
       res.status(200).json({
         type: 'already_active',
         status: 'active',
@@ -375,7 +385,7 @@ module.exports = async (req, res) => {
         status: 'demo_active'
       });
 
-      const expHour = scheduledEnd.toLocaleTimeString('es-CO', { timeZone: 'America/Bogota', hour: '2-digit', minute: '2-digit', hour12: true });
+      const expHour = formatLocalTime(scheduledEnd);
 
       res.status(200).json({
         type: 'activated',
@@ -411,7 +421,7 @@ module.exports = async (req, res) => {
       status: 'demo_queued'
     });
 
-    const startHour = scheduledStart.toLocaleTimeString('es-CO', { timeZone: 'America/Bogota', hour: '2-digit', minute: '2-digit', hour12: true });
+    const startHour = formatLocalTime(scheduledStart);
     const waitMin = Math.round((scheduledStart.getTime() - now.getTime()) / (1000 * 60));
 
     res.status(200).json({

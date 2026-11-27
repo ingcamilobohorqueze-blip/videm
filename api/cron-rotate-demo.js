@@ -39,16 +39,79 @@ function supabaseRequest(path, method = 'GET', body = null) {
   });
 }
 
-function sendWhatsApp(phone, text) {
+function getRegionInfo(phone) {
+  const cleanPhone = String(phone || '').replace(/[^0-9]/g, '');
+  if (cleanPhone.startsWith('34')) {
+    return { region: 'ES', instance: 'VidemEsp' };
+  }
+  if (cleanPhone.startsWith('1') && cleanPhone.length === 11) {
+    return { region: 'US', instance: 'VidemProd' };
+  }
+  return { region: 'CO', instance: 'VidemProd' };
+}
+
+function buildFollowUpMsg(region) {
+  if (region === 'ES') {
+    return [
+      "🍿 *¡Esperamos que hayas disfrutado tu experiencia VIDEM!* 🎬🇪🇸",
+      "",
+      "Tu prueba de cortesía de 2 horas ha finalizado con éxito. ¿Pudiste comprobar la diferencia de nitidez del 4K Remux y el sonido Dolby Atmos en tu salón?",
+      "",
+      "💡 *Activa tu Membresía VIP Oficial para continuar sin interrupciones:*",
+      "• *Pase 1 Mes Flex:* 9,99 € / mes _(sin permanencia)_",
+      "• *Membresía Semestral (6 Meses):* 49,99 € _(~8,33 €/mes)_",
+      "• *Membresía Anual VIP (12 + 1 Mes GRATIS):* 89,99 € _(~7,50 €/mes - Máximo ahorro)_",
+      "",
+      "💳 *Activa en línea de forma segura (Tarjeta, Apple Pay o Google Pay):*",
+      "👉 https://videm.tv/es",
+      "",
+      "Escríbeme por aquí si deseas activar hoy mismo o hablar con un asesor. ¡Un saludo! 👋"
+    ].join("\n");
+  }
+  if (region === 'US') {
+    return [
+      "🍿 *¡Esperamos que hayas disfrutado tu experiencia VIDEM!* 🎬🇺🇸",
+      "",
+      "Tu prueba gratuita de 2 horas ha finalizado con éxito. ¿Pudiste comprobar la diferencia de nitidez del 4K Remux y el sonido Dolby Atmos en tu Smart TV?",
+      "",
+      "💡 *Activa tu Membresía VIP Oficial para continuar sin interrupciones:*",
+      "• *Pase 1 Mes Flex:* $14.99 USD / mes _(sin permanencia)_",
+      "• *Membresía Semestral (6 Meses):* $69.99 USD _(~$11.66/mes)_",
+      "• *Membresía Anual VIP (12 + 1 Mes GRATIS):* $119.99 USD _(~$9.99/mes - Máximo ahorro)_",
+      "",
+      "💳 *Activa en línea vía Stripe (Visa/MC/Amex, Apple Pay, Google Pay o PayPal):*",
+      "👉 https://videm.tv/us",
+      "",
+      "Escríbeme por aquí si deseas activar hoy mismo o hablar con un asesor. ¡Feliz día! 👋"
+    ].join("\n");
+  }
+  return [
+    "🍿 *¡Esperamos que hayas disfrutado tu experiencia VIDEM!* 🎬🇨🇴",
+    "",
+    "Tu pase de cortesía de 2 horas ha finalizado con éxito. ¿Pudiste comprobar la diferencia de nitidez del 4K Remux y el sonido envolvente?",
+    "",
+    "💡 *Activa tu Membresía VIP Oficial para continuar sin interrupciones:*",
+    "• *Pase Mensual (1 Mes):* $55.000 COP",
+    "• *Membresía Semestral (6 Meses):* $240.000 COP _(Ahorras $90.000)_",
+    "• *Membresía Anual (12 + 1 Mes GRATIS):* $440.000 COP _(Máximo ahorro)_",
+    "",
+    "👉 https://videm.tv",
+    "",
+    "Escríbeme por aquí si deseas activar tu acceso permanente hoy mismo. ¡Feliz día! 👋"
+  ].join("\n");
+}
+
+function sendWhatsApp(phone, text, instanceOverride = null) {
   return new Promise((resolve) => {
     const cleanPhone = String(phone).replace(/[^0-9]/g, '');
+    const instance = instanceOverride || getRegionInfo(cleanPhone).instance || EVOLUTION_INSTANCE;
     const data = JSON.stringify({
       number: cleanPhone,
       text: text,
       delay: 1000,
       presence: 'composing'
     });
-    const req = https.request(`${EVOLUTION_API_URL}/message/sendText/${EVOLUTION_INSTANCE}`, {
+    const req = https.request(`${EVOLUTION_API_URL}/message/sendText/${instance}`, {
       method: 'POST',
       headers: {
         'apikey': EVOLUTION_API_KEY,
@@ -223,21 +286,11 @@ module.exports = async (req, res) => {
       await supabaseRequest(`/rest/v1/demo_sessions?id=eq.${s.id}`, 'PATCH', { status: 'completed' });
       await supabaseRequest(`/rest/v1/users?phone=eq.${s.user_phone}`, 'PATCH', { status: 'demo_expired' });
 
-      // Mensaje de cierre y oferta comercial
-      const followUpMsg = [
-        "🍿 *¡Esperamos que hayas disfrutado tu experiencia VIDEM!* 🎬",
-        "",
-        "Tu pase de cortesía de 2 horas ha finalizado con éxito. ¿Pudiste comprobar la diferencia de nitidez del 4K Remux y el sonido envolvente?",
-        "",
-        "💡 *Activa tu Membresía VIP Oficial para continuar sin interrupciones:*",
-        "• *Pase Mensual (1 Mes):* $55.000 COP",
-        "• *Membresía Semestral (6 Meses):* $240.000 COP _(Ahorras $90.000)_",
-        "• *Membresía Anual (12 Meses):* $440.000 COP _(Máximo ahorro)_",
-        "",
-        "Escríbeme por aquí si deseas activar tu acceso permanente hoy mismo. ¡Feliz día! 👋"
-      ].join("\n");
+      // Mensaje de cierre y oferta comercial multirregión (ES: EUR/VidemEsp | US: USD/VidemProd | CO: COP/VidemProd)
+      const { region, instance } = getRegionInfo(s.user_phone);
+      const followUpMsg = buildFollowUpMsg(region);
 
-      await sendWhatsApp(s.user_phone, followUpMsg);
+      await sendWhatsApp(s.user_phone, followUpMsg, instance);
     }
 
     // 2. Si no hay ninguna sesión activa ahora, cortar señal Demo (si hubo vencidas) y activar al siguiente en cola

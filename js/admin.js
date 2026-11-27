@@ -901,6 +901,7 @@ async function saveNewClient(andProvision = false) {
   const name = document.getElementById('clientName').value.trim();
   const phone = document.getElementById('clientPhone').value.trim();
   const plan = document.getElementById('clientPlan').value;
+  const audioRegion = document.getElementById('clientAudioRegion')?.value === 'es' ? 'es' : 'latam';
   const status = document.getElementById('clientStatus').value;
   const user = document.getElementById('genStremioUser').value;
   const pass = document.getElementById('genStremioPass').value;
@@ -917,6 +918,7 @@ async function saveNewClient(andProvision = false) {
   let days = 180;
   let price = '$240.000 COP';
   if (plan.includes('Anual')) { days = 365; price = '$440.000 COP'; }
+  else if (plan.includes('Trimestral')) { days = 90; price = '90 días'; }
   else if (plan.includes('Mensual')) { days = 30; price = '$55.000 COP'; }
   else if (plan.includes('Demo')) { days = 1; price = 'Cortesía'; }
 
@@ -928,6 +930,7 @@ async function saveNewClient(andProvision = false) {
     phone,
     plan,
     price,
+    audioRegion,
     user,
     pass,
     rdEmail,
@@ -935,7 +938,7 @@ async function saveNewClient(andProvision = false) {
     status,
     startDate: now.toISOString(),
     endDate,
-    notes: `Creado el ${now.toLocaleDateString('es-CO')}. Aprovisionamiento inicial.`
+    notes: `Creado el ${now.toLocaleDateString('es-CO')}. Audio: ${audioRegion === 'es' ? 'Castellano (España)' : 'Español Latino'}.`
   };
 
   crmClients.unshift(newClient);
@@ -947,12 +950,12 @@ async function saveNewClient(andProvision = false) {
     if (!rdToken) {
       showToast('⚠️ Para aprovisionar en la nube, ingresa el Token API de Real-Debrid.');
     } else {
-      showToast('⏳ Aprovisionando Torrentio RD 4K en Stremio Cloud...');
-      const ok = await provisionStremioAccountCloud(user, pass, rdToken);
+      showToast(`⏳ Aprovisionando VIDEM 4K (${audioRegion === 'es' ? 'España' : 'Latino'}) en Stremio Cloud...`);
+      const ok = await provisionStremioAccountCloud(user, pass, rdToken, audioRegion);
       if (ok) {
-        newClient.notes += `\n[${new Date().toLocaleDateString('es-CO')}]: Torrentio RD 4K Remux aprovisionado en Stremio Cloud.`;
+        newClient.notes += `\n[${new Date().toLocaleDateString('es-CO')}]: VIDEM 4K (${audioRegion === 'es' ? 'España' : 'Latino'}) aprovisionado en Stremio Cloud.`;
         saveClientsToStorage();
-        showToast(`⚡ ¡Cliente ${name} aprovisionado exitosamente en Stremio Cloud!`);
+        showToast(`⚡ ¡Cliente ${name} aprovisionado (${audioRegion === 'es' ? '🇪🇸 España' : '🇲🇽 Latino'}) en Stremio Cloud!`);
       }
     }
   } else {
@@ -992,14 +995,18 @@ async function verifyRdTokenInForm() {
   }
 }
 
-async function provisionStremioAccountCloud(email, password, rdToken) {
+async function provisionStremioAccountCloud(email, password, rdToken, region = 'latam') {
+  const effectiveRegion = region === 'es' ? 'es' : 'latam';
+  const isSpain = effectiveRegion === 'es';
+  const tokenPath = isSpain ? `es_${rdToken}` : rdToken;
+
   try {
-    // 1. Intentar backend helper de serve.js si está disponible
+    // 1. Intentar backend helper de Vercel/serve.js si está disponible
     try {
       const srvRes = await fetch('/api/provision-stremio', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, rdToken })
+        body: JSON.stringify({ email, password, rdToken, region: effectiveRegion })
       });
       const srvData = await srvRes.json();
       if (srvData.success) {
@@ -1019,18 +1026,24 @@ async function provisionStremioAccountCloud(email, password, rdToken) {
     const authKey = loginData.result?.authKey;
     if (!authKey) throw new Error(loginData.error?.message || 'Error al iniciar sesión en Stremio');
 
-    // Manifiesto Oficial VIDEM 4K Cinema (Marca Blanca con Token Dedicado del Cliente)
-    const manifestUrl = `https://videm.tv/api/addon/${encodeURIComponent(rdToken)}/manifest.json`;
+    // Manifiesto Oficial VIDEM 4K Cinema (Marca Blanca con Token Dedicado y Región de Audio)
+    const manifestUrl = `https://videm.tv/api/addon/${encodeURIComponent(tokenPath)}/manifest.json`;
     const videmManifest = {
       id: 'tv.videm.cinema',
-      version: '1.1.0',
-      name: 'VIDEM 4K Cinema',
-      description: 'Infraestructura privada VIDEM en ultra alta definición 4K Remux Dolby Atmos (Multi-Engine Latino & Asian Cinema)',
-      resources: ['stream'],
+      version: '1.7.6',
+      name: isSpain ? 'VIDEM 4K Cinema (España)' : 'VIDEM 4K Cinema',
+      description: isSpain
+        ? 'Infraestructura privada VIDEM en ultra alta definición 4K Remux Dolby Atmos (Castellano, VOSE, Multi-Audio & Subtítulos Sincronizados)'
+        : 'Infraestructura privada VIDEM en ultra alta definición 4K Remux Dolby Atmos (Audio Latino, Subtítulos Sincronizados, Smart TV Friendly & Metadatos Actualizados)',
+      resources: [
+        'stream',
+        'subtitles',
+        { name: 'meta', types: ['series', 'movie'], idPrefixes: ['tt'] }
+      ],
       types: ['movie', 'series', 'anime'],
       idPrefixes: ['tt', 'kitsu', 'tmdb:'],
       catalogs: [],
-      background: 'https://videm.tv/assets/images/plan_lluvia_bogota_cine.jpg',
+      background: 'https://videm.tv/assets/images/hero-home-theater.jpeg',
       logo: 'https://videm.tv/assets/icons/icon-192.png',
       behaviorHints: { configurable: false, configurationRequired: false }
     };
@@ -1120,6 +1133,8 @@ function openClientDetailModal(clientId) {
     rdTokenInput.value = client.rdToken || '';
   }
 
+  updateModalAudioButtonLabel(client.audioRegion || 'latam');
+
   document.getElementById('modalClientNotes').value = client.notes || '';
 
   const cleanPhone = client.phone.replace(/[^0-9]/g, '');
@@ -1148,6 +1163,38 @@ function closeClientDetailModal() {
   selectedClientId = null;
 }
 
+function updateModalAudioButtonLabel(region) {
+  const btn = document.getElementById('btnToggleAudioRegion');
+  if (!btn) return;
+  const isEs = region === 'es';
+  btn.innerHTML = isEs
+    ? '<span>🇪🇸 Audio: España (Cambiar a 🇲🇽)</span>'
+    : '<span>🇲🇽 Audio: Latino (Cambiar a 🇪🇸)</span>';
+}
+
+async function toggleModalClientAudioRegion() {
+  if (!selectedClientId) return;
+  const client = crmClients.find(c => c.id === selectedClientId);
+  if (!client) return;
+
+  const currentRegion = client.audioRegion === 'es' ? 'es' : 'latam';
+  const nextRegion = currentRegion === 'es' ? 'latam' : 'es';
+  client.audioRegion = nextRegion;
+  saveClientsToStorage();
+  updateModalAudioButtonLabel(nextRegion);
+
+  const token = (document.getElementById('modalClientRdToken')?.value || '').trim() || client.rdToken;
+  if (token && client.user && client.user.includes('@') && client.pass && !client.pass.includes('•')) {
+    showToast(`⏳ Cambiando perfil a ${nextRegion === 'es' ? '🇪🇸 Castellano España' : '🇲🇽 Audio Latino'} en Stremio Cloud...`);
+    const ok = await provisionStremioAccountCloud(client.user, client.pass, token, nextRegion);
+    if (ok) {
+      showToast(`✅ ¡Audio cambiado a ${nextRegion === 'es' ? '🇪🇸 España' : '🇲🇽 Latino'} en la cuenta de ${client.name}!`);
+    }
+  } else {
+    showToast(`🔊 Preferencia guardada: ${nextRegion === 'es' ? '🇪🇸 España' : '🇲🇽 Latino'}. Pulsa "⚡ Aprovisionar 4K" para aplicarlo en Stremio.`);
+  }
+}
+
 function saveModalRdToken() {
   if (!selectedClientId) return;
   const client = crmClients.find(c => c.id === selectedClientId);
@@ -1170,9 +1217,10 @@ function installAddonDirectProtocol() {
     return;
   }
 
-  const manifestUrl = `https://videm.tv/api/addon/${encodeURIComponent(token)}/manifest.json`;
+  const tokenPath = client.audioRegion === 'es' ? `es_${token}` : token;
+  const manifestUrl = `https://videm.tv/api/addon/${encodeURIComponent(tokenPath)}/manifest.json`;
   const stremioWebUrl = `https://web.stremio.com/#/addons?addon=${encodeURIComponent(manifestUrl)}`;
-  const stremioProtocol = `stremio://videm.tv/api/addon/${encodeURIComponent(token)}/manifest.json`;
+  const stremioProtocol = `stremio://videm.tv/api/addon/${encodeURIComponent(tokenPath)}/manifest.json`;
 
   // 1. Copiar enlace al portapapeles por comodidad
   copyText(manifestUrl, 'Enlace de VIDEM 4K copiado');
@@ -1234,12 +1282,13 @@ async function provisionClientFromModal() {
     if (passEl) passEl.textContent = '••••••••';
   }
 
-  showToast('⏳ Aprovisionando VIDEM 4K Cinema en Stremio Cloud...');
-  const ok = await provisionStremioAccountCloud(client.user, client.pass, token);
+  const targetRegion = client.audioRegion === 'es' ? 'es' : 'latam';
+  showToast(`⏳ Aprovisionando VIDEM 4K Cinema (${targetRegion === 'es' ? '🇪🇸 España' : '🇲🇽 Latino'}) en Stremio Cloud...`);
+  const ok = await provisionStremioAccountCloud(client.user, client.pass, token, targetRegion);
   if (ok) {
     client.rdToken = token;
     saveClientsToStorage();
-    showToast(`⚡ ¡VIDEM 4K Cinema aprovisionado con éxito en la cuenta de ${client.name}!`);
+    showToast(`⚡ ¡VIDEM 4K Cinema (${targetRegion === 'es' ? '🇪🇸 España' : '🇲🇽 Latino'}) aprovisionado en la cuenta de ${client.name}!`);
   }
 }
 

@@ -27,7 +27,7 @@ module.exports = async (req, res) => {
       return;
     }
 
-    const isSpain = region === 'es' || (phone && /^(\+?34)/.test(String(phone).trim()));
+    const isSpain = region ? region === 'es' : Boolean(phone && /^(\+?34)/.test(String(phone).trim()));
     const tokenPath = isSpain ? `es_${rdToken}` : rdToken;
 
     // 1. Iniciar sesión en Stremio
@@ -56,7 +56,7 @@ module.exports = async (req, res) => {
     const manifestUrl = `https://videm.tv/api/addon/${encodeURIComponent(tokenPath)}/manifest.json`;
     const videmManifest = {
       id: 'tv.videm.cinema',
-      version: '1.7.0',
+      version: '1.7.6',
       name: isSpain ? 'VIDEM 4K Cinema (España)' : 'VIDEM 4K Cinema',
       description: isSpain
         ? 'Infraestructura privada VIDEM en ultra alta definición 4K Remux Dolby Atmos (Castellano, VOSE, Multi-Audio & Subtítulos Sincronizados)'

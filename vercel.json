@@ -148,17 +148,17 @@
     },
     {
       "source": "/asesor-co",
-      "destination": "https://wa.me/573103311543?text=Hola%2C%20vi%20el%20folleto%20de%20VIDEM%20%28Colombia%29%20y%20quiero%20atenci%C3%B3n%20personalizada%20con%20un%20asesor.",
+      "destination": "https://wa.me/573103311543?text=Hola,%20vi%20el%20folleto%20de%20VIDEM%20Colombia%20y%20quiero%20atenci%C3%B3n%20personalizada%20con%20un%20asesor",
       "permanent": false
     },
     {
       "source": "/asesor-us",
-      "destination": "https://wa.me/573103311543?text=Hola%2C%20vi%20el%20folleto%20de%20VIDEM%20%28USA%29%20y%20quiero%20atenci%C3%B3n%20personalizada%20con%20un%20asesor.",
+      "destination": "https://wa.me/573103311543?text=Hola,%20vi%20el%20folleto%20de%20VIDEM%20USA%20y%20quiero%20atenci%C3%B3n%20personalizada%20con%20un%20asesor",
       "permanent": false
     },
     {
       "source": "/asesor-es",
-      "destination": "https://wa.me/573103311543?text=Hola%2C%20vi%20el%20folleto%20de%20VIDEM%20%28Espa%C3%B1a%29%20y%20quiero%20atenci%C3%B3n%20personalizada%20con%20un%20asesor.",
+      "destination": "https://wa.me/573103311543?text=Hola,%20vi%20el%20folleto%20de%20VIDEM%20Espa%C3%B1a%20y%20quiero%20atenci%C3%B3n%20personalizada%20con%20un%20asesor",
       "permanent": false
     }
   ]

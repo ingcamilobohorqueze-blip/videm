@@ -45,6 +45,41 @@ module.exports = async (req, res) => {
     const action = body.action || parsedUrl.searchParams.get('action') || req.query?.action || 'cut';
     const authKey = body.authKey;
 
+    if (action === 'status') {
+      const sbHeaders = { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY };
+      const [masterRes, sessionsRes, rdRes] = await Promise.all([
+        request(`${SUPABASE_URL}/rest/v1/users?phone=eq.${DEMO_PHONE}&select=status`, { headers: sbHeaders }).catch(() => ({ data: [] })),
+        request(`${SUPABASE_URL}/rest/v1/demo_sessions?order=created_at.desc&limit=3&select=user_phone,tv_code,status,scheduled_start,scheduled_end`, { headers: sbHeaders }).catch(() => ({ data: [] })),
+        request('https://api.real-debrid.com/rest/1.0/downloads?limit=5', { headers: { 'Authorization': 'Bearer ' + DEMO_RD_TOKEN } }).catch(() => ({ data: [] }))
+      ]);
+
+      const nowMs = Date.now();
+      const masterStatus = Array.isArray(masterRes.data) ? (masterRes.data[0]?.status || 'unknown') : 'unknown';
+      const sessions = Array.isArray(sessionsRes.data) ? sessionsRes.data : [];
+      const activeSession = sessions.find(s => s.status === 'active' && new Date(s.scheduled_end).getTime() > nowMs) || null;
+      const expiredActive = sessions.find(s => s.status === 'active' && new Date(s.scheduled_end).getTime() <= nowMs) || null;
+      const lastSession = sessions[0] || null;
+      const downloads = Array.isArray(rdRes.data) ? rdRes.data : [];
+      const isOnline = masterStatus === 'demo_active' && !expiredActive;
+
+      sendJson(200, {
+        success: true,
+        action: 'status',
+        isOnline,
+        masterStatus: expiredActive && masterStatus === 'demo_active' ? 'demo_expired' : masterStatus,
+        activeSession,
+        lastSession,
+        rdActiveCount: downloads.length,
+        lastDownload: downloads[0] ? {
+          filename: downloads[0].filename,
+          generated: downloads[0].generated,
+          sizeGb: Number(((downloads[0].filesize || 0) / 1e9).toFixed(2))
+        } : null,
+        checkedAt: new Date().toISOString()
+      });
+      return;
+    }
+
     if (action === 'cut') {
       // 1. Desactivar en Supabase users
       await request(`${SUPABASE_URL}/rest/v1/users?phone=eq.${DEMO_PHONE}`, {

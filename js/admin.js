@@ -862,9 +862,66 @@ async function toggleDemoStream(action) {
       }
       showToast('⚡ Señal Demo restaurada: Motor 4K Remux activo en vivo.');
     }
+    setTimeout(() => refreshDemoLiveStatus(false), 600);
   } catch (err) {
     console.error('Error al gestionar señal demo:', err);
     showToast('⚠️ Error al comunicarse con el conmutador de señal: ' + err.message);
+  }
+}
+
+async function refreshDemoLiveStatus(showNotify = false) {
+  const label = document.getElementById('demoStreamLabel');
+  const telemetry = document.getElementById('demoLiveTelemetry');
+  const badge = document.getElementById('demoStatusBadge');
+  if (!label && !telemetry) return;
+
+  if (showNotify && telemetry) {
+    telemetry.textContent = '⏳ Consultando Supabase y Real-Debrid en vivo...';
+  }
+
+  try {
+    const apiBase = (window.location.origin && window.location.origin.startsWith('http')) ? window.location.origin : 'https://videm.tv';
+    const res = await fetch(`${apiBase}/api/toggle-demo-signal?action=status&t=${Date.now()}`);
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error || 'No se pudo consultar estado');
+
+    if (data.isOnline) {
+      if (label) label.textContent = '🟢 Señal ACTIVA (80 Mbps Remux)';
+      if (badge) {
+        badge.innerHTML = '<span class="pulsing-dot green"></span><span>Demo Online</span>';
+        badge.style.color = '#10B981';
+        badge.style.borderColor = 'rgba(16,185,129,0.3)';
+      }
+    } else {
+      if (label) label.textContent = `🔴 Señal CORTADA (${data.masterStatus})`;
+      if (badge) {
+        badge.innerHTML = '<span class="pulsing-dot" style="background:#EF4444; box-shadow:0 0 8px #EF4444;"></span><span>Demo Cortada</span>';
+        badge.style.color = '#EF4444';
+        badge.style.borderColor = 'rgba(239,68,68,0.4)';
+      }
+    }
+
+    const parts = [];
+    if (data.activeSession) {
+      const endStr = new Date(data.activeSession.scheduled_end).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit', hour12: true });
+      parts.push(`👤 En uso por +${data.activeSession.user_phone} (TV ${data.activeSession.tv_code}) hasta ${endStr}`);
+    } else if (data.lastSession) {
+      parts.push(`📭 Sin turno activo (última: +${data.lastSession.user_phone} • ${data.lastSession.status})`);
+    } else {
+      parts.push('📭 Sin sesiones registradas');
+    }
+
+    if (data.rdActiveCount > 0 && data.lastDownload) {
+      const genStr = new Date(data.lastDownload.generated).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit', hour12: true });
+      parts.push(`🎬 RD: ${data.rdActiveCount} stream(s) • Último (${genStr}): ${data.lastDownload.filename.slice(0, 42)}`);
+    } else {
+      parts.push('🧊 RD: 0 streams activos');
+    }
+
+    if (telemetry) telemetry.textContent = parts.join('  |  ');
+    if (showNotify) showToast(data.isOnline ? '🟢 Cuenta Demo ACTIVA en vivo' : '🔴 Cuenta Demo CORTADA y sin tráfico');
+  } catch (err) {
+    if (telemetry) telemetry.textContent = '⚠️ No se pudo consultar telemetría en vivo.';
   }
 }
 
@@ -1630,5 +1687,6 @@ function closeIosInstallModal() {
 document.addEventListener('DOMContentLoaded', () => {
   checkExistingAuth();
   checkPwaDisplayState();
+  refreshDemoLiveStatus(false);
 });
 

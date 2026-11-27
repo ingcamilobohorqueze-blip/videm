@@ -271,9 +271,15 @@
             <div class="demo-kill-switch-box">
               <div class="kill-switch-info">
                 <strong>Control de Señal Demo:</strong>
-                <span id="demoStreamLabel">Señal activa a 80 Mbps Remux</span>
+                <span id="demoStreamLabel">Consultando estado en vivo...</span>
+                <div id="demoLiveTelemetry" style="font-size:0.74rem; color:var(--text-muted); margin-top:4px; line-height:1.35;">
+                  Verificando Supabase y tráfico Real-Debrid...
+                </div>
               </div>
               <div class="kill-switch-buttons">
+                <button type="button" class="btn btn-outline btn-sm" onclick="refreshDemoLiveStatus(true)" title="Consultar estado real en vivo (Supabase + Real-Debrid)">
+                  <span>🔄 Estado en Vivo</span>
+                </button>
                 <button type="button" class="btn btn-danger btn-sm" onclick="toggleDemoStream('cut')">
                   <span>🔒 Cortar Acceso Demo</span>
                 </button>

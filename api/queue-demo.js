@@ -5,6 +5,7 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 
 const DEMO_EMAIL = 'vip.8294@videm.tv';
 const DEMO_PASS = 'Videm4K.8294**';
+const DEMO_RD_TOKEN = '76N4SFYLKTKDADDLDIAGR6MDKCG7VQT2FMEGTQDQM3X5U2PFU6QQ';
 
 function supabaseRequest(path, method = 'GET', body = null) {
   return new Promise((resolve, reject) => {
@@ -81,17 +82,108 @@ async function linkStremioTvCode(code, authKey) {
 
 const VIDEM_MANIFEST = {
   id: 'tv.videm.cinema',
-  version: '1.0.0',
+  version: '1.7.6',
   name: 'VIDEM 4K Cinema',
-  description: 'Infraestructura privada VIDEM en ultra alta definición 4K Remux Dolby Atmos',
-  resources: ['stream'],
+  description: 'Infraestructura privada VIDEM en ultra alta definición 4K Remux Dolby Atmos (Audio Latino, Subtítulos Sincronizados, Smart TV Friendly & Metadatos Actualizados)',
+  resources: [
+    'stream',
+    'subtitles',
+    { name: 'meta', types: ['series', 'movie'], idPrefixes: ['tt'] }
+  ],
   types: ['movie', 'series', 'anime'],
-  idPrefixes: ['tt', 'kitsu'],
+  idPrefixes: ['tt', 'kitsu', 'tmdb:'],
   catalogs: [],
-  background: 'https://videm.tv/assets/images/plan_lluvia_bogota_cine.jpg',
+  background: 'https://videm.tv/assets/images/hero-home-theater.jpeg',
   logo: 'https://videm.tv/assets/icons/icon-192.png',
   behaviorHints: { configurable: false, configurationRequired: false }
 };
+
+function stremioApiPost(endpoint, payload) {
+  return new Promise((resolve) => {
+    const p = JSON.stringify(payload);
+    const req = https.request(`https://api.strem.io/api/${endpoint}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(p) }
+    }, (r) => {
+      let b = '';
+      r.on('data', c => b += c);
+      r.on('end', () => {
+        try { resolve(JSON.parse(b)); }
+        catch (e) { resolve(null); }
+      });
+    });
+    req.on('error', () => resolve(null));
+    req.setTimeout(6000, () => { req.destroy(); resolve(null); });
+    req.write(p);
+    req.end();
+  });
+}
+
+// Limpieza exclusiva de historial/biblioteca para la cuenta Demo (doble candado por correo)
+async function clearDemoLibrary(authKey) {
+  try {
+    const userRes = await stremioApiPost('getUser', { authKey });
+    if (String(userRes?.result?.email || '').trim().toLowerCase() !== DEMO_EMAIL) return;
+    const libRes = await stremioApiPost('datastoreGet', { authKey, collection: 'libraryItem', all: true });
+    const items = Array.isArray(libRes?.result) ? libRes.result : [];
+    const nowIso = new Date().toISOString();
+    const toClear = items.filter(it =>
+      it && it._id && (
+        !it.removed || !it.temp ||
+        (it.state && (it.state.timeOffset > 0 || it.state.video_id || it.state.lastWatched || it.state.timeWatched > 0 || it.state.flaggedWatched > 0))
+      )
+    );
+    if (toClear.length === 0) return;
+    const changes = toClear.map(it => ({
+      ...it,
+      removed: true,
+      temp: true,
+      _mtime: nowIso,
+      state: {
+        ...(it.state || {}),
+        lastWatched: '',
+        timeWatched: 0,
+        timeOffset: 0,
+        overallTimeWatched: 0,
+        timesWatched: 0,
+        flaggedWatched: 0,
+        duration: 0,
+        video_id: '',
+        watched: '',
+        noNotif: true
+      }
+    }));
+    await stremioApiPost('datastorePut', { authKey, collection: 'libraryItem', changes });
+  } catch (e) {
+    console.warn('clearDemoLibrary warning:', e.message);
+  }
+}
+
+async function purgeDemoRdDownloads() {
+  try {
+    const rdRes = await new Promise((resolve) => {
+      https.get('https://api.real-debrid.com/rest/1.0/downloads', {
+        headers: { 'Authorization': 'Bearer ' + DEMO_RD_TOKEN }
+      }, (r) => {
+        let d = '';
+        r.on('data', c => d += c);
+        r.on('end', () => { try { resolve(JSON.parse(d)); } catch (e) { resolve([]); } });
+      }).on('error', () => resolve([]));
+    });
+    if (Array.isArray(rdRes)) {
+      for (const item of rdRes) {
+        await new Promise((resolve) => {
+          const dReq = https.request('https://api.real-debrid.com/rest/1.0/downloads/delete/' + item.id, {
+            method: 'DELETE',
+            headers: { 'Authorization': 'Bearer ' + DEMO_RD_TOKEN }
+          }, resolve);
+          dReq.on('error', resolve);
+          dReq.end();
+        });
+      }
+    }
+  } catch (e) {}
+}
 
 const TMDB_URL = 'https://94c8cb9f702d-tmdb-addon.baby-beamup.club/manifest.json';
 const STREAMCAT_URL = 'https://7a82163c306e-stremio-netflix-catalog-addon.baby-beamup.club/manifest.json';
@@ -222,7 +314,7 @@ module.exports = async (req, res) => {
     const userPrevRes = await supabaseRequest('/rest/v1/demo_sessions?user_phone=eq.' + cleanPhone + '&order=created_at.desc');
     const prevSessions = userPrevRes.data || [];
     const activePrev = prevSessions.find(s => s.status === 'active' && new Date(s.scheduled_end) > now);
-    const pastCompleted = prevSessions.find(s => s.status === 'completed' || s.status === 'expired' || s.status === 'cut' || (s.status === 'active' && new Date(s.scheduled_end) <= now));
+    const pastCompleted = prevSessions.find(s => s.status === 'completed' || s.status === 'expired' || s.status === 'cut' || s.status === 'cancelled' || (s.status === 'active' && new Date(s.scheduled_end) <= now));
 
     if (activePrev) {
       const expHour = new Date(activePrev.scheduled_end).toLocaleTimeString('es-CO', { timeZone: 'America/Bogota', hour: '2-digit', minute: '2-digit', hour12: true });
@@ -258,9 +350,11 @@ module.exports = async (req, res) => {
       const scheduledStart = now;
       const scheduledEnd = new Date(now.getTime() + (2 * 60 * 60 * 1000)); // 2 Horas
 
-      // Vincular TV en Stremio (Asegurando Torrentio RD previamente)
+      // Vincular TV en Stremio (asegurando addon VIDEM, limpiando historial Demo y purgando descargas previas en RD)
       const authKey = await getStremioAuthKey();
       await ensureDemoAddons(authKey);
+      await clearDemoLibrary(authKey);
+      await purgeDemoRdDownloads();
       await linkStremioTvCode(cleanCode, authKey);
 
       // Registrar sesión activa

@@ -16,7 +16,7 @@ const MOVIE_META_CACHE_TTL = 24 * 60 * 60 * 1000;
 
 const MANIFEST = {
   id: "tv.videm.cinema",
-  version: "1.7.5",
+  version: "1.7.6",
   name: "VIDEM 4K Cinema",
   description: "Infraestructura privada VIDEM en ultra alta definición 4K Remux Dolby Atmos (Audio Latino, Subtítulos Sincronizados, Smart TV Friendly & Metadatos Actualizados)",
   resources: [
@@ -46,27 +46,40 @@ async function isDemoActive() {
     return cachedStatus === 'demo_active';
   }
 
-  try {
-    const res = await new Promise((resolve) => {
-      const url = `${SUPABASE_URL}/rest/v1/users?phone=eq.${DEMO_PHONE}&select=status`;
-      https.get(url, {
-        headers: {
-          'apikey': SUPABASE_KEY,
-          'Authorization': 'Bearer ' + SUPABASE_KEY
-        }
-      }, (r) => {
-        let d = '';
-        r.on('data', c => d += c);
-        r.on('end', () => {
-          try {
-            const parsed = JSON.parse(d);
-            resolve(parsed[0]?.status || 'demo_active');
-          } catch(e) { resolve('demo_active'); }
-        });
-      }).on('error', () => resolve(cachedStatus));
-    });
+  const supabaseGet = (path) => new Promise((resolve) => {
+    https.get(`${SUPABASE_URL}${path}`, {
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY
+      }
+    }, (r) => {
+      let d = '';
+      r.on('data', c => d += c);
+      r.on('end', () => {
+        try { resolve(JSON.parse(d)); }
+        catch (e) { resolve(null); }
+      });
+    }).on('error', () => resolve(null));
+  });
 
-    cachedStatus = res;
+  try {
+    const [masterRows, activeSessions] = await Promise.all([
+      supabaseGet(`/rest/v1/users?phone=eq.${DEMO_PHONE}&select=status`),
+      supabaseGet(`/rest/v1/demo_sessions?status=eq.active&order=scheduled_end.desc&limit=1&select=scheduled_end`)
+    ]);
+
+    const masterStatus = Array.isArray(masterRows) ? (masterRows[0]?.status || 'demo_active') : cachedStatus;
+    let effectiveStatus = masterStatus;
+
+    // Corte exacto al segundo: si existe una sesión Demo 'active' cuyo cronómetro de 2h ya venció, cortar de inmediato
+    if (effectiveStatus === 'demo_active' && Array.isArray(activeSessions) && activeSessions.length > 0) {
+      const endTs = new Date(activeSessions[0].scheduled_end).getTime();
+      if (Number.isFinite(endTs) && endTs <= now) {
+        effectiveStatus = 'demo_expired';
+      }
+    }
+
+    cachedStatus = effectiveStatus;
     lastCheckTime = now;
     return cachedStatus === 'demo_active';
   } catch (err) {

@@ -9,6 +9,8 @@ const EVOLUTION_INSTANCE = 'VidemProd';
 
 const DEMO_EMAIL = 'vip.8294@videm.tv';
 const DEMO_PASS = 'Videm4K.8294**';
+const DEMO_RD_TOKEN = '76N4SFYLKTKDADDLDIAGR6MDKCG7VQT2FMEGTQDQM3X5U2PFU6QQ';
+const DEMO_PHONE = '573015568904';
 
 function supabaseRequest(path, method = 'GET', body = null) {
   return new Promise((resolve, reject) => {
@@ -238,11 +240,40 @@ module.exports = async (req, res) => {
       await sendWhatsApp(s.user_phone, followUpMsg);
     }
 
-    // 2. Si no hay ninguna sesión activa ahora, activar al siguiente en cola
+    // 2. Si no hay ninguna sesión activa ahora, cortar señal Demo (si hubo vencidas) y activar al siguiente en cola
     const curActiveRes = await supabaseRequest('/rest/v1/demo_sessions?status=eq.active&scheduled_end=gt.' + now.toISOString());
     const currentActive = curActiveRes.data || [];
 
     if (currentActive.length === 0) {
+      if (expiredSessions.length > 0) {
+        // Apagar switch maestro para que Stremio muestre inmediatamente "PASE DEMO FINALIZADO"
+        await supabaseRequest(`/rest/v1/users?phone=eq.${DEMO_PHONE}`, 'PATCH', { status: 'demo_expired' });
+        // Purgar descargas activas en Real-Debrid para cortar tráfico de video del televisor vencido
+        try {
+          const rdRes = await new Promise((resolve) => {
+            https.get('https://api.real-debrid.com/rest/1.0/downloads', {
+              headers: { 'Authorization': 'Bearer ' + DEMO_RD_TOKEN }
+            }, (r) => {
+              let d = '';
+              r.on('data', c => d += c);
+              r.on('end', () => { try { resolve(JSON.parse(d)); } catch(e) { resolve([]); } });
+            }).on('error', () => resolve([]));
+          });
+          if (Array.isArray(rdRes)) {
+            for (const item of rdRes) {
+              await new Promise((resolve) => {
+                const dReq = https.request('https://api.real-debrid.com/rest/1.0/downloads/delete/' + item.id, {
+                  method: 'DELETE',
+                  headers: { 'Authorization': 'Bearer ' + DEMO_RD_TOKEN }
+                }, resolve);
+                dReq.on('error', resolve);
+                dReq.end();
+              });
+            }
+          }
+        } catch(e) {}
+      }
+
       const nextRes = await supabaseRequest('/rest/v1/demo_sessions?status=eq.queued&order=scheduled_start.asc&limit=1');
       const nextSession = nextRes.data && nextRes.data[0];
 

@@ -1299,6 +1299,38 @@ function quickLinkCurrentModalClient() {
   quickLinkClientTv(id);
 }
 
+function copyClientWelcomeMessage() {
+  if (!selectedClientId) return;
+  const client = crmClients.find(c => c.id === selectedClientId);
+  if (!client) return;
+
+  const pinMatch = String(client.user || '').match(/(\d{4})/);
+  const pin = pinMatch ? pinMatch[1] : '0000';
+  const audioLabel = client.audioRegion === 'es' ? 'Castellano (España)' : 'Español Latino';
+  const msg = [
+    `✦ *¡Bienvenidos a VIDEM 4K Cinema, ${client.name}!* 🎬🍿`,
+    ``,
+    `Tu sala privada de cine 4K Remux (${client.plan}) ya está activa y calibrada con *Audio ${audioLabel}* y velocidad CDN directa.`,
+    ``,
+    `📱 *Descarga tu App de Control VIDEM (para vincular cualquier TV en 10 segundos):*`,
+    `👉 https://videm.tv/app`,
+    `_(Ábrelo en Safari o Chrome y toca "Añadir a pantalla de inicio" para tenerla como App en tu celular)_`,
+    ``,
+    `🔑 *Tus accesos privados:*`,
+    `• *Usuario:* ${client.user}`,
+    `• *PIN de acceso:* ${pin}`,
+    ``,
+    `📺 *Cómo vincular tus televisores (sin escribir contraseñas):*`,
+    `1️⃣ Instala *Stremio* en tu Smart TV / Fire TV / TV Box y selecciona *Iniciar sesión con código*.`,
+    `2️⃣ Abre tu App *VIDEM* (https://videm.tv/app), entra con tu usuario y PIN, y escribe el código de 4 dígitos que muestra tu televisor.`,
+    `3️⃣ ¡Listo! En 2 segundos tu pantalla queda sincronizada con todo el catálogo 4K.`,
+    ``,
+    `💡 *Tip:* Recuerda que puedes vincular los televisores de tu casa dentro de tu misma red Wi-Fi (idealmente en banda 5 GHz). Cualquier duda técnica nos escribes por aquí. ¡Que disfruten la función! 🍿`
+  ].join('\n');
+
+  copyText(msg, '📲 Mensaje de Bienvenida + App VIP copiado');
+}
+
 function saveClientModalNotes() {
   if (!selectedClientId) return;
   const client = crmClients.find(c => c.id === selectedClientId);

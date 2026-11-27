@@ -282,18 +282,21 @@ async function handleLinkTvDevice() {
   feedback.style.display = 'none';
 
   try {
-    // 1. Obtener authKey de la cuenta Stremio del cliente
-    let authKey = null;
-    const loginRes = await fetch('https://api.strem.io/api/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: activeClient.user, password: activeClient.pass || 'Videm4K.9299!' })
-    });
-    const loginData = await loginRes.json();
-    authKey = loginData.result?.authKey;
+    // 1. Usar authKey seguro entregado por el servidor al iniciar sesión (evita exponer contraseñas o caer a la Demo)
+    let authKey = activeClient.stremioAuthKey || null;
 
-    if (!authKey) {
-      // Fallback a login maestro demo si es cuenta cortesía
+    if (!authKey && activeClient.pass) {
+      const loginRes = await fetch('https://api.strem.io/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: activeClient.user, password: activeClient.pass })
+      });
+      const loginData = await loginRes.json();
+      authKey = loginData.result?.authKey;
+    }
+
+    if (!authKey && activeClient.status === 'Demo') {
+      // Fallback exclusivo si es cuenta Demo de cortesía (NUNCA para cuentas VIP)
       const demoLog = await fetch('https://api.strem.io/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -303,7 +306,14 @@ async function handleLinkTvDevice() {
       authKey = dLogData.result?.authKey;
     }
 
-    // 2. Enviar a /api/link-device
+    if (!authKey) {
+      feedback.textContent = '⚠️ Tu sesión VIP venció. Toca "Salir" arriba y vuelve a ingresar con tu usuario y PIN para enlazar tu TV.';
+      feedback.style.color = 'var(--danger)';
+      feedback.style.display = 'block';
+      return;
+    }
+
+    // 2. Enviar a /api/link-device (respetando región de audio del cliente y modo VIP sin limpieza Demo)
     const linkRes = await fetch('/api/link-device', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -311,6 +321,7 @@ async function handleLinkTvDevice() {
         code,
         authKey,
         isDemo: activeClient.status === 'Demo',
+        region: activeClient.audioRegion || 'latam',
         phone: activeClient.phone
       })
     });

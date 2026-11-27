@@ -39,10 +39,46 @@ const KNOWN_CLIENTS = [
     name: 'John Bedoya',
     plan: 'Pase Mensual Flex',
     status: 'Activo',
+    audioRegion: 'latam',
     endDate: '2026-11-26T23:59:59',
     rdToken: '5MDPKLAAN2KYABXWZ55Z5TIVQZWJRLZVWAOGLS62YBPPNVVHNMQA'
+  },
+  {
+    id: 'familia_arias_medina',
+    phone: '34613163922',
+    user: 'vip.1320@videm.tv',
+    pin: '1320',
+    pass: 'Videm4K.1320!',
+    name: 'Familia Arias Medina',
+    plan: 'Trimestral VIP (90 días)',
+    status: 'Activo',
+    audioRegion: 'latam',
+    endDate: '2027-02-25T23:59:59',
+    rdToken: 'MYAW5XPA3DMV2YSWATUATHSBZOG2YTYXG3IXU7K6LLUIIBSKSI5Q'
   }
 ];
+
+function getStremioAuthKey(email, password) {
+  return new Promise((resolve) => {
+    if (!email || !password) return resolve(null);
+    const data = JSON.stringify({ email, password });
+    const req = https.request('https://api.strem.io/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(data) }
+    }, (res) => {
+      let b = '';
+      res.on('data', c => b += c);
+      res.on('end', () => {
+        try { resolve(JSON.parse(b)?.result?.authKey || null); }
+        catch (e) { resolve(null); }
+      });
+    });
+    req.on('error', () => resolve(null));
+    req.setTimeout(5000, () => { req.destroy(); resolve(null); });
+    req.write(data);
+    req.end();
+  });
+}
 
 function patchSupabase(path, body) {
   return new Promise((resolve) => {
@@ -117,6 +153,7 @@ module.exports = async (req, res) => {
         c.user.toLowerCase().startsWith(cleanUser) ||
         (targetPhone && (c.phone === targetPhone || c.phone.endsWith(targetPhone) || targetPhone.endsWith(c.phone))) ||
         (cleanUser.includes('9299') && c.id === 'john_bedoya') ||
+        (cleanUser.includes('1320') && c.id === 'familia_arias_medina') ||
         (cleanUser.includes('8294') && c.id === 'demo')
       );
 
@@ -132,6 +169,8 @@ module.exports = async (req, res) => {
           });
         }
 
+        const stremioAuthKey = await getStremioAuthKey(matched.user, matched.pass);
+
         return res.status(200).json({
           success: true,
           message: '¡PIN configurado exitosamente!',
@@ -141,8 +180,10 @@ module.exports = async (req, res) => {
             user: matched.user,
             plan: matched.plan,
             status: matched.status,
+            audioRegion: matched.audioRegion || 'latam',
             endDate: matched.endDate,
-            rdToken: matched.rdToken
+            rdToken: matched.rdToken,
+            stremioAuthKey
           }
         });
       }
@@ -169,6 +210,7 @@ module.exports = async (req, res) => {
         (cleanDigits && (c.phone === cleanDigits || (cleanDigits.length >= 7 && (c.phone.endsWith(cleanDigits) || cleanDigits.endsWith(c.phone))))) ||
         (cleanUser === 'john' && c.id === 'john_bedoya') ||
         (cleanUser === '9299' && c.id === 'john_bedoya') ||
+        (cleanUser === '1320' && c.id === 'familia_arias_medina') ||
         (cleanUser === '8294' && c.id === 'demo')
       );
 
@@ -186,6 +228,7 @@ module.exports = async (req, res) => {
     });
 
     if (matchedKnown) {
+      const stremioAuthKey = await getStremioAuthKey(matchedKnown.user, matchedKnown.pass);
       return res.status(200).json({
         success: true,
         client: {
@@ -194,8 +237,10 @@ module.exports = async (req, res) => {
           user: matchedKnown.user,
           plan: matchedKnown.plan,
           status: matchedKnown.status,
+          audioRegion: matchedKnown.audioRegion || 'latam',
           endDate: matchedKnown.endDate,
-          rdToken: matchedKnown.rdToken
+          rdToken: matchedKnown.rdToken,
+          stremioAuthKey
         }
       });
     }

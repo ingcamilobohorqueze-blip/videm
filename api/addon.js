@@ -11,10 +11,12 @@ let cachedStatus = 'demo_active';
 let lastCheckTime = 0;
 const latamCache = new Map(); // Caché de 20 min para Addon Latam (evita timeouts repetidos de duckdns)
 const LATAM_CACHE_TTL = 20 * 60 * 1000;
+const movieMetaCache = new Map(); // Caché de 24h para año/título oficial de películas (evita infiltrados de remakes como Batman 1989 en 2022)
+const MOVIE_META_CACHE_TTL = 24 * 60 * 60 * 1000;
 
 const MANIFEST = {
   id: "tv.videm.cinema",
-  version: "1.7.4",
+  version: "1.7.5",
   name: "VIDEM 4K Cinema",
   description: "Infraestructura privada VIDEM en ultra alta definición 4K Remux Dolby Atmos (Audio Latino, Subtítulos Sincronizados, Smart TV Friendly & Metadatos Actualizados)",
   resources: [
@@ -179,14 +181,40 @@ async function fetchMultiEngineStreams(type, rawId, rdToken, region = 'latam') {
   // 7. Torrentio Global en paralelo (0ms de espera extra; garantiza siempre copias 4K/1080p Real-Debrid sin riesgo de timeout)
   const urlTorrentioGlobal = `https://torrentio.strem.fun/qualityfilter=cam,scr%7Cdebridoptions=nodownloadlinks%7Crealdebrid=${token}/stream/${type}/${id}`;
 
-  const [resTPrimary, resTSecondary, resPeerflix, resComet, resTdb, resLatam, resTGlobal] = await Promise.all([
+  // 8. Metadatos oficiales de película en paralelo (para filtrar infiltrados de remakes/otros años, ej. Batman 1989 en The Batman 2022)
+  const queryMovieMetaCached = async () => {
+    if (type !== 'movie') return null;
+    const cleanMovieId = id.replace(/\.json$/i, '');
+    if (!cleanMovieId.startsWith('tt')) return null;
+    const hit = movieMetaCache.get(cleanMovieId);
+    if (hit && Date.now() - hit.ts < MOVIE_META_CACHE_TTL) return hit.data;
+    const data = await fetchRawJson(`https://v3-cinemeta.strem.io/meta/movie/${cleanMovieId}.json`, 2500);
+    const meta = data?.meta;
+    if (meta) {
+      const yearMatch = String(meta.year || meta.releaseInfo || '').match(/(19\d{2}|20[0-3]\d)/);
+      const parsed = {
+        name: String(meta.name || ''),
+        year: yearMatch ? parseInt(yearMatch[1], 10) : null
+      };
+      movieMetaCache.set(cleanMovieId, { ts: Date.now(), data: parsed });
+      if (movieMetaCache.size > 500) {
+        const firstKey = movieMetaCache.keys().next().value;
+        movieMetaCache.delete(firstKey);
+      }
+      return parsed;
+    }
+    return null;
+  };
+
+  const [resTPrimary, resTSecondary, resPeerflix, resComet, resTdb, resLatam, resTGlobal, movieMeta] = await Promise.all([
     queryJsonUrl(urlTorrentioPrimary, 4000),
     queryJsonUrl(urlTorrentioSecondary, 4000),
     queryJsonUrl(urlPeerflix, 4000),
     queryJsonUrl(urlCometDmm, 4500),
     queryJsonUrl(urlTorrentsDb, 3800),
     region === 'latam' ? queryAddonLatamCached() : Promise.resolve({ streams: [] }),
-    region === 'latam' ? queryJsonUrl(urlTorrentioGlobal, 4000) : Promise.resolve({ streams: [] })
+    region === 'latam' ? queryJsonUrl(urlTorrentioGlobal, 4000) : Promise.resolve({ streams: [] }),
+    queryMovieMetaCached()
   ]);
 
   // Extraer hashes confirmados en caché Real-Debrid desde Comet (cachedOnly: true)
@@ -241,6 +269,19 @@ async function fetchMultiEngineStreams(type, rawId, rdToken, region = 'latam') {
     // Si estamos consultando una película, descartar packs de series infiltrados por palabra clave (ej. "DRAGON BALL Z: Complete 1989-2019 Series" en "Red Dragon")
     if (type === 'movie' && /complete\s+\d{4}-\d{4}\s+series|dragon\s*ball\s*z|\bs\d{2}e\d{2}\b/i.test(fullText)) {
       continue;
+    }
+    // Si estamos consultando una película con año oficial conocido, descartar remakes/versiones de otro año (ej. Batman 1989 infiltrado en The Batman 2022)
+    if (type === 'movie' && movieMeta?.year) {
+      const releaseHeader = `${(s.title || s.description || '').split('\n')[0] || ''} ${s.behaviorHints?.filename || ''}`;
+      const yearMatches = releaseHeader.match(/\b(19\d{2}|20[0-3]\d)\b/g);
+      if (yearMatches && yearMatches.length > 0) {
+        const titleYears = new Set((movieMeta.name.match(/\b(19\d{2}|20[0-3]\d)\b/g) || []).map(Number));
+        const candidateYears = yearMatches.map(Number).filter(y => !titleYears.has(y));
+        if (candidateYears.length > 0) {
+          const hasMatchingYear = candidateYears.some(y => Math.abs(y - movieMeta.year) <= 1);
+          if (!hasMatchingYear) continue;
+        }
+      }
     }
     // Descartar enlaces de aviso o "Idioma sin confirmar" de baja confianza si ya hay opciones confirmadas
     if (/acceso no es válido|acceso no autorizado|solicitar contenido/i.test(fullText)) {
